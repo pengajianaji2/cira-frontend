@@ -1,0 +1,133 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { projectsApi } from "../api/projects.api";
+import {
+  ProjectStatus,
+  CreateProjectInput,
+  UpdateProjectInput,
+} from "../types/projects.types";
+
+export const PROJECT_KEYS = {
+  all: ["projects"] as const,
+  lists: () => [...PROJECT_KEYS.all, "list"] as const,
+  list: (status?: ProjectStatus | "all") =>
+    [...PROJECT_KEYS.lists(), { status }] as const,
+  details: () => [...PROJECT_KEYS.all, "detail"] as const,
+  detail: (id: string) => [...PROJECT_KEYS.details(), id] as const,
+};
+
+export function useProjectsQuery(status?: ProjectStatus | "all") {
+  return useQuery({
+    queryKey: PROJECT_KEYS.list(status),
+    queryFn: async () => {
+      const response = await projectsApi.getProjects(status);
+      return response.data;
+    },
+  });
+}
+
+export function useProjectQuery(id: string) {
+  return useQuery({
+    queryKey: PROJECT_KEYS.detail(id),
+    queryFn: async () => {
+      const response = await projectsApi.getProjectById(id);
+      return response.data;
+    },
+    enabled: Boolean(id),
+  });
+}
+
+export function useCreateProjectMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: CreateProjectInput) => {
+      const response = await projectsApi.createProject(payload);
+      return response.data;
+    },
+    onSuccess: (newProject) => {
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+      toast.success("Proyek Baru Berhasil Dibuat", {
+        description: `Proyek "${newProject.name}" masuk ke pipeline dengan status Lead.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast.error("Gagal membuat proyek", {
+        description: error.message || "Terjadi kesalahan pada sistem.",
+      });
+    },
+  });
+}
+
+export function useUpdateProjectPrdMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, prdContent }: { id: string; prdContent: string }) => {
+      const response = await projectsApi.updateProjectPrd(id, prdContent);
+      return response.data;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(PROJECT_KEYS.detail(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+      toast.success("Perubahan PRD Disimpan", {
+        description: "Dokumen spesifikasi proyek berhasil diperbarui.",
+      });
+    },
+    onError: (error: Error) => {
+      toast.error("Gagal menyimpan PRD", {
+        description: error.message || "Gagal menyimpan perubahan dokumen.",
+      });
+    },
+  });
+}
+
+export function useUpdateProjectStatusMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: ProjectStatus;
+    }) => {
+      const response = await projectsApi.updateProjectStatus(id, status);
+      return response.data;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(PROJECT_KEYS.detail(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+      toast.success("Status Proyek Diperbarui", {
+        description: `Status proyek kini menjadi "${updated.status.toUpperCase()}".`,
+      });
+    },
+    onError: (error: Error) => {
+      toast.error("Gagal mengubah status", {
+        description: error.message || "Tidak dapat memperbarui status proyek.",
+      });
+    },
+  });
+}
+
+export function useUpdateProjectMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      input,
+    }: {
+      id: string;
+      input: UpdateProjectInput;
+    }) => {
+      const response = await projectsApi.updateProject(id, input);
+      return response.data;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(PROJECT_KEYS.detail(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+    },
+  });
+}

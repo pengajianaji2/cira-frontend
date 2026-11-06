@@ -1,0 +1,79 @@
+"use client";
+
+import React from "react";
+import { Project, ProjectStatus } from "../types/projects.types";
+import { cn } from "@/lib/utils";
+import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
+
+export type FilterStatus = "all" | ProjectStatus;
+
+export interface ProjectFilterTabsProps {
+  currentFilter?: FilterStatus;
+  onFilterChange?: (status: FilterStatus) => void;
+  projects?: Project[];
+}
+
+export function ProjectFilterTabs({
+  currentFilter,
+  onFilterChange,
+  projects = [],
+}: ProjectFilterTabsProps) {
+  const globalState = useGlobalState();
+
+  const activeFilter = currentFilter ?? globalState.filterStatus;
+  const handleFilterChange = (key: FilterStatus) => {
+    if (onFilterChange) {
+      onFilterChange(key);
+    }
+    globalState.setFilterStatus(key);
+  };
+
+  const counts = {
+    all: projects.length,
+    lead: projects.filter((p) => p.status === "lead").length,
+    active: projects.filter((p) => p.status === "active").length,
+    completed: projects.filter((p) => p.status === "completed").length,
+    cancelled: projects.filter((p) => p.status === "cancelled").length,
+  };
+
+  const tabs: { key: FilterStatus; label: string; count: number }[] = [
+    { key: "all", label: "Semua", count: counts.all },
+    { key: "lead", label: "Lead", count: counts.lead },
+    { key: "active", label: "Active", count: counts.active },
+    { key: "completed", label: "Completed", count: counts.completed },
+    { key: "cancelled", label: "Cancelled", count: counts.cancelled },
+  ];
+
+  return (
+    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+      {tabs.map((tab) => {
+        const isActive = activeFilter === tab.key;
+        return (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => handleFilterChange(tab.key)}
+            className={cn(
+              "px-3.5 py-1.5 rounded-full text-xs font-medium transition-all inline-flex items-center gap-2 whitespace-nowrap",
+              isActive
+                ? "bg-foreground text-background shadow-xs font-semibold"
+                : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <span>{tab.label}</span>
+            <span
+              className={cn(
+                "size-5 rounded-full text-[10px] flex items-center justify-center font-bold",
+                isActive
+                  ? "bg-background/20 text-background"
+                  : "bg-background text-muted-foreground border border-border/50"
+              )}
+            >
+              {tab.count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
