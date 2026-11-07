@@ -41,7 +41,6 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -56,18 +55,10 @@ export function LoginForm() {
     loginMutation.mutate(data);
   };
 
-  const handleQuickFill = () => {
-    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL;
-    const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
-    if (!demoEmail || !demoPassword || process.env.NODE_ENV === "production") return;
-    setValue("email", demoEmail, { shouldValidate: true });
-    setValue("password", demoPassword, { shouldValidate: true });
-  };
-
   return (
-    <div className="h-screen max-h-screen w-full flex items-center justify-center p-3 sm:p-4 md:p-6 bg-[#09250c] overflow-hidden select-none">
+    <div className="h-screen max-h-screen w-full flex items-center justify-center p-3 sm:p-4 md:p-6 bg-white overflow-hidden select-none">
       {/* Main White Card Container - Pas 100% Viewport tanpa scroll */}
-      <div className="w-full max-w-[920px] max-h-[96vh] md:max-h-[540px] bg-white rounded-[32px] md:rounded-[40px] shadow-2xl p-5 sm:p-7 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center overflow-hidden">
+      <div className="w-full max-w-[920px] max-h-[96vh] md:max-h-[540px] bg-white rounded-[32px] md:rounded-[40px] border border-neutral-200/80 shadow-xl p-5 sm:p-7 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center overflow-hidden">
         {/* Kolom Kiri: Form Login */}
         <div className="w-full max-w-[340px] mx-auto flex flex-col justify-center">
           {/* Logo Cira */}
@@ -157,25 +148,6 @@ export function LoginForm() {
               )}
             </button>
           </form>
-
-          {/* Don't have an account? Sign Up */}
-          <div className="text-center text-[11px] text-neutral-500 mt-3">
-            Don&apos;t have an account?{" "}
-            <span
-              onClick={() => alert("Pembuatan akun baru dilakukan via seed atau tautan undangan Owner.")}
-              className="font-semibold text-neutral-900 cursor-pointer hover:underline"
-            >
-              Sign Up
-            </span>
-          </div>
-
-          {/* Quick Demo Helper */}
-          <div className="mt-3 pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400">
-            <span>Dev demo:</span>
-            <button type="button" onClick={handleQuickFill} className="text-[#f7941e] hover:underline font-medium">
-              Isi akun owner (owner@cira.id)
-            </button>
-          </div>
         </div>
 
         {/* Kolom Kanan: The Exact Reference Illustration via next/image */}

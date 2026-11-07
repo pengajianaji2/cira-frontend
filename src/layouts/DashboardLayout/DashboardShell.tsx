@@ -10,10 +10,71 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { navigationConfig } from "../navigation.config";
 import { useAuthStore, useLogoutMutation, useCurrentUserQuery } from "@/features/auth";
+import { useProjectQuery } from "@/features/projects";
 import { cn } from "@/lib/utils";
 
 interface DashboardShellProps {
   children: React.ReactNode;
+}
+
+function DashboardBreadcrumb() {
+  const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+
+  const isProjectsRoute = segments[0] === "projects";
+  const projectId = isProjectsRoute && segments[1] ? segments[1] : "";
+
+  // TanStack Query caches project details, reusing data fetched on the project page
+  const { data: project, isLoading } = useProjectQuery(projectId);
+
+  if (segments.length === 0) {
+    return (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>Workspace</span>
+        <span>/</span>
+        <span className="text-foreground font-medium">Dashboard</span>
+      </div>
+    );
+  }
+
+  if (isProjectsRoute && projectId) {
+    return (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>Workspace</span>
+        <span>/</span>
+        <Link
+          href="/projects"
+          className="hover:text-foreground transition-colors font-medium text-muted-foreground"
+        >
+          Projects
+        </Link>
+        <span>/</span>
+        <span
+          className="text-foreground font-medium truncate max-w-[140px] sm:max-w-[220px] md:max-w-[340px]"
+          title={project?.name}
+        >
+          {project?.name || (isLoading ? "..." : projectId)}
+        </span>
+      </div>
+    );
+  }
+
+  const title =
+    segments[0] === "projects"
+      ? "Projects"
+      : segments[0] === "directory"
+      ? "Directory"
+      : segments[0] === "profile"
+      ? "Profile"
+      : segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
+
+  return (
+    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <span>Workspace</span>
+      <span>/</span>
+      <span className="text-foreground font-medium">{title}</span>
+    </div>
+  );
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
@@ -167,11 +228,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               </Sheet>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>Workspace</span>
-              <span>/</span>
-              <span className="text-foreground font-medium capitalize">{pathname.replace("/", "") || "Dashboard"}</span>
-            </div>
+            <DashboardBreadcrumb />
           </div>
 
           <div className="flex items-center gap-3">

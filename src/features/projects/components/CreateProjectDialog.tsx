@@ -74,7 +74,7 @@ export function CreateProjectDialog({
         {trigger || (
           <Button className="rounded-full h-10 px-4 text-xs font-medium shadow-xs">
             <HugeiconsIcon icon={Add01Icon} className="size-4 mr-1.5" />
-            + Buat Proyek Baru
+            Buat Proyek Baru
           </Button>
         )}
       </DialogTrigger>
