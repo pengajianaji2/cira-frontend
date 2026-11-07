@@ -17,8 +17,8 @@ export const authApi = {
   /**
    * Melakukan autentikasi kredensial pengguna (email & password).
    */
-  async login(payload: LoginInput): Promise<ApiResponse<{ user: User }>> {
-    const response = await apiClient.post<ApiResponse<{ user: User }>>(
+  async login(payload: LoginInput): Promise<ApiResponse<{ user: User; token?: string }>> {
+    const response = await apiClient.post<ApiResponse<{ user: User; token?: string }>>(
       "/auth/login",
       payload
     );
@@ -76,8 +76,8 @@ export const authApi = {
   /**
    * Menyelesaikan aktivasi akun tim dengan nama, WhatsApp, Instagram, dan password baru.
    */
-  async activate(payload: ActivateInput): Promise<ApiResponse<{ user: User }>> {
-    const response = await apiClient.post<ApiResponse<{ user: User }>>(
+  async activate(payload: ActivateInput): Promise<ApiResponse<{ user: User; token?: string }>> {
+    const response = await apiClient.post<ApiResponse<{ user: User; token?: string }>>(
       "/auth/activate",
       payload
     );

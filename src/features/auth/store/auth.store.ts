@@ -4,8 +4,10 @@ import { User } from "@/shared/types/auth.types";
 
 interface AuthStore {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  setAuth: (user: User | null, token?: string | null) => void;
   setUser: (user: User | null) => void;
   setLoading: (isLoading: boolean) => void;
   logout: () => void;
@@ -15,8 +17,16 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
       isLoading: false,
+      setAuth: (user, token = null) =>
+        set({
+          user,
+          token,
+          isAuthenticated: !!user,
+          isLoading: false,
+        }),
       setUser: (user) =>
         set({
           user,
@@ -27,6 +37,7 @@ export const useAuthStore = create<AuthStore>()(
       logout: () =>
         set({
           user: null,
+          token: null,
           isAuthenticated: false,
           isLoading: false,
         }),

@@ -37,13 +37,13 @@ export function useCurrentUserQuery() {
 
 export function useLoginMutation() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: LoginInput) => authApi.login(payload),
     onSuccess: (response) => {
-      setUser(response.data.user);
+      setAuth(response.data.user, response.data.token);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
       toast.success(response.message || "Selamat datang kembali!");
       router.push("/projects");
@@ -117,13 +117,13 @@ export function useInviteInfoQuery(token: string) {
 
 export function useActivateMutation() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: ActivateInput) => authApi.activate(payload),
     onSuccess: (response) => {
-      setUser(response.data.user);
+      setAuth(response.data.user, response.data.token);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
       toast.success(response.message || "Aktivasi berhasil! Selamat bergabung di tim.");
       router.push("/projects");
