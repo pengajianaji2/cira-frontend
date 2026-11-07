@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import {
   useWorkspaceStore,
-  WorkspaceState,
   FilterStatus,
   SortField,
   SortOrder,

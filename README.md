@@ -1,8 +1,6 @@
-# Cira Project Management (Frontend: pm-web)
+# Cira Project Management (Frontend: `cira-pm-frontend`)
 
-Platform dashboard web terpadu untuk tim agensi dan studio pengembang proyek klien (skala 3–5 orang) guna mengelola pipeline penawaran proyek, editor PRD standar berbasis Markdown, papan Kanban tugas, pencatatan termin keuangan & bukti transfer, serta transparansi riwayat aktivitas (*audit log*).
-
-Aplikasi ini dibangun untuk mengatasi risiko operasional dan *context switching* ekstrem, memastikan pengerjaan tugas teknis tidak mendahului kepastian pembayaran uang muka (DP) klien.
+Platform dashboard web terpadu untuk tim agensi dan studio pengembang proyek klien (skala 3–5 orang) guna mengelola tata kelola persetujuan status proyek, PRD versioning kompresi GZIP, daur hidup sprint dengan story points Fibonacci matematis, serta rantai penagihan keuangan resmi: kontrak termin berbobot tepat 100%, trigger modul BAST, dan generator invoice PDF resmi.
 
 ---
 
@@ -10,26 +8,28 @@ Aplikasi ini dibangun untuk mengatasi risiko operasional dan *context switching*
 
 Sistem telah menyelesaikan seluruh cakupan kebutuhan fungsional MVP sesuai dokumen spesifikasi [`docs/prd.md`](../docs/prd.md):
 
-### 1. Autentikasi & Ruang Kerja Tim (US-1)
-- **Login Split-Screen Responsif:** Formulir masuk aman dengan validasi Zod (`loginSchema`), animasi transisi modern, dan ilustrasi *creative studio*.
-- **Auth Store Terisolasi:** Manajemen sesi dan identitas pengguna berbasis Zustand store dengan persistensi lokal browser.
-- **Shell Layout Dashboard:** Navigasi sidebar terpadu, info avatar pengguna, *breadcrumbs*, dan kompatibilitas tampilan desktop maupun mobile.
+### 1. Autentikasi RBAC 3-Role & Direktori Tim (US-1)
+- **Login Split-Screen Responsif:** Formulir masuk aman dengan validasi Zod (`loginSchema`), proteksi CSRF, dan persistensi sesi.
+- **Aktivasi Token 24 Jam:** Pendaftaran anggota tim melalui token undangan 24 jam dengan input wajib WhatsApp standar internasional (`^\+?[1-9]\d{1,14}$`) dan profil Instagram.
+- **Direktori Tim Terfilter:** Daftar anggota tim dengan filter role (`Owner`, `Developer`, `Operasional`) dan kontak langsung.
 
-### 2. Pipeline Proyek & Editor PRD Resmi (US-2)
-- **Manajemen Status Pipeline:** Pengelolaan siklus hidup proyek (`Lead`, `Active`, `Completed`, `Cancelled`) dengan filter tab interaktif dan modal pembuatan proyek baru.
-- **Split-Pane PRD Markdown Editor:** Penyusunan dokumen kebutuhan produk (*Product Requirements Document*) berbasis Markdown dengan *live preview* tersinkronisasi.
-- **Ekspor Dokumen PDF Resmi:** Fitur generate dan unduh dokumen resmi PRD bersurat standar profesional langsung dari browser menggunakan `@react-pdf/renderer`.
+### 2. Tata Kelola Status Proyek, Voting Roster & PRD Versioning (US-2)
+- **Persetujuan Status via Voting Roster:** Perubahan status proyek (`Lead`, `Active`, `Completed`, `Cancelled`) mewajibkan konsensus 100% dari roster tim atau arbitrase final Owner.
+- **Tautan Repositori Berlabel:** Manajemen URL repositori proyek berlabel (`monorepo` vs `separate`) dengan otorisasi khusus Owner & Developer.
+- **Riwayat Audit Append-Only:** Log histori audit perubahan proyek yang tidak dapat dimanipulasi.
+- **PRD Versioning GZIP:** Riwayat snapshot spesifikasi PRD terkompresi GZIP yang dapat ditinjau dan dipulihkan (*restore*) tanpa menimpa histori audit masa lalu.
 
-### 3. Papan Kanban Tugas & Galeri Aset Desain (US-3)
-- **Task Kanban Board Drag-and-Drop:** Manajemen kolom status tugas (`To Do`, `In Progress`, `Done`) interaktif menggunakan `@dnd-kit/core` & `@dnd-kit/sortable` dengan pengelompokan prioritas (*Low*, *Medium*, *High*, *Urgent*).
-- **Banner Deteksi Proteksi DP (DP Guard Banner):** Sistem peringatan dini otomatis di atas papan Kanban jika proyek berstatus `Active` belum memiliki pembayaran termin dengan status `Verified`.
-- **Kompresi Gambar Otomatis di Browser:** Upload aset desain wireframe/mockup dengan kompresi ukuran otomatis di sisi klien via `browser-image-compression` (menjaga batas file < 2 MB).
+### 3. Sprint Lifecycle, Fibonacci Story Points, & Progres Kumulatif (US-3)
+- **Daur Hidup Sprint Terurut:** Siklus sprint terstruktur (`planning` -> `active` -> `completed`) dengan aturan ketat 1 sprint aktif.
+- **Story Points Fibonacci:** Penetapan bobot tugas berbasis deret Fibonacci murni `[1, 2, 3, 5, 8, 13]` dengan tepat 1 assignee per tugas.
+- **Validasi Selesai Sprint:** Penolakan penyelesaian sprint jika masih terdapat task yang belum berstatus `Done`.
+- **Progres Kumulatif Matematis:** Bar pengukur progres proyek dihitung secara matematis berdasarkan akumulasi story points sprint yang telah selesai terhadap total ruang lingkup yang disetujui.
 
-### 4. Manajemen Keuangan, Bukti Transfer & Riwayat Aktivitas (US-4)
-- **Ringkasan Finansial Proyek:** 4 kartu metrik utama (**Total Nilai Kontrak**, **Total Terverifikasi**, **Menunggu Verifikasi**, **Sisa Tagihan**) dan indikator persentase pelunasan.
-- **Daftar Termin Pembayaran (Milestone):** Pencatatan termin (DP, progres, pelunasan) dengan status default `Pending` dan fitur penyesuaian nilai kontrak resmi.
-- **Lightbox Bukti Transfer & Verifikasi:** Unggah bukti pembayaran dan pratinjau bukti bayar digital beresolusi tinggi. Verifikasi pembayaran oleh Owner secara otomatis mengubah badge menjadi `Verified` dan menonaktifkan peringatan banner DP di Task Board.
-- **Riwayat Aktivitas Kronologis (Audit Log):** Pencatatan otomatis setiap aksi penting sistem (proyek, termin keuangan, task board, dan upload aset) dengan filter kategori dan waktu relatif bahasa Indonesia.
+### 4. Kontrak Termin 100%, Trigger BAST, & Invoice PDF Resmi (US-4)
+- **Konfigurasi Kontrak & Termin 100%:** Form interaktif penyusunan termin dengan validasi total tepat 100%. Baris termin terakhir secara otomatis menyerap selisih pembulatan rupiah (*rounding discrepancy absorption*).
+- **Trigger Penyelesaian & Bukti BAST:** Dukungan trigger Tanggal, Modul/Sprint, dan Manual. Khusus trigger sprint, sistem memvalidasi bahwa sprint terkait wajib berstatus `completed` sebelum dokumen BAST (PDF/JPG/PNG) dapat diunggah untuk mengubah status termin ke `Siap ditagih`.
+- **Penerbitan Invoice PDF Resmi:** Pembuatan invoice bernomor seri unik otomatis `INV-YYYY-NNN/Tn` (misal `INV-2026-001/T1`), mengunci termin secara permanen (`isLocked = true`) dari perubahan, serta pratinjau dokumen dan pencetakan/unduh langsung via browser.
+- **Proteksi RBAC Finansial:** Akses kelola termin dan invoice dibatasi hanya untuk role `Owner` dan `Operasional`.
 
 ---
 
@@ -59,29 +59,30 @@ Mengikuti arsitektur 5 layer ketat (`types` ➔ `api` ➔ `queries` ➔ `compone
 frontend/
 ├── src/
 │   ├── app/                          # Next.js App Router (Pages & Layouts)
-│   │   ├── (auth)/                   # Halaman autentikasi (/login)
+│   │   ├── (auth)/                   # Halaman autentikasi (/login, /activate)
 │   │   ├── (dashboard)/              # Halaman operasional (/projects, /projects/[id])
 │   │   ├── globals.css               # Definisi theme tokens Tailwind v4
 │   │   └── layout.tsx                # Root layout & providers
 │   ├── components/
 │   │   └── ui/                       # Primitives UI reusable (Button, Dialog, Badge, Card, dll.)
 │   ├── features/                     # Modul fitur mandiri (Encapsulated)
-│   │   ├── auth/                     # Autentikasi tim & profil
-│   │   ├── projects/                 # Pipeline proyek & editor PRD
-│   │   ├── tasks/                    # Kanban board & DP banner
-│   │   ├── assets/                   # Galeri aset & kompresi gambar
-│   │   ├── finance/                  # Termin pembayaran & verifikasi transfer
+│   │   ├── auth/                     # Autentikasi tim, token aktivasi & profil
+│   │   ├── projects/                 # Pipeline proyek, voting roster, repo links & PRD versioning
+│   │   ├── tasks/                    # Kanban board, story points & DP banner
+│   │   ├── sprints/                  # Daur hidup sprint & progres kumulatif
+│   │   ├── finance/                  # Kontrak termin 100%, upload BAST & invoice PDF
 │   │   ├── activity/                 # Timeline audit log kronologis
-│   │   └── [feature]/index.ts        # SATU-SATUNYA Public API modul
+│   │   ├── assets/                   # Galeri aset & kompresi gambar
+│   │   └── [feature]/index.ts        # Public API modul
 │   ├── layouts/
 │   │   ├── DashboardLayout/          # Komponen layout dashboard terpadu
 │   │   └── navigation.config.ts      # Konfigurasi menu navigasi terpusat
-│   └── shared/                       # Helper, lib instance, & types lintas modul
+│   └── shared/                       # Helper, lib instance (apiClient), & types lintas modul
 ```
 
 ---
 
-## 💻 Panduan Menjalankan Aplikasi
+## 💻 Panduan Menjalankan Frontend
 
 ### 1. Prasyarat Sistem
 - Node.js versi 20+ (disarankan Node.js 20 LTS atau 22+)
@@ -89,46 +90,26 @@ frontend/
 
 ### 2. Instalasi Dependensi
 ```bash
-cd frontend
 npm install
 ```
 
-### 3. Menjalankan Server Development
+### 3. Konfigurasi Environment (`.env.local`)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+```
+
+### 4. Menjalankan Server Development
 ```bash
 npm run dev
 ```
 Buka browser pada [http://localhost:3000](http://localhost:3000).
 
-Kredensial simulasi login:
-- **Email:** `ivan@cira.id`
-- **Password:** `password123`
-
-### 4. Build Produksi & Type-Checking
+### 5. Verifikasi Kualitas
 ```bash
-# Verifikasi tipe data TypeScript:
-npx tsc --noEmit
+# Typecheck
+npx tsc -p tsconfig.json --noEmit
 
-# Pengecekan kualitas kode & linting:
+# Lint
 npm run lint
-
-# Kompilasi build produksi Next.js:
-npm run build
-# Catatan: Jika build default Turbopack mengalami hambatan IPC socket di lingkungan Windows tertentu, gunakan opsi Webpack:
-# npx next build --webpack
 ```
-
----
-
-## 🔒 Konvensi Git & Kontribusi
-
-- **Main Branch Protection:** Branch `main` harus selalu steril, bebas eror, dan siap rilis. Seluruh penambahan fitur dan perbaikan dilakukan melalui branch terpisah (`feat/...` atau `fix/...`).
-- **Format Commit:** Mengikuti standar [Conventional Commits](https://www.conventionalcommits.org/):
-  - `feat(...)`: Penambahan fungsionalitas fitur baru.
-  - `fix(...)`: Perbaikan bug atau optimasi kode.
-  - `chore(...)`: Konfigurasi dependensi, build, atau berkas gitignore.
-  - `docs(...)`: Pembaruan dokumentasi atau spesifikasi.
-- **Eksekusi Git:** Seluruh aksi commit, push, dan merge selalu dieksekusi secara sadar oleh manusia di terminal.
-
----
-
-© 2026 Cira Creative Studio. All Rights Reserved.
+*Hasil Verifikasi: 0 Error, 0 Warning.*

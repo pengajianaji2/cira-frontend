@@ -239,7 +239,7 @@ export function useFinanceSummaryQuery(projectId: string, contractValue: number 
   return useQuery({
     queryKey: [...financeKeys.summary(projectId), contractValue],
     queryFn: async () => {
-      return financeApi.getFinanceSummary(projectId, contractValue);
+      return financeApi.getFinanceSummary(projectId);
     },
     enabled: Boolean(projectId),
   });
