@@ -33,6 +33,12 @@ import { TaskColumn } from "./TaskColumn";
 import { TaskCard } from "./TaskCard";
 import { TaskCreateDialog } from "./TaskCreateDialog";
 import { DpWarningBanner } from "./DpWarningBanner";
+import {
+  CumulativeProgressBar,
+  SprintHeaderControls,
+  CreateSprintModal,
+  useProjectSprintsQuery,
+} from "@/features/sprints";
 
 interface TaskKanbanBoardProps {
   project: {
@@ -50,6 +56,8 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
 
 export function TaskKanbanBoard({ project }: TaskKanbanBoardProps) {
   const { data: tasks = [], isLoading } = useTasksQuery(project.id);
+  const { data: sprints = [] } = useProjectSprintsQuery(project.id);
+
   const createTaskMutation = useCreateTaskMutation(project.id);
   const updateStatusMutation = useUpdateTaskStatusMutation(project.id);
   const deleteTaskMutation = useDeleteTaskMutation(project.id);
@@ -58,6 +66,8 @@ export function TaskKanbanBoard({ project }: TaskKanbanBoardProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createStatus, setCreateStatus] = useState<TaskStatus>("todo");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
+  const [isCreateSprintOpen, setIsCreateSprintOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -70,16 +80,29 @@ export function TaskKanbanBoard({ project }: TaskKanbanBoardProps) {
     })
   );
 
+  const activeSprint = useMemo(
+    () => sprints.find((s) => s.status === "active"),
+    [sprints]
+  );
+
+  // Filter berdasarkan Sprint yang dipilih
+  const sprintFilteredTasks = useMemo(() => {
+    if (!selectedSprintId) return tasks;
+    return tasks.filter((t) => t.sprintId === selectedSprintId);
+  }, [tasks, selectedSprintId]);
+
+  // Filter pencarian teks
   const filteredTasks = useMemo(() => {
-    if (!searchQuery.trim()) return tasks;
+    if (!searchQuery.trim()) return sprintFilteredTasks;
     const q = searchQuery.toLowerCase();
-    return tasks.filter(
+    return sprintFilteredTasks.filter(
       (t) =>
         t.title.toLowerCase().includes(q) ||
         t.description?.toLowerCase().includes(q) ||
-        t.assignee?.name.toLowerCase().includes(q)
+        t.assignee?.name?.toLowerCase().includes(q) ||
+        t.assigneeName?.toLowerCase().includes(q)
     );
-  }, [tasks, searchQuery]);
+  }, [sprintFilteredTasks, searchQuery]);
 
   const tasksByColumn = useMemo(() => {
     return {
@@ -179,7 +202,22 @@ export function TaskKanbanBoard({ project }: TaskKanbanBoardProps) {
         projectStatus={project.status}
       />
 
-      {/* Board Controls Bar */}
+      {/* Zona 1: Indikator Progres Kumulatif Terbobot (AC-12) */}
+      <CumulativeProgressBar
+        projectId={project.id}
+        activeSprintName={activeSprint?.name}
+      />
+
+      {/* Zona 2: Kontrol Header Sprint & Alokasi (AC-10 & AC-11) */}
+      <SprintHeaderControls
+        projectId={project.id}
+        sprints={sprints}
+        selectedSprintId={selectedSprintId}
+        onSelectSprint={setSelectedSprintId}
+        onOpenCreateSprint={() => setIsCreateSprintOpen(true)}
+      />
+
+      {/* Board Controls Bar: Pencarian & Tombol Buat Task */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-sm">
           <HugeiconsIcon
@@ -189,7 +227,7 @@ export function TaskKanbanBoard({ project }: TaskKanbanBoardProps) {
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari task atau anggota tim..."
+            placeholder="Cari judul task, deskripsi, atau penanggung jawab..."
             className="pl-9 rounded-full text-xs h-9 bg-card"
           />
         </div>
@@ -239,13 +277,22 @@ export function TaskKanbanBoard({ project }: TaskKanbanBoardProps) {
         </DndContext>
       )}
 
-      {/* Create Dialog */}
+      {/* Create Task Dialog */}
       <TaskCreateDialog
+        projectId={project.id}
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         initialStatus={createStatus}
+        initialSprintId={selectedSprintId}
         onSubmit={handleCreateSubmit}
         isPending={createTaskMutation.isPending}
+      />
+
+      {/* Create Sprint Modal */}
+      <CreateSprintModal
+        projectId={project.id}
+        isOpen={isCreateSprintOpen}
+        onClose={() => setIsCreateSprintOpen(false)}
       />
     </div>
   );

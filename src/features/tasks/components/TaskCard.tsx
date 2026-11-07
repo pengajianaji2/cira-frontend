@@ -65,9 +65,10 @@ export function TaskCard({ task, onDelete, isOverlay = false }: TaskCardProps) {
   };
 
   const priorityMeta = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
+  const displayName = task.assignee?.name || task.assigneeName;
 
-  const initials = task.assignee?.name
-    ? task.assignee.name
+  const initials = displayName
+    ? displayName
         .split(" ")
         .map((n) => n[0])
         .slice(0, 2)
@@ -88,12 +89,30 @@ export function TaskCard({ task, onDelete, isOverlay = false }: TaskCardProps) {
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <Badge
-          variant="outline"
-          className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${priorityMeta.className}`}
-        >
-          {priorityMeta.label}
-        </Badge>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge
+            variant="outline"
+            className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${priorityMeta.className}`}
+          >
+            {priorityMeta.label}
+          </Badge>
+
+          {/* AC-10: Badge Story Points Fibonacci */}
+          {task.storyPoints !== null && task.storyPoints !== undefined && (
+            <Badge
+              variant="secondary"
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800 dark:bg-violet-950/70 dark:text-violet-300 border border-violet-200 dark:border-violet-800 font-mono"
+            >
+              {task.storyPoints} SP
+            </Badge>
+          )}
+
+          {task.sprint?.name && (
+            <span className="text-[10px] text-muted-foreground/80 truncate max-w-[100px]">
+              {task.sprint.name}
+            </span>
+          )}
+        </div>
 
         <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
           {onDelete && !isOverlay && (
@@ -145,7 +164,7 @@ export function TaskCard({ task, onDelete, isOverlay = false }: TaskCardProps) {
             </div>
           )}
           <span className="text-[11px] font-medium text-foreground/80 truncate max-w-[120px]">
-            {task.assignee?.name || "Belum ditugaskan"}
+            {displayName || "Belum ditugaskan"}
           </span>
         </div>
 

@@ -26,25 +26,38 @@ import {
   CreateTaskInput,
   TaskStatus,
   TaskPriority,
+  FIBONACCI_TASK_POINTS,
 } from "../types/tasks.types";
+import { useProjectSprintsQuery } from "@/features/sprints/queries/sprints.queries";
+import { useProjectRosterQuery } from "@/features/projects/queries/governance.queries";
 
 interface TaskCreateDialogProps {
+  projectId: string;
   isOpen: boolean;
   onClose: () => void;
   initialStatus?: TaskStatus;
+  initialSprintId?: string | null;
   onSubmit: (input: CreateTaskInput) => void;
   isPending?: boolean;
 }
 
 export function TaskCreateDialog({
+  projectId,
   isOpen,
   onClose,
   initialStatus = "todo",
+  initialSprintId = null,
   onSubmit,
   isPending = false,
 }: TaskCreateDialogProps) {
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
   const [priority, setPriority] = useState<TaskPriority>("medium");
+  const [storyPoints, setStoryPoints] = useState<string>("none");
+  const [sprintId, setSprintId] = useState<string>(initialSprintId || "none");
+  const [assigneeId, setAssigneeId] = useState<string>("none");
+
+  const { data: sprints = [] } = useProjectSprintsQuery(projectId);
+  const { data: roster = [] } = useProjectRosterQuery(projectId);
 
   const {
     register,
@@ -74,14 +87,35 @@ export function TaskCreateDialog({
       });
       setStatus(initialStatus);
       setPriority("medium");
+      setStoryPoints("none");
+      setSprintId(initialSprintId || "none");
+      setAssigneeId("none");
     }
-  }, [isOpen, initialStatus, reset]);
+  }, [isOpen, initialStatus, initialSprintId, reset]);
 
   const onFormSubmit = (data: CreateTaskInput) => {
+    const selectedPoints = storyPoints !== "none" ? Number(storyPoints) : undefined;
+    const selectedSprint = sprintId !== "none" ? sprintId : undefined;
+
+    let finalAssigneeId: string | undefined = undefined;
+    let finalAssigneeName = data.assigneeName?.trim() || undefined;
+
+    if (assigneeId !== "none") {
+      const selectedMember = roster.find((m) => m.userId === assigneeId);
+      if (selectedMember) {
+        finalAssigneeId = selectedMember.userId;
+        finalAssigneeName = selectedMember.user?.name || finalAssigneeName;
+      }
+    }
+
     onSubmit({
       ...data,
       status,
       priority,
+      storyPoints: selectedPoints,
+      sprintId: selectedSprint,
+      assigneeId: finalAssigneeId,
+      assigneeName: finalAssigneeName,
     });
   };
 
@@ -93,7 +127,7 @@ export function TaskCreateDialog({
             Tambah Task Baru
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Masukkan detail tugas dan alokasikan penanggung jawab di tim.
+            Tentukan estimasi Story Points Fibonacci dan alokasi sprint task ini.
           </DialogDescription>
         </DialogHeader>
 
@@ -124,12 +158,72 @@ export function TaskCreateDialog({
             <Textarea
               {...register("description")}
               placeholder="Jelaskan kebutuhan teknis atau kriteria selesai task ini..."
-              rows={3}
+              rows={2}
               className="rounded-xl text-xs"
             />
           </div>
 
-          {/* Status & Priority Row */}
+          {/* AC-10: Story Points Fibonacci & Alokasi Sprint */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Story Points (Fibonacci)
+              </label>
+              <Select
+                value={storyPoints}
+                onValueChange={(val) => {
+                  setStoryPoints(val);
+                  setValue(
+                    "storyPoints",
+                    val !== "none" ? Number(val) : undefined
+                  );
+                }}
+              >
+                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                  <SelectValue placeholder="Pilih Story Points" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="text-xs text-muted-foreground">
+                    Belum Ditentukan
+                  </SelectItem>
+                  {FIBONACCI_TASK_POINTS.map((pt) => (
+                    <SelectItem key={pt} value={String(pt)} className="text-xs font-medium">
+                      {pt} SP {pt === 1 ? "(Sangat Kecil)" : pt === 3 ? "(Sedang)" : pt === 8 ? "(Besar)" : pt === 13 ? "(Sangat Kompleks)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Alokasi Sprint
+              </label>
+              <Select
+                value={sprintId}
+                onValueChange={(val) => {
+                  setSprintId(val);
+                  setValue("sprintId", val !== "none" ? val : undefined);
+                }}
+              >
+                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                  <SelectValue placeholder="Pilih Sprint" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="text-xs text-muted-foreground">
+                    Backlog (Tanpa Sprint)
+                  </SelectItem>
+                  {sprints.map((s) => (
+                    <SelectItem key={s.id} value={s.id} className="text-xs">
+                      {s.status === "active" ? "🟢" : "⚪"} {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Status Kolom & Prioritas */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
@@ -183,7 +277,7 @@ export function TaskCreateDialog({
                   <SelectItem value="high" className="text-xs">
                     High
                   </SelectItem>
-                  <SelectItem value="urgent" className="text-xs">
+                  <SelectItem value="urgent" className="text-xs font-semibold text-rose-600">
                     Urgent
                   </SelectItem>
                 </SelectContent>
@@ -191,16 +285,47 @@ export function TaskCreateDialog({
             </div>
           </div>
 
-          {/* Penanggung Jawab */}
+          {/* AC-10: Penanggung Jawab (Assignee) dari Roster Proyek */}
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-foreground">
               Penanggung Jawab (Assignee)
             </label>
-            <Input
-              {...register("assigneeName")}
-              placeholder="Contoh: Ivan Developer"
-              className="rounded-xl text-xs h-10"
-            />
+            {roster.length > 0 ? (
+              <Select
+                value={assigneeId}
+                onValueChange={(val) => {
+                  setAssigneeId(val);
+                  if (val === "none") {
+                    setValue("assigneeId", undefined);
+                  } else {
+                    setValue("assigneeId", val);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                  <SelectValue placeholder="Pilih dari Roster Proyek" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="text-xs text-muted-foreground">
+                    Belum Ditugaskan
+                  </SelectItem>
+                  {roster.map((m) => (
+                    <SelectItem key={m.userId} value={m.userId} className="text-xs">
+                      {m.user?.name || "Anggota"} ({m.user?.roles?.[0] || "member"})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                {...register("assigneeName")}
+                placeholder="Contoh: Ivan Developer"
+                className="rounded-xl text-xs h-10"
+              />
+            )}
+            <p className="text-[10px] text-muted-foreground">
+              Catatan: Sesuai kriteria AC-10, task dalam sprint aktif wajib memiliki tepat satu assignee.
+            </p>
           </div>
 
           <DialogFooter className="pt-2 flex items-center justify-end gap-2">

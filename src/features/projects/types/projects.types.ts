@@ -15,6 +15,7 @@ export interface Project {
   clientContact: string;
   status: ProjectStatus;
   repoType?: ProjectRepoType;
+  progress?: number;
   contractValue?: number;
   prdContent: string;
   createdAt: string;
@@ -46,6 +47,7 @@ export interface UpdateProjectInput {
   clientName?: string;
   clientContact?: string;
   status?: ProjectStatus;
+  progress?: number;
   contractValue?: number;
   prdContent?: string;
   repoType?: ProjectRepoType;
