@@ -10,16 +10,12 @@ import {
   Call02Icon,
   Coins01Icon,
 } from "@hugeicons/core-free-icons";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Project, ProjectStatus } from "../types/projects.types";
-import { useUpdateProjectStatusMutation } from "../queries/projects.queries";
+import { useAuthStore } from "@/features/auth";
+import { Project } from "../types/projects.types";
+import { ProjectStatusBadge } from "./ProjectStatusBadge";
+import { RequestStatusDialog } from "./RequestStatusDialog";
+import { ProjectRosterModal } from "./ProjectRosterModal";
 
 interface ProjectDetailHeaderProps {
   project: Project;
@@ -39,14 +35,9 @@ export function ProjectDetailHeader({
   project,
   activeTab = "prd",
 }: ProjectDetailHeaderProps) {
-  const updateStatusMutation = useUpdateProjectStatusMutation();
-
-  const handleStatusChange = (val: string) => {
-    updateStatusMutation.mutate({
-      id: project.id,
-      status: val as ProjectStatus,
-    });
-  };
+  const { user } = useAuthStore();
+  const userRoles = (user?.roles || []).map((r) => r.toLowerCase());
+  const canManageRoster = userRoles.includes("owner") || userRoles.includes("operasional");
 
   const navTabs: { id: string; label: string; available: boolean; badge?: string }[] = [
     { id: "prd", label: "PRD & Spesifikasi", available: true },
@@ -104,34 +95,18 @@ export function ProjectDetailHeader({
           </div>
         </div>
 
-        {/* Status Switcher */}
-        <div className="flex items-center gap-3 self-start md:self-auto bg-muted/30 p-2 rounded-2xl border border-border/60">
-          <span className="text-xs font-medium text-muted-foreground pl-1">
-            Status:
-          </span>
-          <Select
-            value={project.status}
-            onValueChange={handleStatusChange}
-            disabled={updateStatusMutation.isPending}
-          >
-            <SelectTrigger className="w-[140px] rounded-full text-xs h-8">
-              <SelectValue placeholder="Pilih Status" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="lead" className="text-xs">
-                Lead
-              </SelectItem>
-              <SelectItem value="active" className="text-xs">
-                Active
-              </SelectItem>
-              <SelectItem value="completed" className="text-xs">
-                Completed
-              </SelectItem>
-              <SelectItem value="cancelled" className="text-xs">
-                Cancelled
-              </SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Status Badge & Governance Actions (US-2) */}
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto bg-muted/40 p-2 rounded-2xl border border-border/80">
+          <ProjectStatusBadge status={project.status} />
+
+          <RequestStatusDialog
+            projectId={project.id}
+            currentStatus={project.status}
+          />
+
+          {canManageRoster && (
+            <ProjectRosterModal projectId={project.id} />
+          )}
         </div>
       </div>
 

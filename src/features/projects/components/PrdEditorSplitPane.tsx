@@ -14,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Project, DEFAULT_PRD_TEMPLATE } from "../types/projects.types";
 import { useUpdateProjectPrdMutation } from "../queries/projects.queries";
 import { PrdExportButton } from "./PrdExportButton";
+import { PrdVersionDrawer } from "./PrdVersionDrawer";
 
 interface PrdEditorSplitPaneProps {
   project: Project;
@@ -83,7 +84,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
               Editor PRD Markdown Terstruktur
             </span>
             <span>•</span>
-            <span>Live Preview Sinkron</span>
+            <span>Snapshot GZIP</span>
             {isDirty && (
               <span className="text-[11px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
                 Ada perubahan belum disimpan
@@ -92,8 +93,8 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        {/* Action Buttons (US-2) */}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           <Button
             type="button"
             variant="ghost"
@@ -105,6 +106,12 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
             <HugeiconsIcon icon={RefreshIcon} className="size-3.5 mr-1" />
             Reset Template
           </Button>
+
+          <PrdVersionDrawer
+            projectId={project.id}
+            currentContent={content}
+            onRestore={(restoredContent) => setContent(restoredContent)}
+          />
 
           <PrdExportButton project={{ ...project, prdContent: content }} />
 
@@ -122,7 +129,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
             ) : (
               <>
                 <HugeiconsIcon icon={FloppyDiskIcon} className="size-4 mr-1.5" />
-                Simpan PRD
+                Simpan Versi PRD
               </>
             )}
           </Button>

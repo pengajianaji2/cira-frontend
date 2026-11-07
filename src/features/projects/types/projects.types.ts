@@ -1,4 +1,10 @@
 import { z } from "zod";
+import {
+  ProjectRepoType,
+  ProjectRepositoryLink,
+  ProjectRosterMember,
+  ProjectStatusRequest,
+} from "./governance.types";
 
 export type ProjectStatus = "lead" | "active" | "completed" | "cancelled";
 
@@ -8,10 +14,21 @@ export interface Project {
   clientName: string;
   clientContact: string;
   status: ProjectStatus;
+  repoType?: ProjectRepoType;
   contractValue?: number;
   prdContent: string;
   createdAt: string;
   updatedAt: string;
+  roster?: ProjectRosterMember[];
+  repositoryLinks?: ProjectRepositoryLink[];
+  statusRequests?: ProjectStatusRequest[];
+  _count?: {
+    tasks?: number;
+    payments?: number;
+    roster?: number;
+    repositoryLinks?: number;
+    prdVersions?: number;
+  };
 }
 
 export const createProjectSchema = z.object({
@@ -19,6 +36,7 @@ export const createProjectSchema = z.object({
   clientName: z.string().min(2, "Nama klien minimal 2 karakter"),
   clientContact: z.string().min(5, "Nomor kontak minimal 5 karakter"),
   contractValue: z.number().min(0, "Nilai kontrak tidak boleh negatif").optional(),
+  repoType: z.enum(["monorepo", "separate"]).optional(),
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
@@ -30,6 +48,7 @@ export interface UpdateProjectInput {
   status?: ProjectStatus;
   contractValue?: number;
   prdContent?: string;
+  repoType?: ProjectRepoType;
 }
 
 export const DEFAULT_PRD_TEMPLATE = (projectName: string, clientName: string) => `# PRD: ${projectName}
@@ -55,3 +74,5 @@ export const DEFAULT_PRD_TEMPLATE = (projectName: string, clientName: string) =>
 - **Termin 2 (Progress 30%):** Dibayarkan setelah verifikasi fitur inti dan demonstrasi sistem.
 - **Termin 3 (Pelunasan 20%):** Dibayarkan setelah masa UAT (User Acceptance Testing) selesai dan serah terima dokumen resmi.
 `;
+
+export * from "./governance.types";

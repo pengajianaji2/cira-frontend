@@ -11,6 +11,8 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   useProjectQuery,
   ProjectDetailHeader,
+  StatusApprovalBanner,
+  ProjectRepositoriesCard,
 } from "@/features/projects";
 import { TabContentSkeleton } from "@/shared/components/state/ComponentSkeleton";
 import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
@@ -100,6 +102,12 @@ function ProjectDetailContent() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <ProjectDetailHeader project={project} activeTab={tab} />
+
+      {/* Banner Persetujuan Status (US-2: Tampil dinamis jika ada permohonan status pending) */}
+      <StatusApprovalBanner projectId={project.id} currentStatus={project.status} />
+
+      {/* Tautan Repositori Berlabel & Switcher Monorepo (US-2) */}
+      <ProjectRepositoriesCard projectId={project.id} />
 
       {tab === "prd" && <PrdEditorSplitPane project={project} />}
       {tab === "tasks" && <TaskKanbanBoard project={project} />}
