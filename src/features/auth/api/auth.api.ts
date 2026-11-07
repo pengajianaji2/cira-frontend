@@ -2,7 +2,9 @@ import { apiClient } from "@/shared/lib/api-client";
 import { ApiResponse } from "@/shared/types/api.types";
 import { User } from "@/shared/types/auth.types";
 import {
+  ActivateInput,
   ChangePasswordInput,
+  InviteInfoResponse,
   LoginInput,
   ProfileInput,
 } from "../types/auth.types";
@@ -56,6 +58,27 @@ export const authApi = {
   async changePassword(payload: ChangePasswordInput): Promise<ApiResponse<null>> {
     const response = await apiClient.put<ApiResponse<null>>(
       "/auth/password",
+      payload
+    );
+    return response.data;
+  },
+
+  /**
+   * Memeriksa validitas token aktivasi undangan dan mengambil info calon anggota.
+   */
+  async getInviteInfo(token: string): Promise<ApiResponse<InviteInfoResponse>> {
+    const response = await apiClient.get<ApiResponse<InviteInfoResponse>>(
+      `/auth/invite/${token}`
+    );
+    return response.data;
+  },
+
+  /**
+   * Menyelesaikan aktivasi akun tim dengan nama, WhatsApp, Instagram, dan password baru.
+   */
+  async activate(payload: ActivateInput): Promise<ApiResponse<{ user: User }>> {
+    const response = await apiClient.post<ApiResponse<{ user: User }>>(
+      "/auth/activate",
       payload
     );
     return response.data;

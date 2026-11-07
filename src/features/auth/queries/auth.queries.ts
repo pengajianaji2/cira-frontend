@@ -6,12 +6,14 @@ import { toast } from "sonner";
 import { authApi } from "../api/auth.api";
 import { useAuthStore } from "../store/auth.store";
 import {
+  ActivateInput,
   ChangePasswordInput,
   LoginInput,
   ProfileInput,
 } from "../types/auth.types";
 
 export const AUTH_QUERY_KEY = ["auth", "currentUser"];
+export const INVITE_INFO_QUERY_KEY = ["auth", "inviteInfo"];
 
 export function useCurrentUserQuery() {
   const { setUser, isAuthenticated, logout } = useAuthStore();
@@ -97,6 +99,37 @@ export function useChangePasswordMutation() {
     },
     onError: (error: Error) => {
       toast.error(error.message || "Gagal mengganti password.");
+    },
+  });
+}
+
+export function useInviteInfoQuery(token: string) {
+  return useQuery({
+    queryKey: [...INVITE_INFO_QUERY_KEY, token],
+    queryFn: async () => {
+      const response = await authApi.getInviteInfo(token);
+      return response.data;
+    },
+    enabled: !!token,
+    retry: false,
+  });
+}
+
+export function useActivateMutation() {
+  const router = useRouter();
+  const { setUser } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ActivateInput) => authApi.activate(payload),
+    onSuccess: (response) => {
+      setUser(response.data.user);
+      queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
+      toast.success(response.message || "Aktivasi berhasil! Selamat bergabung di tim.");
+      router.push("/projects");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Aktivasi gagal. Silakan periksa kembali data Anda.");
     },
   });
 }

@@ -46,26 +46,33 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   const renderNavLinks = () => (
     <nav className="space-y-1 px-3 py-4">
-      {navigationConfig.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setMobileOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors",
-              isActive
-                ? "bg-primary text-primary-foreground shadow-xs font-semibold"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
-            )}
-          >
-            <HugeiconsIcon icon={item.icon} className="size-4 shrink-0" />
-            <span>{item.title}</span>
-            {item.badge && <span className="ml-auto text-[10px] bg-muted px-1.5 py-0.5 rounded-md">{item.badge}</span>}
-          </Link>
-        );
-      })}
+      {navigationConfig
+        .filter((item) => {
+          if (!item.roles || item.roles.length === 0) return true;
+          if (!user?.roles) return false;
+          const userRoles = user.roles.map((r) => r.toLowerCase());
+          return item.roles.some((r) => userRoles.includes(r.toLowerCase()));
+        })
+        .map((item) => {
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              <HugeiconsIcon icon={item.icon} className="size-4 shrink-0" />
+              <span>{item.title}</span>
+              {item.badge && <span className="ml-auto text-[10px] bg-muted px-1.5 py-0.5 rounded-md">{item.badge}</span>}
+            </Link>
+          );
+        })}
     </nav>
   );
 
