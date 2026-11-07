@@ -82,8 +82,12 @@ export function CreatePaymentDialog({
           setNotes("");
           onOpenChange(false);
         },
-        onError: (err: Error) => {
-          setErrorMsg(err?.message || "Gagal menyimpan termin pembayaran.");
+        onError: (err: unknown) => {
+          const msg =
+            err && typeof err === "object" && "message" in err
+              ? String((err as { message: string }).message)
+              : "Gagal menyimpan termin pembayaran.";
+          setErrorMsg(msg);
         },
       }
     );

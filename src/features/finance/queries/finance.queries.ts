@@ -1,15 +1,228 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { financeApi } from "../api/finance.api";
-import { CreatePaymentInput } from "../types/finance.types";
+import {
+  CreatePaymentInput,
+  CreateContractInput,
+  UploadBastInput,
+  IssueInvoiceInput,
+} from "../types/finance.types";
 import { activityKeys } from "@/features/activity/queries/activity.queries";
 import { PROJECT_KEYS } from "@/features/projects/queries/projects.queries";
+
+function getErrorMessage(err: unknown, fallback: string): string {
+  if (err && typeof err === "object" && "response" in err) {
+    const res = (err as { response?: { data?: { message?: string } } }).response;
+    if (res?.data?.message) return res.data.message;
+  }
+  if (err instanceof Error) {
+    return err.message;
+  }
+  return fallback;
+}
 
 export const financeKeys = {
   all: ["finance"] as const,
   payments: (projectId: string) => [...financeKeys.all, "payments", projectId] as const,
   summary: (projectId: string) => [...financeKeys.all, "summary", projectId] as const,
 };
+
+export const termsKeys = {
+  all: ["payment-terms"] as const,
+  lists: () => [...termsKeys.all, "list"] as const,
+  list: (projectId: string) => [...termsKeys.lists(), projectId] as const,
+  detail: (id: string) => [...termsKeys.all, "detail", id] as const,
+};
+
+// =========================================================================
+// US-4: Queries & Mutations Kontrak & Termin 100%
+// =========================================================================
+
+export function useProjectTermsQuery(projectId: string) {
+  return useQuery({
+    queryKey: termsKeys.list(projectId),
+    queryFn: async () => {
+      const res = await financeApi.getProjectTerms(projectId);
+      return res.data || [];
+    },
+    enabled: Boolean(projectId),
+  });
+}
+
+export function useTermDetailQuery(termId: string) {
+  return useQuery({
+    queryKey: termsKeys.detail(termId),
+    queryFn: async () => {
+      const res = await financeApi.getTermById(termId);
+      return res.data;
+    },
+    enabled: Boolean(termId),
+  });
+}
+
+export function useCreateContractMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      input,
+    }: {
+      projectId: string;
+      input: CreateContractInput;
+    }) => financeApi.createContract(projectId, input),
+    onSuccess: (_, variables) => {
+      toast.success("Kontrak dan termin pembayaran 100% berhasil dikonfigurasi!");
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.list(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: financeKeys.summary(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_KEYS.detail(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: activityKeys.lists(),
+      });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal mengonfigurasi kontrak dan termin"));
+    },
+  });
+}
+
+export function useMarkTermReadyWithBastMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      termId,
+      input,
+    }: {
+      termId: string;
+      projectId: string;
+      input: UploadBastInput;
+    }) => financeApi.markTermReadyWithBast(termId, input),
+    onSuccess: (_, variables) => {
+      toast.success("Dokumen BAST berhasil diunggah. Termin siap ditagih!");
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.list(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.detail(variables.termId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: financeKeys.summary(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: activityKeys.lists(),
+      });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal memperbarui status termin dengan BAST"));
+    },
+  });
+}
+
+export function useUploadBastFileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      termId,
+      file,
+    }: {
+      termId: string;
+      projectId: string;
+      file: File;
+    }) => financeApi.uploadBastFile(termId, file),
+    onSuccess: (_, variables) => {
+      toast.success("Berkas BAST berhasil diunggah. Termin berstatus Siap Ditagih!");
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.list(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.detail(variables.termId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: financeKeys.summary(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: activityKeys.lists(),
+      });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal mengunggah berkas BAST"));
+    },
+  });
+}
+
+export function useIssueInvoiceMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      termId,
+      input = {},
+    }: {
+      termId: string;
+      projectId: string;
+      input?: IssueInvoiceInput;
+    }) => financeApi.issueInvoice(termId, input),
+    onSuccess: (res, variables) => {
+      const invNum = res.data?.invoiceNumber || "resmi";
+      toast.success(`Invoice ${invNum} berhasil diterbitkan dan termin dikunci!`);
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.list(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.detail(variables.termId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: financeKeys.summary(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: activityKeys.lists(),
+      });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal menerbitkan invoice resmi"));
+    },
+  });
+}
+
+export function useDeleteTermMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      termId,
+    }: {
+      termId: string;
+      projectId: string;
+    }) => financeApi.deleteTerm(termId),
+    onSuccess: (_, variables) => {
+      toast.success("Termin pembayaran berhasil dihapus.");
+      queryClient.invalidateQueries({
+        queryKey: termsKeys.list(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: financeKeys.summary(variables.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: activityKeys.lists(),
+      });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal menghapus termin"));
+    },
+  });
+}
+
+// =========================================================================
+// Existing Payment Queries & Mutations
+// =========================================================================
 
 export function usePaymentsQuery(projectId: string) {
   return useQuery({
@@ -55,8 +268,8 @@ export function useCreatePaymentMutation() {
         queryKey: activityKeys.lists(),
       });
     },
-    onError: (err: Error) => {
-      toast.error(err?.message || "Gagal menambahkan termin pembayaran");
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal menambahkan termin pembayaran"));
     },
   });
 }
@@ -88,13 +301,12 @@ export function useVerifyPaymentMutation() {
       queryClient.invalidateQueries({
         queryKey: activityKeys.lists(),
       });
-      // Invalidate tasks to update DP banner
       queryClient.invalidateQueries({
         queryKey: ["tasks"],
       });
     },
-    onError: (err: Error) => {
-      toast.error(err?.message || "Gagal memperbarui status verifikasi");
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal memperbarui status verifikasi"));
     },
   });
 }
@@ -120,8 +332,8 @@ export function useUploadProofMutation() {
         queryKey: activityKeys.lists(),
       });
     },
-    onError: (err: Error) => {
-      toast.error(err?.message || "Gagal mengunggah bukti transfer");
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal mengunggah bukti transfer"));
     },
   });
 }
@@ -148,8 +360,8 @@ export function useDeletePaymentMutation() {
         queryKey: activityKeys.lists(),
       });
     },
-    onError: (err: Error) => {
-      toast.error(err?.message || "Gagal menghapus termin");
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal menghapus termin"));
     },
   });
 }
@@ -180,8 +392,8 @@ export function useUpdateContractValueMutation() {
         queryKey: activityKeys.lists(),
       });
     },
-    onError: (err: Error) => {
-      toast.error(err?.message || "Gagal memperbarui nilai kontrak");
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal memperbarui nilai kontrak"));
     },
   });
 }

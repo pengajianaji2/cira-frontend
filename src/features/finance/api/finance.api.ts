@@ -3,18 +3,142 @@ import { apiClient } from "@/shared/lib/api-client";
 import { ApiResponse } from "@/shared/types/api.types";
 import {
   Payment,
+  PaymentTerm,
   CreatePaymentInput,
   UpdatePaymentInput,
+  CreateContractInput,
+  UploadBastInput,
+  IssueInvoiceInput,
   FinanceSummary,
 } from "../types/finance.types";
 
 /**
- * Service API Manajemen Keuangan & Termin Proyek
- * Terhubung langsung ke Backend API Cira PM (/api/v1/projects/:id/payments, /api/v1/payments/:id, & /api/v1/projects/:id/finance-summary)
+ * Service API Manajemen Keuangan, Kontrak & Termin Proyek
+ * Terhubung langsung ke Backend API Cira PM:
+ * - /api/v1/projects/:id/contracts
+ * - /api/v1/projects/:id/payment-terms
+ * - /api/v1/payment-terms/:id
+ * - /api/v1/projects/:id/payments
+ * - /api/v1/payments/:id
+ * - /api/v1/projects/:id/finance-summary
  */
 export const financeApi = {
+  // =========================================================================
+  // US-4: Kontrak & Termin Berbobot 100%, BAST, dan Invoice Resmi
+  // =========================================================================
+
   /**
-   * Mengambil seluruh daftar termin pembayaran berdasarkan ID proyek dari backend.
+   * Mengonfigurasi kontrak proyek dan seluruh termin pembayaran bertotal tepat 100% (AC-13).
+   */
+  async createContract(
+    projectId: string,
+    input: CreateContractInput
+  ): Promise<ApiResponse<{ project: unknown; terms: PaymentTerm[] }>> {
+    const response = await apiClient.post<ApiResponse<{ project: unknown; terms: PaymentTerm[] }>>(
+      `/projects/${projectId}/contracts`,
+      input
+    );
+    return response.data;
+  },
+
+  /**
+   * Mengambil seluruh daftar termin pembayaran berbobot berdasarkan ID proyek.
+   */
+  async getProjectTerms(projectId: string): Promise<ApiResponse<PaymentTerm[]>> {
+    const response = await apiClient.get<ApiResponse<PaymentTerm[]>>(
+      `/projects/${projectId}/payment-terms`
+    );
+    return response.data;
+  },
+
+  /**
+   * Mengambil detail satu termin pembayaran berdasarkan ID termin.
+   */
+  async getTermById(termId: string): Promise<ApiResponse<PaymentTerm>> {
+    const response = await apiClient.get<ApiResponse<PaymentTerm>>(
+      `/payment-terms/${termId}`
+    );
+    return response.data;
+  },
+
+  /**
+   * Mengunggah bukti BAST dan mengubah status termin menjadi 'ready' / Siap Ditagih (AC-14).
+   */
+  async markTermReadyWithBast(
+    termId: string,
+    input: UploadBastInput
+  ): Promise<ApiResponse<PaymentTerm>> {
+    const response = await apiClient.patch<ApiResponse<PaymentTerm>>(
+      `/payment-terms/${termId}/ready`,
+      input
+    );
+    return response.data;
+  },
+
+  /**
+   * Mengunggah berkas BAST (PDF, JPG, PNG) dari browser sebagai data URL base64.
+   */
+  async uploadBastFile(
+    termId: string,
+    file: File
+  ): Promise<ApiResponse<PaymentTerm>> {
+    let processedFile: File = file;
+    if (file.type.startsWith("image/")) {
+      try {
+        const options = {
+          maxSizeMB: 1.5,
+          maxWidthOrHeight: 1800,
+          useWebWorker: true,
+        };
+        processedFile = await imageCompression(file, options);
+      } catch (err) {
+        console.warn("Gagal kompresi berkas gambar BAST, memakai file asli:", err);
+      }
+    }
+
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(processedFile);
+    });
+
+    return this.markTermReadyWithBast(termId, {
+      bastUrl: dataUrl,
+      bastFileName: file.name,
+    });
+  },
+
+  /**
+   * Menerbitkan invoice resmi bernomor unik INV-YYYY-NNN/Tn dan mengunci termin (AC-15).
+   */
+  async issueInvoice(
+    termId: string,
+    input: IssueInvoiceInput = {}
+  ): Promise<ApiResponse<PaymentTerm>> {
+    const response = await apiClient.post<ApiResponse<PaymentTerm>>(
+      `/payment-terms/${termId}/invoice`,
+      input
+    );
+    return response.data;
+  },
+
+  /**
+   * Menghapus termin pembayaran yang belum terkunci.
+   */
+  async deleteTerm(termId: string): Promise<ApiResponse<{ id: string }>> {
+    const response = await apiClient.delete<ApiResponse<{ id: string }>>(
+      `/payment-terms/${termId}`
+    );
+    return response.data;
+  },
+
+  // =========================================================================
+  // Existing Payment Handlers
+  // =========================================================================
+
+  /**
+   * Mengambil seluruh daftar termin pembayaran lama berdasarkan ID proyek.
    */
   async getPayments(projectId: string): Promise<ApiResponse<Payment[]>> {
     const response = await apiClient.get<ApiResponse<Payment[]>>(
@@ -77,7 +201,7 @@ export const financeApi = {
     if (file.type.startsWith("image/")) {
       try {
         const options = {
-          maxSizeMB: 1.0, // Kompresi hingga maksimal 1MB
+          maxSizeMB: 1.0,
           maxWidthOrHeight: 1600,
           useWebWorker: true,
         };
@@ -145,8 +269,7 @@ export const financeApi = {
    * Mengambil ringkasan kalkulasi metrik keuangan proyek langsung dari backend.
    */
   async getFinanceSummary(
-    projectId: string,
-    _contractValue: number = 0
+    projectId: string
   ): Promise<FinanceSummary> {
     const response = await apiClient.get<ApiResponse<FinanceSummary>>(
       `/projects/${projectId}/finance-summary`

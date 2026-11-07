@@ -2,6 +2,10 @@ import { z } from "zod";
 
 export type PaymentStatus = "pending" | "verified";
 
+// US-4: Tipe Trigger & Status Termin Kontrak
+export type TermTriggerType = "date" | "sprint" | "manual";
+export type TermStatus = "planned" | "ready" | "invoiced" | "paid";
+
 export interface PaymentVerifier {
   name: string;
   role: string;
@@ -20,6 +24,30 @@ export interface Payment {
   proofUploadedAt?: string;
   verifiedAt?: string;
   verifiedBy?: PaymentVerifier;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentTerm {
+  id: string;
+  projectId: string;
+  termNumber: number;
+  title: string;
+  percentage: number;
+  amount: number;
+  triggerType: TermTriggerType;
+  triggerSprintId?: string | null;
+  triggerSprint?: { id: string; name: string; status: string } | null;
+  dueDate?: string | null;
+  status: TermStatus;
+  bastUrl?: string | null;
+  bastFileName?: string | null;
+  bastUploadedAt?: string | null;
+  invoiceNumber?: string | null;
+  invoiceIssuedAt?: string | null;
+  invoicePdfUrl?: string | null;
+  isLocked: boolean;
+  notes?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,6 +74,31 @@ export interface UpdatePaymentInput {
   proofFileName?: string;
 }
 
+// US-4: Input DTOs untuk Kontrak & Termin 100%
+export interface TerminInput {
+  title: string;
+  percentage: number;
+  triggerType: TermTriggerType;
+  triggerSprintId?: string | null;
+  dueDate?: string | null;
+  notes?: string | null;
+}
+
+export interface CreateContractInput {
+  contractValue: number;
+  terms: TerminInput[];
+}
+
+export interface UploadBastInput {
+  bastUrl: string;
+  bastFileName?: string;
+}
+
+export interface IssueInvoiceInput {
+  notes?: string;
+  invoicePdfUrl?: string;
+}
+
 export interface FinanceSummary {
   contractValue: number;
   totalVerified: number;
@@ -56,4 +109,6 @@ export interface FinanceSummary {
   verifiedCount: number;
   pendingCount: number;
   hasVerifiedDp: boolean;
+  termsCount?: number;
+  totalInvoiced?: number;
 }

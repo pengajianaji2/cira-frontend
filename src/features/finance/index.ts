@@ -6,4 +6,8 @@ export * from "./components/PaymentMilestoneList";
 export * from "./components/CreatePaymentDialog";
 export * from "./components/PaymentProofDialog";
 export * from "./components/UpdateContractValueDialog";
+export * from "./components/ContractConfigModal";
+export * from "./components/PaymentTermsTable";
+export * from "./components/UploadBastModal";
+export * from "./components/InvoicePdfModal";
 export * from "./components/FinanceTabContent";
