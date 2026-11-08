@@ -17,7 +17,7 @@ import {
 import { TabContentSkeleton } from "@/shared/components/state/ComponentSkeleton";
 import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
 
-// Code-split chunks using next/dynamic for all 5 tabs
+// Code-split chunks using next/dynamic for all tabs
 const PrdEditorSplitPane = dynamic(
   () => import("@/features/projects").then((mod) => mod.PrdEditorSplitPane),
   {
@@ -25,8 +25,8 @@ const PrdEditorSplitPane = dynamic(
   }
 );
 
-const TaskKanbanBoard = dynamic(
-  () => import("@/features/tasks").then((mod) => mod.TaskKanbanBoard),
+const TaskChecklistBoard = dynamic(
+  () => import("@/features/tasks").then((mod) => mod.TaskChecklistBoard),
   {
     loading: () => <TabContentSkeleton tab="tasks" />,
   }
@@ -110,7 +110,7 @@ function ProjectDetailContent() {
       <ProjectRepositoriesCard projectId={project.id} />
 
       {tab === "prd" && <PrdEditorSplitPane project={project} />}
-      {tab === "tasks" && <TaskKanbanBoard project={project} />}
+      {tab === "tasks" && <TaskChecklistBoard project={project} />}
       {tab === "finance" && <FinanceTabContent project={project} />}
       {tab === "assets" && <AssetGallery project={project} />}
       {tab === "activity" && <ActivityTabContent project={project} />}
