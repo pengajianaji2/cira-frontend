@@ -12,7 +12,7 @@ export interface ActivityLog {
   category: "finance" | "project" | "task" | "asset";
   action: string;
   description: string;
-  user: ActivityUser;
+  user: ActivityUser | null;
   metadata?: Record<string, unknown>;
   createdAt: string;
 }

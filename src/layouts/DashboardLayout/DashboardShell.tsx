@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { navigationConfig } from "../navigation.config";
 import { useAuthStore, useLogoutMutation, useCurrentUserQuery } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import { useProjectQuery } from "@/features/projects";
 import { cn } from "@/lib/utils";
 
@@ -83,6 +84,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const { user, isAuthenticated } = useAuthStore();
   const logoutMutation = useLogoutMutation();
   useCurrentUserQuery();
+  const { data: permissions = [] } = useMyPermissionsQuery();
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -109,10 +111,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
     <nav className="space-y-1 px-3 py-4">
       {navigationConfig
         .filter((item) => {
-          if (!item.roles || item.roles.length === 0) return true;
-          if (!user?.roles) return false;
-          const userRoles = user.roles.map((r) => r.toLowerCase());
-          return item.roles.some((r) => userRoles.includes(r.toLowerCase()));
+          const userRoles = (user?.roles || []).map((r) => r.toLowerCase());
+          const roleAllowed = !item.roles?.length || item.roles.some((r) => userRoles.includes(r.toLowerCase()));
+          return roleAllowed && (!item.permission || permissions.includes(item.permission));
         })
         .map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);

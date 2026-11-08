@@ -67,13 +67,4 @@ export const projectsApi = {
     return this.updateProject(id, { prdContent });
   },
 
-  /**
-   * Memperbarui status siklus proyek (lead, active, completed, cancelled).
-   */
-  async updateProjectStatus(
-    id: string,
-    status: ProjectStatus
-  ): Promise<ApiResponse<Project>> {
-    return this.updateProject(id, { status });
-  },
 };

@@ -6,6 +6,7 @@ export interface NavigationItem {
   icon: typeof Folder01Icon;
   badge?: string;
   roles?: string[]; // filter role opsional
+  permission?: string;
 }
 
 export const navigationConfig: NavigationItem[] = [
@@ -18,10 +19,18 @@ export const navigationConfig: NavigationItem[] = [
     title: "Direktori Tim",
     href: "/directory",
     icon: UserGroupIcon,
+    permission: "directory.read",
   },
   {
     title: "Profil Saya",
     href: "/profile",
     icon: UserIcon,
+  },
+  {
+    title: "Kelola Akses",
+    href: "/access-policies",
+    icon: UserGroupIcon,
+    roles: ["owner"],
+    permission: "policies.manage",
   },
 ];

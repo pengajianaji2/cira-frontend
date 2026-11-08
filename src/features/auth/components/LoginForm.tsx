@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -124,12 +125,9 @@ export function LoginForm() {
                 />
                 <span>Remember me</span>
               </label>
-              <span
-                onClick={() => alert("Fitur reset password belum diaktifkan pada MVP internal ini.")}
-                className="text-[#f7941e] hover:underline cursor-pointer"
-              >
+              <Link href="/forgot-password" className="text-[#f7941e] hover:underline">
                 Forgot password?
-              </span>
+              </Link>
             </div>
 
             {/* Submit Button */}

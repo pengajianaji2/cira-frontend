@@ -41,6 +41,7 @@ export const financeApi = {
     return response.data;
   },
 
+
   /**
    * Mengambil seluruh daftar termin pembayaran berbobot berdasarkan ID proyek.
    */
@@ -254,7 +255,7 @@ export const financeApi = {
     contractValue: number
   ): Promise<ApiResponse<{ contractValue: number }>> {
     const response = await apiClient.patch<ApiResponse<{ contractValue: number }>>(
-      `/projects/${projectId}`,
+      `/projects/${projectId}/contract-value`,
       { contractValue }
     );
 

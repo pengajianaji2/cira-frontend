@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -11,11 +12,27 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { profileSchema, ProfileInput } from "../types/auth.types";
 import { useAuthStore } from "../store/auth.store";
-import { useUpdateProfileMutation } from "../queries/auth.queries";
+import { useUpdateProfileMutation, useUploadAvatarMutation } from "../queries/auth.queries";
 
 export function ProfileForm() {
   const { user } = useAuthStore();
   const updateMutation = useUpdateProfileMutation();
+  const avatarMutation = useUploadAvatarMutation();
+
+  const uploadAvatar = async (file?: File) => {
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type) || file.size > 2 * 1024 * 1024) {
+      window.alert("Pilih gambar PNG, JPG, atau WebP maksimal 2 MB.");
+      return;
+    }
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("File tidak dapat dibaca."));
+      reader.readAsDataURL(file);
+    });
+    avatarMutation.mutate(dataUrl);
+  };
 
   const {
     register,
@@ -59,14 +76,19 @@ export function ProfileForm() {
       <CardContent>
         {/* User Card Header */}
         <div className="flex items-center gap-4 pb-6 mb-6 border-b border-border">
-          <div className="size-16 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xl">
-            {user?.name ? user.name.slice(0, 2).toUpperCase() : "US"}
-          </div>
+          <label className="relative size-16 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xl overflow-hidden cursor-pointer" title="Ubah foto profil">
+            {user?.avatarUrl ? <Image src={user.avatarUrl} alt="Foto profil" fill unoptimized className="object-cover" /> : user?.name ? user.name.slice(0, 2).toUpperCase() : "US"}
+            <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={avatarMutation.isPending} onChange={(event) => { void uploadAvatar(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+          </label>
           <div>
             <h3 className="font-semibold text-foreground text-base">
               {user?.name || "Pengguna"}
             </h3>
             <p className="text-xs text-muted-foreground">{user?.email}</p>
+            <label className="inline-block mt-1 text-[11px] text-primary hover:underline cursor-pointer">
+              {avatarMutation.isPending ? "Mengunggah foto..." : "Ubah foto profil (maks. 2 MB)"}
+              <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={avatarMutation.isPending} onChange={(event) => { void uploadAvatar(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+            </label>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {user?.roles?.map((role) => (
                 <Badge

@@ -23,7 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useAuthStore } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import {
   useCreateRepositoryMutation,
   useDeleteRepositoryMutation,
@@ -38,7 +38,7 @@ interface ProjectRepositoriesCardProps {
 }
 
 export function ProjectRepositoriesCard({ projectId }: ProjectRepositoriesCardProps) {
-  const { user } = useAuthStore();
+  const { data: permissions = [] } = useMyPermissionsQuery();
   const { data, isLoading } = useRepositoriesQuery(projectId);
 
   const createRepoMutation = useCreateRepositoryMutation(projectId);
@@ -51,8 +51,7 @@ export function ProjectRepositoriesCard({ projectId }: ProjectRepositoriesCardPr
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
 
-  const userRoles = (user?.roles || []).map((r) => r.toLowerCase());
-  const canManage = userRoles.includes("owner") || userRoles.includes("developer");
+  const canManage = permissions.includes("repositories.write");
 
   const repoType = data?.repoType || "monorepo";
   const repositories = data?.repositories || [];

@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Project } from "@/features/projects";
-import { useAuthStore } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import {
   usePaymentsQuery,
   useProjectTermsQuery,
@@ -30,12 +30,8 @@ interface FinanceTabContentProps {
 }
 
 export function FinanceTabContent({ project }: FinanceTabContentProps) {
-  const currentUser = useAuthStore((state) => state.user);
-  const isFinanceManager = Boolean(
-    currentUser?.roles?.some(
-      (r) => r === "owner" || r === "operasional" || r === "ops"
-    )
-  );
+  const { data: permissions = [] } = useMyPermissionsQuery();
+  const isFinanceManager = permissions.includes("finance.write");
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [contractDialogOpen, setContractDialogOpen] = useState(false);

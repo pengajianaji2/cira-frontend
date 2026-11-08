@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -45,7 +45,10 @@ function CiraLogo() {
 
 export function ActivateForm() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") || "";
+  const [token] = useState(() => searchParams.get("token") || "");
+  useEffect(() => {
+    if (token) window.history.replaceState(null, "", window.location.pathname);
+  }, [token]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 

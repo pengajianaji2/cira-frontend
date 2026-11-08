@@ -82,35 +82,6 @@ export function useUpdateProjectPrdMutation() {
   });
 }
 
-export function useUpdateProjectStatusMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: ProjectStatus;
-    }) => {
-      const response = await projectsApi.updateProjectStatus(id, status);
-      return response.data;
-    },
-    onSuccess: (updated) => {
-      queryClient.setQueryData(PROJECT_KEYS.detail(updated.id), updated);
-      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
-      toast.success("Status Proyek Diperbarui", {
-        description: `Status proyek kini menjadi "${updated.status.toUpperCase()}".`,
-      });
-    },
-    onError: (error: Error) => {
-      toast.error("Gagal mengubah status", {
-        description: error.message || "Tidak dapat memperbarui status proyek.",
-      });
-    },
-  });
-}
-
 export function useUpdateProjectMutation() {
   const queryClient = useQueryClient();
 

@@ -5,6 +5,7 @@ import {
   TaskStatus,
   CreateTaskInput,
   UpdateTaskInput,
+  ProjectTasksResult,
 } from "../types/tasks.types";
 
 /**
@@ -15,8 +16,8 @@ export const tasksApi = {
   /**
    * Mengambil daftar tugas berdasarkan ID proyek dari backend.
    */
-  async getTasks(projectId: string): Promise<ApiResponse<Task[]>> {
-    const response = await apiClient.get<ApiResponse<Task[]>>(
+  async getTasks(projectId: string): Promise<ApiResponse<ProjectTasksResult | Task[]>> {
+    const response = await apiClient.get<ApiResponse<ProjectTasksResult | Task[]>>(
       `/projects/${projectId}/tasks`
     );
     return response.data;

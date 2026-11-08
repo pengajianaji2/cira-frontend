@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import {
   useActiveStatusRequestQuery,
   useOwnerFinalDecisionMutation,
@@ -48,6 +49,7 @@ export function StatusApprovalBanner({
   currentStatus,
 }: StatusApprovalBannerProps) {
   const { user } = useAuthStore();
+  const { data: permissions = [] } = useMyPermissionsQuery();
   const { data: request, isLoading: isRequestLoading } = useActiveStatusRequestQuery(projectId);
   const { data: roster, isLoading: isRosterLoading } = useProjectRosterQuery(projectId);
 
@@ -65,7 +67,7 @@ export function StatusApprovalBanner({
   }
 
   const userRoles = (user?.roles || []).map((r) => r.toLowerCase());
-  const isOwner = userRoles.includes("owner");
+  const isOwner = userRoles.includes("owner") && permissions.includes("projects.status.change");
   const isRosterMember = (roster || []).some((m) => m.userId === user?.id);
   const myVote = request.votes?.find((v) => v.userId === user?.id);
   const hasVoted = Boolean(myVote);

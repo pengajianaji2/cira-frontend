@@ -20,7 +20,7 @@ export interface InviteUserResponse {
   id: string;
   email: string;
   role: string;
-  token: string;
+  emailSent: boolean;
   expiresAt: string;
   createdAt: string;
 }

@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
-  Copy01Icon,
   Mail01Icon,
-  Tick02Icon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,14 +16,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useInviteMutation } from "../queries/directory.queries";
-import { toast } from "sonner";
 
 export function InviteUserModal() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"developer" | "operasional">("developer");
-  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const inviteMutation = useInviteMutation();
 
@@ -34,37 +30,18 @@ export function InviteUserModal() {
     if (!isOpen) {
       setEmail("");
       setRole("developer");
-      setGeneratedLink(null);
-      setCopied(false);
+      setSent(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      toast.error("Alamat email calon anggota wajib diisi.");
-      return;
-    }
-
     inviteMutation.mutate(
       { email, role },
       {
-        onSuccess: (res) => {
-          const token = res.data.invitation.token;
-          const origin = typeof window !== "undefined" ? window.location.origin : "";
-          const link = `${origin}/activate?token=${token}`;
-          setGeneratedLink(link);
-        },
+        onSuccess: () => setSent(true),
       }
     );
-  };
-
-  const handleCopy = () => {
-    if (!generatedLink) return;
-    navigator.clipboard.writeText(generatedLink);
-    setCopied(true);
-    toast.success("Tautan aktivasi disalin ke clipboard!");
-    setTimeout(() => setCopied(false), 2500);
   };
 
   return (
@@ -85,34 +62,13 @@ export function InviteUserModal() {
           </DialogDescription>
         </DialogHeader>
 
-        {generatedLink ? (
+        {sent ? (
           <div className="space-y-4 pt-2">
             <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-xl space-y-2">
-              <p className="text-xs font-semibold text-emerald-800">
-                Undangan Berhasil Diterbitkan!
-              </p>
+              <p className="text-xs font-semibold text-emerald-800">Undangan berhasil dikirim melalui email.</p>
               <p className="text-[11px] text-emerald-700 leading-relaxed">
-                Tautan aktivasi untuk <span className="font-semibold">{email}</span> (Role: {role}) telah siap. Salin dan kirimkan tautan ini kepada calon anggota:
+                Tautan aktivasi telah dikirim ke <span className="font-semibold">{email}</span> dengan role {role}. Tautan berlaku 24 jam.
               </p>
-              <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="text"
-                  readOnly
-                  value={generatedLink}
-                  className="w-full text-[11px] font-mono bg-white px-2.5 py-1.5 rounded-lg border border-emerald-300 text-neutral-800 focus:outline-hidden"
-                />
-                <Button
-                  size="sm"
-                  onClick={handleCopy}
-                  className="rounded-lg shrink-0 gap-1 text-xs"
-                >
-                  <HugeiconsIcon
-                    icon={copied ? Tick02Icon : Copy01Icon}
-                    className="size-3.5"
-                  />
-                  <span>{copied ? "Disalin" : "Salin"}</span>
-                </Button>
-              </div>
             </div>
 
             <Button

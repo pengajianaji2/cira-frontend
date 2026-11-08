@@ -10,6 +10,7 @@ import {
   WhatsappIcon,
 } from "@hugeicons/core-free-icons";
 import { useAuthStore } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,9 @@ import { ChangeRoleModal } from "./ChangeRoleModal";
 
 export function DirectoryTable() {
   const { user: currentUser } = useAuthStore();
-  const isOwner = currentUser?.roles?.includes("owner");
+  const { data: permissions = [] } = useMyPermissionsQuery();
+  const isOwner = currentUser?.roles?.includes("owner") && permissions.includes("users.manage");
+  const canInvite = currentUser?.roles?.includes("owner") && permissions.includes("users.invite");
 
   const { data: users = [], isLoading, isError, refetch } = useDirectoryQuery();
   const updateStatusMutation = useUpdateStatusMutation();
@@ -97,7 +100,7 @@ export function DirectoryTable() {
         </div>
 
         {/* Tombol Undang Anggota hanya tampil untuk role Owner */}
-        {isOwner && (
+        {canInvite && (
           <div className="shrink-0">
             <InviteUserModal />
           </div>

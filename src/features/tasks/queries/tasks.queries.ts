@@ -15,7 +15,11 @@ export function useTasksQuery(projectId: string) {
     queryKey: tasksKeys.list(projectId),
     queryFn: async () => {
       const res = await tasksApi.getTasks(projectId);
-      return res.data;
+      // API task list returns { tasks, hasVerifiedDp, dpWarning }; normalize it
+      // to an array because the board and optimistic mutations cache Task[].
+      if (Array.isArray(res.data)) return res.data;
+      if (res.data && Array.isArray(res.data.tasks)) return res.data.tasks;
+      return [];
     },
     enabled: !!projectId,
   });

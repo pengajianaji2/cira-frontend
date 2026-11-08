@@ -150,6 +150,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
         <div className="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-[17px] sm:before:left-[21px] before:top-3 before:bottom-3 before:w-0.5 before:bg-border/80">
           {activities.map((item) => {
             const config = getCategoryConfig(item.category);
+            const actor = item.user ?? { name: "Pengguna", role: "Anggota" };
             let relativeTime = "";
             let fullTime = "";
             try {
@@ -205,15 +206,15 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
                     <div className="flex items-center gap-2">
                       <Avatar className="size-6 text-[10px] font-bold">
                         <AvatarFallback className="bg-primary/10 text-primary">
-                          {getInitials(item.user.name)}
+                          {getInitials(actor.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         <span className="font-semibold text-foreground">
-                          {item.user.name}
+                          {actor.name}
                         </span>
                         <span>•</span>
-                        <span className="text-[11px]">{item.user.role}</span>
+                        <span className="text-[11px]">{actor.role}</span>
                       </div>
                     </div>
                   </div>

@@ -46,9 +46,7 @@ export interface UpdateProjectInput {
   name?: string;
   clientName?: string;
   clientContact?: string;
-  status?: ProjectStatus;
   progress?: number;
-  contractValue?: number;
   prdContent?: string;
   repoType?: ProjectRepoType;
 }

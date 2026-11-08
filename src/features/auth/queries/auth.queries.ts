@@ -14,6 +14,18 @@ import {
 
 export const AUTH_QUERY_KEY = ["auth", "currentUser"];
 export const INVITE_INFO_QUERY_KEY = ["auth", "inviteInfo"];
+export const MY_PERMISSIONS_QUERY_KEY = ["auth", "permissions"];
+
+export function useMyPermissionsQuery() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  return useQuery({
+    queryKey: MY_PERMISSIONS_QUERY_KEY,
+    queryFn: async () => (await authApi.getMyPermissions()).data.permissions,
+    enabled: isAuthenticated,
+    staleTime: 30_000,
+    retry: false,
+  });
+}
 
 export function useCurrentUserQuery() {
   const { setUser, isAuthenticated, logout } = useAuthStore();
@@ -43,7 +55,7 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: (payload: LoginInput) => authApi.login(payload),
     onSuccess: (response) => {
-      setAuth(response.data.user, response.data.token);
+      setAuth(response.data.user);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
       toast.success(response.message || "Selamat datang kembali!");
       router.push("/projects");
@@ -103,6 +115,20 @@ export function useChangePasswordMutation() {
   });
 }
 
+export function useUploadAvatarMutation() {
+  const { setUser } = useAuthStore();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dataUrl: string) => authApi.uploadAvatar(dataUrl),
+    onSuccess: (response) => {
+      setUser(response.data.user);
+      queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
+      toast.success(response.message || "Foto profil diperbarui.");
+    },
+    onError: (error: Error) => toast.error(error.message || "Gagal mengunggah foto profil."),
+  });
+}
+
 export function useInviteInfoQuery(token: string) {
   return useQuery({
     queryKey: [...INVITE_INFO_QUERY_KEY, token],
@@ -123,7 +149,7 @@ export function useActivateMutation() {
   return useMutation({
     mutationFn: (payload: ActivateInput) => authApi.activate(payload),
     onSuccess: (response) => {
-      setAuth(response.data.user, response.data.token);
+      setAuth(response.data.user);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
       toast.success(response.message || "Aktivasi berhasil! Selamat bergabung di tim.");
       router.push("/projects");

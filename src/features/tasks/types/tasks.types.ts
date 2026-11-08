@@ -37,6 +37,12 @@ export interface Task {
   updatedAt: string;
 }
 
+export interface ProjectTasksResult {
+  tasks: Task[];
+  hasVerifiedDp: boolean;
+  dpWarning: boolean;
+}
+
 export const createTaskSchema = z.object({
   title: z.string().min(2, "Judul task minimal 2 karakter"),
   description: z.string().optional(),

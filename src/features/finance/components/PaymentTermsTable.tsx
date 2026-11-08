@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Project } from "@/features/projects";
-import { useAuthStore } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import { PaymentTerm, TermStatus } from "../types/finance.types";
 import { useDeleteTermMutation } from "../queries/finance.queries";
 import { UploadBastModal } from "./UploadBastModal";
@@ -60,12 +60,8 @@ export function PaymentTermsTable({
   isLoading,
   onOpenConfigModal,
 }: PaymentTermsTableProps) {
-  const currentUser = useAuthStore((state) => state.user);
-  const isFinanceManager = Boolean(
-    currentUser?.roles?.some(
-      (r) => r === "owner" || r === "operasional" || r === "ops"
-    )
-  );
+  const { data: permissions = [] } = useMyPermissionsQuery();
+  const isFinanceManager = permissions.includes("finance.write");
 
   const [selectedBastTerm, setSelectedBastTerm] = useState<PaymentTerm | null>(null);
   const [bastModalOpen, setBastModalOpen] = useState(false);

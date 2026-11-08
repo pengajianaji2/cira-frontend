@@ -29,6 +29,7 @@ import {
   CreateProjectInput,
 } from "../types/projects.types";
 import { useCreateProjectMutation } from "../queries/projects.queries";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 
 interface CreateProjectDialogProps {
   trigger?: React.ReactNode;
@@ -41,6 +42,7 @@ export function CreateProjectDialog({
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
   const createMutation = useCreateProjectMutation();
+  const { data: permissions = [] } = useMyPermissionsQuery();
 
   const {
     register,
@@ -67,6 +69,8 @@ export function CreateProjectDialog({
       // Error handled by mutation toast
     }
   };
+
+  if (!permissions.includes("projects.create")) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -165,7 +169,7 @@ export function CreateProjectDialog({
           </div>
 
           {/* Nilai Kontrak */}
-          <div className="space-y-1.5">
+          {permissions.includes("projects.contract.update") && <div className="space-y-1.5">
             <Label htmlFor="contractValue" className="text-xs font-medium">
               Estimasi Nilai Kontrak (Rp, Opsional)
             </Label>
@@ -189,7 +193,7 @@ export function CreateProjectDialog({
                 {errors.contractValue.message}
               </p>
             )}
-          </div>
+          </div>}
 
           <DialogFooter className="pt-2 gap-2 sm:gap-0">
             <Button

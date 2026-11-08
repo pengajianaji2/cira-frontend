@@ -11,7 +11,7 @@ import {
   Coins01Icon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/features/auth";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import { Project } from "../types/projects.types";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
 import { RequestStatusDialog } from "./RequestStatusDialog";
@@ -35,14 +35,13 @@ export function ProjectDetailHeader({
   project,
   activeTab = "prd",
 }: ProjectDetailHeaderProps) {
-  const { user } = useAuthStore();
-  const userRoles = (user?.roles || []).map((r) => r.toLowerCase());
-  const canManageRoster = userRoles.includes("owner") || userRoles.includes("operasional");
+  const { data: permissions = [] } = useMyPermissionsQuery();
+  const canManageRoster = permissions.includes("roster.manage");
 
   const navTabs: { id: string; label: string; available: boolean; badge?: string }[] = [
     { id: "prd", label: "PRD & Spesifikasi", available: true },
     { id: "tasks", label: "Task Board", available: true },
-    { id: "finance", label: "Keuangan & Termin", available: true },
+    { id: "finance", label: "Keuangan & Termin", available: permissions.includes("finance.read") },
     { id: "assets", label: "Aset Desain", available: true },
     { id: "activity", label: "Riwayat Aktivitas", available: true },
   ];
