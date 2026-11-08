@@ -5,7 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Rocket01Icon,
   CheckmarkCircle02Icon,
-  AlertCircleIcon,
+  Calendar03Icon,
 } from "@hugeicons/core-free-icons";
 import { useProjectProgressQuery } from "../queries/sprints.queries";
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +22,8 @@ export function CumulativeProgressBar({
   const { data: progressData, isLoading } = useProjectProgressQuery(projectId);
 
   const progress = progressData?.progress ?? 0;
-  const completedPoints = progressData?.completedPoints ?? 0;
-  const totalScopePoints = progressData?.totalScopePoints ?? 0;
-  const remainingPoints = Math.max(0, totalScopePoints - completedPoints);
+  const completedSprintCount = progressData?.completedSprintCount ?? 0;
+  const totalSprintCount = progressData?.totalSprintCount ?? 0;
 
   const getProgressColor = (val: number) => {
     if (val >= 100) return "from-emerald-500 to-teal-500";
@@ -43,19 +42,19 @@ export function CumulativeProgressBar({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xs font-bold text-foreground tracking-tight">
-                Progres Kumulatif Proyek
+                Progres Proyek
               </h3>
               {activeSprintName && (
                 <Badge
                   variant="outline"
                   className="text-[10px] px-1.5 py-0 rounded-md font-medium bg-muted/50 border-border"
                 >
-                  Sprint Aktif: {activeSprintName}
+                  🟢 Sprint Aktif: {activeSprintName}
                 </Badge>
               )}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Dihitung berdasarkan proporsi bobot Story Points sprint yang telah selesai.
+              Dihitung berdasarkan proporsi Sprint selesai terhadap seluruh Sprint (BR-PROJECT-01).
             </p>
           </div>
         </div>
@@ -68,7 +67,7 @@ export function CumulativeProgressBar({
             variant="secondary"
             className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border-primary/20"
           >
-            {completedPoints} / {totalScopePoints} SP
+            {completedSprintCount} / {totalSprintCount} Sprint
           </Badge>
         </div>
       </div>
@@ -88,15 +87,15 @@ export function CumulativeProgressBar({
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
             <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3" />
-            Selesai: {completedPoints} SP
+            Sprint Selesai: {completedSprintCount}
           </span>
           <span className="flex items-center gap-1 text-muted-foreground">
-            <HugeiconsIcon icon={AlertCircleIcon} className="size-3" />
-            Sisa Scope: {remainingPoints} SP
+            <HugeiconsIcon icon={Calendar03Icon} className="size-3" />
+            Total Sprint: {totalSprintCount}
           </span>
         </div>
         <div className="font-mono text-[10px] text-muted-foreground/80">
-          Formula: (Points Selesai / Total Scope) × 100%
+          Rumus: (Sprint Selesai / Total Seluruh Sprint) × 100%
         </div>
       </div>
     </div>

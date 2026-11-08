@@ -24,10 +24,9 @@ import { Sprint } from "../types/sprints.types";
 import {
   useDeleteSprintMutation,
   useReopenSprintMutation,
-  useStartSprintMutation,
 } from "../queries/sprints.queries";
-import { CompleteSprintModal } from "./CompleteSprintModal";
-import { toast } from "sonner";
+import { CloseSprintModal } from "./CloseSprintModal";
+import { StartSprintModal } from "./StartSprintModal";
 
 interface SprintHeaderControlsProps {
   projectId: string;
@@ -45,31 +44,13 @@ export function SprintHeaderControls({
   onOpenCreateSprint,
 }: SprintHeaderControlsProps) {
   const [completeModalSprint, setCompleteModalSprint] = useState<Sprint | null>(null);
+  const [startModalSprint, setStartModalSprint] = useState<Sprint | null>(null);
 
-  const startMutation = useStartSprintMutation(projectId);
   const reopenMutation = useReopenSprintMutation(projectId);
   const deleteMutation = useDeleteSprintMutation(projectId);
 
   const activeSprint = sprints.find((s) => s.status === "active");
   const selectedSprint = sprints.find((s) => s.id === selectedSprintId) || null;
-
-  const handleStartSprint = (sprint: Sprint) => {
-    // Validasi frontend awal AC-10
-    const tasks = sprint.tasks || [];
-    if (tasks.length === 0) {
-      toast.error("Sprint belum memiliki task. Tambahkan task sebelum memulai.");
-      return;
-    }
-    const missingAssignee = tasks.filter((t) => !t.assigneeId && !t.assignee?.name);
-    if (missingAssignee.length > 0) {
-      toast.error(
-        `Semua task wajib memiliki satu assignee sebelum sprint dimulai (${missingAssignee.length} task belum ditugaskan).`
-      );
-      return;
-    }
-
-    startMutation.mutate(sprint.id);
-  };
 
   const handleReopenSprint = (sprintId: string) => {
     if (window.confirm("Buka kembali sprint ini ke tahap perencanaan (planning)? Progres proyek akan disesuaikan otomatis.")) {
@@ -147,7 +128,7 @@ export function SprintHeaderControls({
             variant="outline"
             size="sm"
             onClick={onOpenCreateSprint}
-            className="rounded-full text-xs h-9 px-3.5 border-dashed border-primary/50 text-primary hover:bg-primary/5 font-semibold"
+            className="rounded-full text-xs h-9 px-3.5 border-dashed border-primary/50 text-primary hover:bg-primary/5 font-semibold cursor-pointer"
           >
             <HugeiconsIcon icon={Add01Icon} className="size-3.5 mr-1" />
             + Buat Sprint Baru
@@ -178,9 +159,8 @@ export function SprintHeaderControls({
                 <Button
                   type="button"
                   size="sm"
-                  onClick={() => handleStartSprint(selectedSprint)}
-                  disabled={startMutation.isPending}
-                  className="rounded-full text-xs h-8 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                  onClick={() => setStartModalSprint(selectedSprint)}
+                  className="rounded-full text-xs h-8 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold cursor-pointer"
                 >
                   <HugeiconsIcon icon={PlayIcon} className="size-3.5 mr-1.5" />
                   Mulai Sprint
@@ -192,7 +172,7 @@ export function SprintHeaderControls({
                   type="button"
                   size="sm"
                   onClick={() => setCompleteModalSprint(selectedSprint)}
-                  className="rounded-full text-xs h-8 px-3.5 bg-primary text-primary-foreground font-semibold"
+                  className="rounded-full text-xs h-8 px-3.5 bg-primary text-primary-foreground font-semibold cursor-pointer"
                 >
                   <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5 mr-1.5" />
                   Selesaikan Sprint
@@ -206,7 +186,7 @@ export function SprintHeaderControls({
                   size="sm"
                   onClick={() => handleReopenSprint(selectedSprint.id)}
                   disabled={reopenMutation.isPending}
-                  className="rounded-full text-xs h-8 px-3 text-muted-foreground hover:text-foreground"
+                  className="rounded-full text-xs h-8 px-3 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   <HugeiconsIcon icon={ReplayIcon} className="size-3.5 mr-1.5" />
                   Buka Kembali
@@ -220,7 +200,7 @@ export function SprintHeaderControls({
                   size="icon-xs"
                   onClick={() => handleDeleteSprint(selectedSprint)}
                   disabled={deleteMutation.isPending}
-                  className="rounded-lg text-muted-foreground hover:text-destructive"
+                  className="rounded-lg text-muted-foreground hover:text-destructive cursor-pointer"
                   title="Hapus Sprint"
                 >
                   <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
@@ -274,20 +254,32 @@ export function SprintHeaderControls({
             variant="ghost"
             size="sm"
             onClick={() => onSelectSprint(activeSprint.id)}
-            className="text-[11px] h-7 px-2.5 text-primary hover:underline font-semibold"
+            className="text-[11px] h-7 px-2.5 text-primary hover:underline font-semibold cursor-pointer"
           >
             Fokus ke Sprint Ini →
           </Button>
         </div>
       ) : null}
 
-      {/* Complete Sprint Modal */}
+      {/* Close Sprint Modal dengan resolusi task TODO (BR-SPRINT-04 & BR-SPRINT-05) */}
       {completeModalSprint && (
-        <CompleteSprintModal
+        <CloseSprintModal
           projectId={projectId}
           sprint={completeModalSprint}
+          allSprints={sprints}
           isOpen={true}
           onClose={() => setCompleteModalSprint(null)}
+        />
+      )}
+
+      {/* Start Sprint Modal dengan input tanggal valid (BR-SPRINT-02) */}
+      {startModalSprint && (
+        <StartSprintModal
+          projectId={projectId}
+          sprint={startModalSprint}
+          activeSprint={activeSprint}
+          isOpen={true}
+          onClose={() => setStartModalSprint(null)}
         />
       )}
     </div>

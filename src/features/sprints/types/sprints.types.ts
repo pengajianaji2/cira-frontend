@@ -37,9 +37,25 @@ export interface UpdateSprintInput {
   endDate?: string;
 }
 
+export interface StartSprintInput {
+  startDate: string;
+  endDate: string;
+}
+
+export interface TaskMoveTarget {
+  taskId: string;
+  targetSprintId: string | null; // null = Backlog
+}
+
+export interface CloseSprintInput {
+  taskMoves: TaskMoveTarget[];
+}
+
 export interface ProjectCumulativeProgress {
   projectId: string;
   totalScopePoints: number;
   completedPoints: number;
   progress: number; // Persentase matematis 0 - 100
+  completedSprintCount?: number;
+  totalSprintCount?: number;
 }
