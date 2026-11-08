@@ -29,12 +29,19 @@ export function CreateSprintModal({
   const [goal, setGoal] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const createMutation = useCreateSprintMutation(projectId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     if (!name.trim()) return;
+
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      setError("Tanggal mulai sprint tidak boleh melebihi tanggal selesai.");
+      return;
+    }
 
     createMutation.mutate(
       {
@@ -49,6 +56,7 @@ export function CreateSprintModal({
           setGoal("");
           setStartDate("");
           setEndDate("");
+          setError(null);
           onClose();
         },
       }
@@ -63,7 +71,7 @@ export function CreateSprintModal({
             Buat Sprint Baru
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Sprint baru akan berstatus perencanaan (planning) sampai Anda memulainya secara resmi.
+            Sprint baru berstatus planning. Tanggal boleh dikosongkan terlebih dahulu (BR-SPRINT-01).
           </DialogDescription>
         </DialogHeader>
 
@@ -97,11 +105,11 @@ export function CreateSprintModal({
             />
           </div>
 
-          {/* Rentang Tanggal */}
+          {/* Rentang Tanggal (Opsional saat planning) */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                Tanggal Mulai
+                Tanggal Mulai (Opsional)
               </label>
               <Input
                 type="date"
@@ -112,7 +120,7 @@ export function CreateSprintModal({
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                Tanggal Selesai
+                Tanggal Selesai (Opsional)
               </label>
               <Input
                 type="date"
@@ -122,6 +130,8 @@ export function CreateSprintModal({
               />
             </div>
           </div>
+
+          {error && <p className="text-[11px] text-destructive">{error}</p>}
 
           <DialogFooter className="pt-2 flex items-center justify-end gap-2">
             <Button

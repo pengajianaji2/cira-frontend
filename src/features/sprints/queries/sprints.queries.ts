@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { sprintsApi } from "../api/sprints.api";
-import { CreateSprintInput, UpdateSprintInput } from "../types/sprints.types";
+import {
+  CloseSprintInput,
+  CreateSprintInput,
+  StartSprintInput,
+  UpdateSprintInput,
+} from "../types/sprints.types";
 import { tasksKeys } from "@/features/tasks/queries/tasks.queries";
 
 export const sprintsKeys = {
@@ -93,15 +98,16 @@ export function useStartSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (sprintId: string) => sprintsApi.startSprint(sprintId),
+    mutationFn: ({ sprintId, input }: { sprintId: string; input: StartSprintInput }) =>
+      sprintsApi.startSprint(sprintId, input),
     onSuccess: (res) => {
-      toast.success(res.message || "Sprint berhasil dimulai");
+      toast.success(res.message || "Sprint berhasil diaktifkan");
       queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
       queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
       queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
     },
     onError: (err: unknown) => {
-      toast.error(getErrorMessage(err, "Gagal memulai sprint"));
+      toast.error(getErrorMessage(err, "Gagal mengaktifkan sprint"));
     },
   });
 }
@@ -110,7 +116,8 @@ export function useCompleteSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (sprintId: string) => sprintsApi.completeSprint(sprintId),
+    mutationFn: ({ sprintId, input }: { sprintId: string; input?: CloseSprintInput }) =>
+      sprintsApi.completeSprint(sprintId, input),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil diselesaikan");
       queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });

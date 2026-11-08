@@ -1,14 +1,16 @@
 import { apiClient } from "@/shared/lib/api-client";
 import { ApiResponse } from "@/shared/types/api.types";
 import {
+  CloseSprintInput,
   CreateSprintInput,
   ProjectCumulativeProgress,
   Sprint,
+  StartSprintInput,
   UpdateSprintInput,
 } from "../types/sprints.types";
 
 /**
- * Service API Manajemen Sprint & Progres Kumulatif
+ * Service API Manajemen Sprint & Progres Proyek
  * Terhubung ke backend /api/v1/projects/:id/sprints & /api/v1/sprints/:id
  */
 export const sprintsApi = {
@@ -23,7 +25,7 @@ export const sprintsApi = {
   },
 
   /**
-   * Mengambil ringkasan progres kumulatif terbobot proyek.
+   * Mengambil ringkasan progres kumulatif proyek berbasis rumus sprint (BR-PROJECT-01).
    */
   async getProjectProgress(
     projectId: string
@@ -45,7 +47,7 @@ export const sprintsApi = {
   },
 
   /**
-   * Membuat sprint baru dalam proyek.
+   * Membuat sprint baru dalam proyek (BR-SPRINT-01: tanggal boleh kosong).
    */
   async createSprint(
     projectId: string,
@@ -59,7 +61,7 @@ export const sprintsApi = {
   },
 
   /**
-   * Memperbarui informasi sprint (nama, sasaran, tanggal).
+   * Memperbarui informasi sprint.
    */
   async updateSprint(
     sprintId: string,
@@ -73,24 +75,29 @@ export const sprintsApi = {
   },
 
   /**
-   * Memulai sprint (AC-10: seluruh task wajib punya satu assignee & points Fibonacci).
+   * Mengaktifkan sprint (BR-SPRINT-02: wajib memiliki tanggal mulai dan selesai valid).
    */
-  async startSprint(sprintId: string): Promise<ApiResponse<Sprint>> {
+  async startSprint(
+    sprintId: string,
+    input: StartSprintInput
+  ): Promise<ApiResponse<Sprint>> {
     const response = await apiClient.post<ApiResponse<Sprint>>(
-      `/sprints/${sprintId}/start`
+      `/sprints/${sprintId}/start`,
+      input
     );
     return response.data;
   },
 
   /**
-   * Menyelesaikan sprint (AC-11: seluruh task wajib berstatus done).
+   * Menyelesaikan sprint secara atomik dengan resolusi task TODO (BR-SPRINT-04 & BR-SPRINT-05).
    */
   async completeSprint(
-    sprintId: string
-  ): Promise<ApiResponse<{ sprint: Sprint; cumulativeProgress: ProjectCumulativeProgress }>> {
-    const response = await apiClient.patch<
-      ApiResponse<{ sprint: Sprint; cumulativeProgress: ProjectCumulativeProgress }>
-    >(`/sprints/${sprintId}/complete`);
+    sprintId: string,
+    input?: CloseSprintInput
+  ): Promise<ApiResponse<{ sprint: Sprint; progress: number; completedSprintCount: number; totalSprintCount: number }>> {
+    const response = await apiClient.post<
+      ApiResponse<{ sprint: Sprint; progress: number; completedSprintCount: number; totalSprintCount: number }>
+    >(`/sprints/${sprintId}/complete`, input || { taskMoves: [] });
     return response.data;
   },
 
