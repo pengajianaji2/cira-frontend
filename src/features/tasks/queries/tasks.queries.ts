@@ -15,8 +15,6 @@ export function useTasksQuery(projectId: string) {
     queryKey: tasksKeys.list(projectId),
     queryFn: async () => {
       const res = await tasksApi.getTasks(projectId);
-      // API task list returns { tasks, hasVerifiedDp, dpWarning }; normalize it
-      // to an array because the board and optimistic mutations cache Task[].
       if (Array.isArray(res.data)) return res.data;
       if (res.data && Array.isArray(res.data.tasks)) return res.data.tasks;
       return [];
@@ -88,6 +86,34 @@ export function useUpdateTaskStatusMutation(projectId: string) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+    },
+  });
+}
+
+export function useMoveTaskToSprintMutation(projectId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      taskId,
+      targetSprintId,
+    }: {
+      taskId: string;
+      targetSprintId: string | null;
+    }) => {
+      const res = await tasksApi.moveTaskToSprint(taskId, targetSprintId);
+      return res.data;
+    },
+    onSuccess: (task) => {
+      toast.success(
+        task.sprintId
+          ? "Task berhasil dipindahkan ke Sprint Aktif"
+          : "Task berhasil dikembalikan ke Backlog"
+      );
+      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+    },
+    onError: (err: Error) => {
+      toast.error(err?.message || "Gagal memindahkan task");
     },
   });
 }

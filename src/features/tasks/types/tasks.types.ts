@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export type TaskStatus = "todo" | "in_progress" | "done";
+export type TaskStatus = "todo" | "done";
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
 export const FIBONACCI_TASK_POINTS = [1, 2, 3, 5, 8, 13] as const;
@@ -46,7 +46,7 @@ export interface ProjectTasksResult {
 export const createTaskSchema = z.object({
   title: z.string().min(2, "Judul task minimal 2 karakter"),
   description: z.string().optional(),
-  status: z.enum(["todo", "in_progress", "done"]),
+  status: z.enum(["todo", "done"]),
   priority: z.enum(["low", "medium", "high", "urgent"]),
   storyPoints: z
     .number()
@@ -56,7 +56,7 @@ export const createTaskSchema = z.object({
       "Story points harus deret Fibonacci: 1, 2, 3, 5, 8, 13"
     )
     .optional(),
-  sprintId: z.string().optional(),
+  sprintId: z.string().nullable().optional(),
   assigneeId: z.string().optional(),
   assigneeName: z.string().optional(),
 });
@@ -74,4 +74,8 @@ export interface UpdateTaskInput {
   assigneeName?: string | null;
   order?: number;
   assignee?: TaskAssignee;
+}
+
+export interface MoveTaskToSprintInput {
+  targetSprintId: string | null;
 }

@@ -9,7 +9,7 @@ import {
 } from "../types/tasks.types";
 
 /**
- * Service API Manajemen Tugas (Task Kanban Board)
+ * Service API Manajemen Tugas (Task Checklist & Backlog)
  * Terhubung langsung ke Backend API Cira PM (/api/v1/projects/:id/tasks & /api/v1/tasks/:id)
  */
 export const tasksApi = {
@@ -24,7 +24,7 @@ export const tasksApi = {
   },
 
   /**
-   * Membuat tugas baru di kolom kanban proyek.
+   * Membuat tugas baru (default di Backlog dengan sprintId = null).
    */
   async createTask(
     projectId: string,
@@ -38,7 +38,7 @@ export const tasksApi = {
   },
 
   /**
-   * Mengubah status kolom tugas (drag-and-drop) dan urutannya di board kanban.
+   * Mengubah status tugas ('todo' <-> 'done'). Checkbox checked iff 'done'.
    */
   async updateTaskStatus(
     taskId: string,
@@ -56,7 +56,21 @@ export const tasksApi = {
   },
 
   /**
-   * Memperbarui detail tugas (judul, deskripsi, prioritas, assignee).
+   * Memindahkan task ke sprint aktif atau kembali ke Backlog (targetSprintId = null).
+   */
+  async moveTaskToSprint(
+    taskId: string,
+    targetSprintId: string | null
+  ): Promise<ApiResponse<Task>> {
+    const response = await apiClient.patch<ApiResponse<Task>>(
+      `/tasks/${taskId}/move-sprint`,
+      { targetSprintId }
+    );
+    return response.data;
+  },
+
+  /**
+   * Memperbarui detail tugas (judul, deskripsi, prioritas, assignee, story points).
    */
   async updateTask(
     taskId: string,
@@ -70,7 +84,7 @@ export const tasksApi = {
   },
 
   /**
-   * Menghapus tugas dari papan kanban.
+   * Menghapus tugas dari sistem.
    */
   async deleteTask(taskId: string): Promise<ApiResponse<{ id: string }>> {
     const response = await apiClient.delete<ApiResponse<{ id: string }>>(
@@ -80,7 +94,7 @@ export const tasksApi = {
   },
 
   /**
-   * Mengambil status verifikasi pembayaran DP proyek langsung dari backend ringkasan keuangan.
+   * Mengambil status verifikasi pembayaran DP proyek.
    */
   async getProjectPaymentStatus(projectId: string): Promise<{
     hasVerifiedPayment: boolean;

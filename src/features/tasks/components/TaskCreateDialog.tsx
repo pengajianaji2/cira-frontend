@@ -127,7 +127,7 @@ export function TaskCreateDialog({
             Tambah Task Baru
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Tentukan estimasi Story Points Fibonacci dan alokasi sprint task ini.
+            Task baru default masuk ke Backlog kecuali sprint dipilih secara eksplisit.
           </DialogDescription>
         </DialogHeader>
 
@@ -139,7 +139,7 @@ export function TaskCreateDialog({
             </label>
             <Input
               {...register("title")}
-              placeholder="Contoh: Implementasi modul filter kasir"
+              placeholder="Contoh: Implementasi validasi checkout"
               className="rounded-xl text-xs h-10"
               autoFocus
             />
@@ -163,7 +163,7 @@ export function TaskCreateDialog({
             />
           </div>
 
-          {/* AC-10: Story Points Fibonacci & Alokasi Sprint */}
+          {/* Story Points Fibonacci & Alokasi Sprint */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
@@ -210,8 +210,8 @@ export function TaskCreateDialog({
                   <SelectValue placeholder="Pilih Sprint" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="none" className="text-xs text-muted-foreground">
-                    Backlog (Tanpa Sprint)
+                  <SelectItem value="none" className="text-xs text-muted-foreground font-medium">
+                    📦 Backlog (Default)
                   </SelectItem>
                   {sprints.map((s) => (
                     <SelectItem key={s.id} value={s.id} className="text-xs">
@@ -223,11 +223,11 @@ export function TaskCreateDialog({
             </div>
           </div>
 
-          {/* Status Kolom & Prioritas */}
+          {/* Status Task & Prioritas */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                Tahap Kolom
+                Status Awal
               </label>
               <Select
                 value={status}
@@ -237,16 +237,13 @@ export function TaskCreateDialog({
                 }}
               >
                 <SelectTrigger className="w-full rounded-xl text-xs h-10">
-                  <SelectValue placeholder="Pilih Tahap" />
+                  <SelectValue placeholder="Pilih Status" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="todo" className="text-xs">
+                  <SelectItem value="todo" className="text-xs font-medium">
                     To Do
                   </SelectItem>
-                  <SelectItem value="in_progress" className="text-xs">
-                    In Progress
-                  </SelectItem>
-                  <SelectItem value="done" className="text-xs">
+                  <SelectItem value="done" className="text-xs font-medium">
                     Done
                   </SelectItem>
                 </SelectContent>
@@ -285,7 +282,7 @@ export function TaskCreateDialog({
             </div>
           </div>
 
-          {/* AC-10: Penanggung Jawab (Assignee) dari Roster Proyek */}
+          {/* Assignee dari Roster Proyek */}
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-foreground">
               Penanggung Jawab (Assignee)
@@ -323,9 +320,6 @@ export function TaskCreateDialog({
                 className="rounded-xl text-xs h-10"
               />
             )}
-            <p className="text-[10px] text-muted-foreground">
-              Catatan: Sesuai kriteria AC-10, task dalam sprint aktif wajib memiliki tepat satu assignee.
-            </p>
           </div>
 
           <DialogFooter className="pt-2 flex items-center justify-end gap-2">
