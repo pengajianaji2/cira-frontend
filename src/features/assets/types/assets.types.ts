@@ -5,7 +5,7 @@ export interface DesignAsset {
   originalSize: number; // Dalam bytes
   compressedSize: number; // Dalam bytes
   compressionRatio: number; // Persentase penghematan (misal: 65%)
-  dataUrl: string; // Base64 data preview
+  dataUrl: string; // Signed authenticated delivery URL
   mimeType: string;
   createdAt: string;
 }

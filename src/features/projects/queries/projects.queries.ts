@@ -26,6 +26,14 @@ export function useProjectsQuery(status?: ProjectStatus | "all") {
   });
 }
 
+export function useProjectListingQuery(filters: { status?: ProjectStatus; search?: string; page: number; limit: number }) {
+  return useQuery({
+    queryKey: [...PROJECT_KEYS.lists(), "listing", filters],
+    queryFn: async () => (await projectsApi.getProjectListing(filters)).data,
+    placeholderData: (previous) => previous,
+  });
+}
+
 export function useProjectQuery(id: string) {
   return useQuery({
     queryKey: PROJECT_KEYS.detail(id),

@@ -11,12 +11,14 @@ export interface ProjectFilterTabsProps {
   currentFilter?: FilterStatus;
   onFilterChange?: (status: FilterStatus) => void;
   projects?: Project[];
+  counts?: Partial<Record<FilterStatus, number>>;
 }
 
 export function ProjectFilterTabs({
   currentFilter,
   onFilterChange,
   projects = [],
+  counts: suppliedCounts,
 }: ProjectFilterTabsProps) {
   const globalState = useGlobalState();
 
@@ -28,12 +30,19 @@ export function ProjectFilterTabs({
     globalState.setFilterStatus(key);
   };
 
-  const counts = {
+  const localCounts = {
     all: projects.length,
     lead: projects.filter((p) => p.status === "lead").length,
     active: projects.filter((p) => p.status === "active").length,
     completed: projects.filter((p) => p.status === "completed").length,
     cancelled: projects.filter((p) => p.status === "cancelled").length,
+  };
+  const counts = {
+    all: suppliedCounts?.all ?? localCounts.all,
+    lead: suppliedCounts?.lead ?? localCounts.lead,
+    active: suppliedCounts?.active ?? localCounts.active,
+    completed: suppliedCounts?.completed ?? localCounts.completed,
+    cancelled: suppliedCounts?.cancelled ?? localCounts.cancelled,
   };
 
   const tabs: { key: FilterStatus; label: string; count: number }[] = [
