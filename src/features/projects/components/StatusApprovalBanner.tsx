@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { UserAvatar } from "@/shared/components";
 import {
   Dialog,
   DialogContent,
@@ -132,7 +133,7 @@ export function StatusApprovalBanner({
                   {statusDisplayLabels[currentStatus] || currentStatus}
                 </span>
                 <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                <span className="capitalize px-2 py-0.5 rounded-md bg-primary/20 text-primary font-bold">
+                <span className="capitalize px-2 py-0.5 rounded-md bg-accent text-accent-foreground font-bold">
                   {statusDisplayLabels[request.targetStatus] || request.targetStatus}
                 </span>
               </div>
@@ -193,9 +194,12 @@ export function StatusApprovalBanner({
                   className="bg-card/70 border border-border rounded-xl p-2.5 flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-2 truncate pr-2">
-                    <div className="size-6 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px] shrink-0">
-                      {member.user.name.charAt(0).toUpperCase()}
-                    </div>
+                    <UserAvatar
+                      name={member.user.name}
+                      avatarUrl={member.user.avatarUrl}
+                      size="sm"
+                      decorative
+                    />
                     <div className="truncate">
                       <div className="font-semibold truncate text-foreground">{member.user.name}</div>
                       <div className="text-[10px] text-muted-foreground capitalize">
@@ -231,7 +235,7 @@ export function StatusApprovalBanner({
           <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-xs">
               <span className="font-bold text-foreground flex items-center gap-1.5">
-                <HugeiconsIcon icon={UserCheck01Icon} className="size-4 text-primary" aria-hidden="true" />
+                <HugeiconsIcon icon={UserCheck01Icon} className="size-4 text-accent-foreground" aria-hidden="true" />
                 Anda terdaftar di Roster Proyek ini.
               </span>
               <p className="text-muted-foreground mt-0.5">
@@ -271,7 +275,7 @@ export function StatusApprovalBanner({
         {/* Already Voted Badge Pill */}
         {hasVoted && myVote && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border">
-            <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-4 text-primary" aria-hidden="true" />
+            <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-4 text-accent-foreground" aria-hidden="true" />
             <span>
               Anda telah memberikan suara:{" "}
               <strong className={myVote.vote === "approve" ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}>

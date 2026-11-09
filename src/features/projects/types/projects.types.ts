@@ -17,12 +17,21 @@ export interface ProjectListingResponse {
   counts: Partial<Record<ProjectStatus, number>>;
 }
 
+export interface ProjectOwner {
+  id: string;
+  name: string;
+  email?: string;
+  avatarUrl?: string | null;
+}
+
 export interface Project {
   id: string;
   name: string;
   clientName: string;
   clientContact: string;
   status: ProjectStatus;
+  ownerId?: string | null;
+  owner?: ProjectOwner | null;
   repoType?: ProjectRepoType;
   progress?: number;
   contractValue?: number;

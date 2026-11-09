@@ -13,6 +13,7 @@ import { useAuthStore } from "@/features/auth";
 import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/shared/components";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,10 +112,11 @@ export function DirectoryTable() {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
-            <HugeiconsIcon icon={Search01Icon} className="size-3.5" />
+            <HugeiconsIcon icon={Search01Icon} className="size-3.5" aria-hidden="true" />
           </span>
           <input
             type="text"
+            aria-label="Cari anggota berdasarkan nama, email, WhatsApp, atau Instagram"
             placeholder="Cari nama, email, WhatsApp, atau Instagram..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -124,6 +126,7 @@ export function DirectoryTable() {
 
         <div className="flex items-center gap-2 shrink-0">
           <select
+            aria-label="Filter berdasarkan role"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             className="text-xs px-2.5 py-1.5 rounded-xl border border-neutral-200 bg-white text-neutral-700 focus:outline-hidden"
@@ -135,6 +138,7 @@ export function DirectoryTable() {
           </select>
 
           <select
+            aria-label="Filter berdasarkan status akun"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="text-xs px-2.5 py-1.5 rounded-xl border border-neutral-200 bg-white text-neutral-700 focus:outline-hidden"
@@ -162,7 +166,7 @@ export function DirectoryTable() {
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="p-10 text-center space-y-2">
-            <HugeiconsIcon icon={UserGroupIcon} className="size-8 text-neutral-300 mx-auto" />
+            <HugeiconsIcon icon={UserGroupIcon} className="size-8 text-neutral-300 mx-auto" aria-hidden="true" />
             <p className="text-xs font-semibold text-neutral-700">Tidak ada anggota yang ditemukan</p>
             <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
               Cobalah mengubah kata kunci pencarian atau reset filter role/status di atas.
@@ -173,7 +177,7 @@ export function DirectoryTable() {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-neutral-200/80 bg-neutral-50/70 text-neutral-600 font-semibold text-[11px]">
-                  <th className="py-3 px-4">Nama & Akun</th>
+                  <th className="py-3 px-4">Nama &amp; Akun</th>
                   <th className="py-3 px-4">Kontak Resmi</th>
                   <th className="py-3 px-4">Role Produk</th>
                   <th className="py-3 px-4">Status Akun</th>
@@ -182,7 +186,6 @@ export function DirectoryTable() {
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {filteredUsers.map((u) => {
-                  const initial = u.name.charAt(0).toUpperCase();
                   const cleanWA = u.whatsapp?.replace(/[^0-9]/g, "");
 
                   return (
@@ -195,9 +198,12 @@ export function DirectoryTable() {
                       {/* Nama & Akun */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-full bg-neutral-100 border border-neutral-200/80 flex items-center justify-center font-bold text-neutral-700 text-xs shrink-0">
-                            {initial}
-                          </div>
+                          <UserAvatar
+                            name={u.name}
+                            avatarUrl={u.avatarUrl}
+                            size="md"
+                            decorative
+                          />
                           <div>
                             <div className="flex items-center gap-1.5">
                               <span className="font-semibold text-neutral-900 leading-tight">
@@ -230,7 +236,7 @@ export function DirectoryTable() {
                               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[11px] font-mono border border-emerald-200/60 transition-colors"
                               title="Buka Chat WhatsApp"
                             >
-                              <HugeiconsIcon icon={WhatsappIcon} className="size-3" />
+                              <HugeiconsIcon icon={WhatsappIcon} className="size-3" aria-hidden="true" />
                               <span>{u.whatsapp}</span>
                             </a>
                           ) : (
@@ -245,7 +251,7 @@ export function DirectoryTable() {
                               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 text-[11px] font-mono border border-purple-200/60 transition-colors"
                               title="Buka Profil Instagram"
                             >
-                              <HugeiconsIcon icon={InstagramIcon} className="size-3" />
+                              <HugeiconsIcon icon={InstagramIcon} className="size-3" aria-hidden="true" />
                               <span>@{u.instagram}</span>
                             </a>
                           )}
@@ -311,9 +317,10 @@ export function DirectoryTable() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
+                                  aria-label={`Aksi untuk ${u.name}`}
                                   className="h-7 w-7 p-0 rounded-lg text-neutral-500 hover:text-neutral-900"
                                 >
-                                  <HugeiconsIcon icon={MoreHorizontalIcon} className="size-4" />
+                                  <HugeiconsIcon icon={MoreHorizontalIcon} className="size-4" aria-hidden="true" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-44 text-xs rounded-xl">

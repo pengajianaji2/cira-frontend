@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Project } from "../types/projects.types";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
 import { CreateProjectDialog } from "./CreateProjectDialog";
-import { TableSkeleton, EmptyState } from "@/shared/components";
+import { TableSkeleton, EmptyState, UserAvatar } from "@/shared/components";
 
 interface ProjectTableProps {
   projects: Project[];
@@ -71,33 +71,45 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
               >
                 <td className="py-4 px-4 font-semibold text-foreground">
                   <div className="flex items-center gap-2.5">
-                    <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <HugeiconsIcon icon={Folder01Icon} className="size-4" />
+                    <div className="size-8 rounded-xl bg-accent text-accent-foreground flex items-center justify-center shrink-0">
+                      <HugeiconsIcon icon={Folder01Icon} className="size-4" aria-hidden="true" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <Link
                         href={`/projects/${project.id}?tab=prd`}
-                        className="hover:underline font-semibold text-foreground block"
+                        className="hover:underline font-semibold text-foreground block truncate"
                       >
                         {project.name}
                       </Link>
-                      <span className="text-[11px] text-muted-foreground">
-                        ID: {project.id}
-                      </span>
+                      {project.owner ? (
+                        <div className="flex items-center gap-1.5 mt-1 text-[11px] font-normal text-muted-foreground">
+                          <UserAvatar
+                            name={project.owner.name}
+                            avatarUrl={project.owner.avatarUrl}
+                            size="xs"
+                            decorative
+                          />
+                          <span className="truncate">{project.owner.name}</span>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] font-normal text-muted-foreground">
+                          ID: {project.id}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </td>
 
                 <td className="py-4 px-4 text-muted-foreground">
                   <div className="flex items-center gap-1.5">
-                    <HugeiconsIcon icon={UserIcon} className="size-3.5 text-muted-foreground/70" />
+                    <HugeiconsIcon icon={UserIcon} className="size-3.5 text-muted-foreground/70" aria-hidden="true" />
                     <span>{project.clientName}</span>
                   </div>
                 </td>
 
                 <td className="py-4 px-4 text-muted-foreground">
                   <div className="flex items-center gap-1.5">
-                    <HugeiconsIcon icon={Call02Icon} className="size-3.5 text-muted-foreground/70" />
+                    <HugeiconsIcon icon={Call02Icon} className="size-3.5 text-muted-foreground/70" aria-hidden="true" />
                     <span>{project.clientContact}</span>
                   </div>
                 </td>
@@ -108,7 +120,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
 
                 <td className="py-4 px-4 font-medium text-foreground">
                   <div className="flex items-center gap-1.5">
-                    <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-muted-foreground/70" />
+                    <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-muted-foreground/70" aria-hidden="true" />
                     <span>{formatRupiah(project.contractValue)}</span>
                   </div>
                 </td>
@@ -124,6 +136,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
                       <HugeiconsIcon
                         icon={ArrowRight01Icon}
                         className="size-3.5 ml-1 transition-transform group-hover:translate-x-0.5"
+                        aria-hidden="true"
                       />
                     </Button>
                   </Link>
@@ -142,17 +155,28 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
             className="bg-card border border-border rounded-2xl p-4 shadow-xs space-y-3"
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <HugeiconsIcon icon={Folder01Icon} className="size-4" />
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="size-8 rounded-xl bg-accent text-accent-foreground flex items-center justify-center shrink-0">
+                  <HugeiconsIcon icon={Folder01Icon} className="size-4" aria-hidden="true" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h4 className="font-semibold text-sm text-foreground line-clamp-1">
                     {project.name}
                   </h4>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-muted-foreground truncate">
                     {project.clientName}
                   </p>
+                  {project.owner && (
+                    <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted-foreground">
+                      <UserAvatar
+                        name={project.owner.name}
+                        avatarUrl={project.owner.avatarUrl}
+                        size="xs"
+                        decorative
+                      />
+                      <span className="truncate">{project.owner.name}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <ProjectStatusBadge status={project.status} size="sm" />
@@ -177,7 +201,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
                 className="w-full rounded-full text-xs h-9 justify-center"
               >
                 Buka Proyek
-                <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 ml-1" />
+                <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 ml-1" aria-hidden="true" />
               </Button>
             </Link>
           </div>

@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { UserAvatar } from "@/shared/components";
 import { useDirectoryQuery } from "@/features/directory";
 import {
   useAddRosterMemberMutation,
@@ -117,7 +118,7 @@ export function ProjectRosterModal({ projectId, trigger }: ProjectRosterModalPro
         <DialogContent className="sm:max-w-lg rounded-3xl p-6">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <HugeiconsIcon icon={UserCheck01Icon} className="size-5 text-primary" aria-hidden="true" />
+              <HugeiconsIcon icon={UserCheck01Icon} className="size-5 text-accent-foreground" aria-hidden="true" />
               Roster Hak Suara &amp; Persetujuan Status
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
@@ -204,9 +205,13 @@ export function ProjectRosterModal({ projectId, trigger }: ProjectRosterModalPro
                     className="bg-card border border-border rounded-xl p-2.5 flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex items-center gap-2.5 truncate">
-                      <div className="size-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs shrink-0">
-                        {member.user.name.charAt(0).toUpperCase()}
-                      </div>
+                      <UserAvatar
+                        name={member.user.name}
+                        avatarUrl={member.user.avatarUrl}
+                        size="sm"
+                        className="size-7"
+                        decorative
+                      />
                       <div className="truncate">
                         <div className="font-semibold text-foreground truncate">
                           {member.user.name}
