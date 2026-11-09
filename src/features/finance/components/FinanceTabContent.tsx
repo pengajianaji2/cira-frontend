@@ -31,7 +31,13 @@ interface FinanceTabContentProps {
 
 export function FinanceTabContent({ project }: FinanceTabContentProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
-  const isFinanceManager = permissions.includes("finance.write");
+  const canManageTerms =
+    permissions.includes("finance.payment_terms.manage") ||
+    permissions.includes("finance.write");
+  const canUpdateContractValue =
+    permissions.includes("projects.contract.update") ||
+    permissions.includes("finance.write") ||
+    canManageTerms;
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [contractDialogOpen, setContractDialogOpen] = useState(false);
@@ -71,37 +77,41 @@ export function FinanceTabContent({ project }: FinanceTabContentProps) {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <div className="size-9 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <HugeiconsIcon icon={Coins01Icon} className="size-4.5" />
+              <HugeiconsIcon icon={Coins01Icon} className="size-4.5" aria-hidden="true" />
             </div>
             <h2 className="text-lg font-bold text-foreground">
-              Manajemen Keuangan, Termin 100%, & Invoice
+              Manajemen Keuangan, Pemicu Termin & Invoice
             </h2>
           </div>
           <p className="text-xs text-muted-foreground pl-11">
-            Susun termin berbobot tepat 100%, unggah bukti BAST penyelesaian modul, dan terbitkan invoice resmi PDF bernomor seri otomatis.
+            Tetapkan bobot termin tepat 100% dengan pemicu tunggal (Tanggal WIB / Jumlah Sprint Selesai / Manual), lalu catat invoice dan pantau status pelunasan.
           </p>
         </div>
 
-        {isFinanceManager && (
+        {(canUpdateContractValue || canManageTerms) && (
           <div className="flex items-center gap-2 self-start sm:self-auto pl-11 sm:pl-0 flex-wrap">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setContractDialogOpen(true)}
-              className="rounded-full text-xs h-8.5 px-3.5 font-medium"
-            >
-              <HugeiconsIcon icon={Edit02Icon} className="size-3.5 mr-1.5" />
-              Ubah Nilai Kontrak
-            </Button>
+            {canUpdateContractValue && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setContractDialogOpen(true)}
+                className="rounded-full text-xs h-8.5 px-3.5 font-medium"
+              >
+                <HugeiconsIcon icon={Edit02Icon} className="size-3.5 mr-1.5" aria-hidden="true" />
+                Ubah Nilai Kontrak
+              </Button>
+            )}
 
-            <Button
-              size="sm"
-              onClick={() => setContractConfigOpen(true)}
-              className="rounded-full text-xs h-8.5 px-4 font-semibold shadow-xs"
-            >
-              <HugeiconsIcon icon={SparklesIcon} className="size-3.5 mr-1.5" />
-              Kelola Kontrak 100%
-            </Button>
+            {canManageTerms && (
+              <Button
+                size="sm"
+                onClick={() => setContractConfigOpen(true)}
+                className="rounded-full text-xs h-8.5 px-4 font-semibold shadow-xs"
+              >
+                <HugeiconsIcon icon={SparklesIcon} className="size-3.5 mr-1.5" aria-hidden="true" />
+                Kelola Kontrak 100%
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -119,19 +129,19 @@ export function FinanceTabContent({ project }: FinanceTabContentProps) {
             value="terms"
             className="rounded-xl text-xs font-semibold px-4 h-8 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"
           >
-            <HugeiconsIcon icon={File01Icon} className="size-3.5" />
+            <HugeiconsIcon icon={File01Icon} className="size-3.5" aria-hidden="true" />
             Termin Kontrak 100% & Invoice ({terms.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
             className="rounded-xl text-xs font-semibold px-4 h-8 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"
           >
-            <HugeiconsIcon icon={Invoice01Icon} className="size-3.5" />
+            <HugeiconsIcon icon={Invoice01Icon} className="size-3.5" aria-hidden="true" />
             Riwayat Pembayaran ({payments.length})
           </TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: US-4 Termin Kontrak 100% & Invoice */}
+        {/* Tab 1: US-3 Termin Berbobot, Pemicu & Invoice Manual */}
         <TabsContent value="terms" className="space-y-4 mt-0">
           <PaymentTermsTable
             project={project}

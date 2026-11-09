@@ -4,6 +4,7 @@ import { financeApi } from "../api/finance.api";
 import {
   CreatePaymentInput,
   CreateContractInput,
+  UpdateTermInput,
   UploadBastInput,
   IssueInvoiceInput,
 } from "../types/finance.types";
@@ -33,10 +34,6 @@ export const termsKeys = {
   list: (projectId: string) => [...termsKeys.lists(), projectId] as const,
   detail: (id: string) => [...termsKeys.all, "detail", id] as const,
 };
-
-// =========================================================================
-// US-4: Queries & Mutations Kontrak & Termin 100%
-// =========================================================================
 
 export function useProjectTermsQuery(projectId: string) {
   return useQuery({
@@ -73,21 +70,40 @@ export function useCreateContractMutation() {
     }) => financeApi.createContract(projectId, input),
     onSuccess: (_, variables) => {
       toast.success("Kontrak dan termin pembayaran 100% berhasil dikonfigurasi!");
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.list(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_KEYS.detail(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.detail(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal mengonfigurasi kontrak dan termin"));
+    },
+  });
+}
+
+export function useUpdateTermMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      termId,
+      input,
+    }: {
+      termId: string;
+      projectId: string;
+      input: UpdateTermInput;
+    }) => financeApi.updateTerm(termId, input),
+    onSuccess: (_, variables) => {
+      toast.success("Konfigurasi termin berhasil diperbarui!");
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: termsKeys.detail(variables.termId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal memperbarui termin pembayaran"));
     },
   });
 }
@@ -98,29 +114,22 @@ export function useMarkTermReadyWithBastMutation() {
   return useMutation({
     mutationFn: ({
       termId,
-      input,
+      input = {},
     }: {
       termId: string;
       projectId: string;
-      input: UploadBastInput;
+      input?: UploadBastInput;
     }) => financeApi.markTermReadyWithBast(termId, input),
     onSuccess: (_, variables) => {
-      toast.success("Dokumen BAST berhasil diunggah. Termin siap ditagih!");
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.list(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.detail(variables.termId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      toast.success("Termin berhasil ditandai Siap Ditagih!");
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: termsKeys.detail(variables.termId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
     },
     onError: (err: unknown) => {
-      toast.error(getErrorMessage(err, "Gagal memperbarui status termin dengan BAST"));
+      toast.error(getErrorMessage(err, "Gagal memperbarui status termin menjadi siap ditagih"));
     },
   });
 }
@@ -139,18 +148,11 @@ export function useUploadBastFileMutation() {
     }) => financeApi.uploadBastFile(termId, file),
     onSuccess: (_, variables) => {
       toast.success("Berkas BAST berhasil diunggah. Termin berstatus Siap Ditagih!");
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.list(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.detail(variables.termId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: termsKeys.detail(variables.termId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal mengunggah berkas BAST"));
@@ -164,30 +166,47 @@ export function useIssueInvoiceMutation() {
   return useMutation({
     mutationFn: ({
       termId,
-      input = {},
+      input,
     }: {
       termId: string;
       projectId: string;
-      input?: IssueInvoiceInput;
+      input: IssueInvoiceInput;
     }) => financeApi.issueInvoice(termId, input),
     onSuccess: (res, variables) => {
       const invNum = res.data?.invoiceNumber || "resmi";
       toast.success(`Invoice ${invNum} berhasil diterbitkan dan termin dikunci!`);
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.list(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.detail(variables.termId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: termsKeys.detail(variables.termId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal menerbitkan invoice resmi"));
+    },
+  });
+}
+
+export function useMarkTermPaidMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      termId,
+    }: {
+      termId: string;
+      projectId: string;
+    }) => financeApi.markTermPaid(termId),
+    onSuccess: (_, variables) => {
+      toast.success("Termin berhasil ditandai Lunas!");
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: termsKeys.detail(variables.termId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, "Gagal menandai termin lunas"));
     },
   });
 }
@@ -204,15 +223,10 @@ export function useDeleteTermMutation() {
     }) => financeApi.deleteTerm(termId),
     onSuccess: (_, variables) => {
       toast.success("Termin pembayaran berhasil dihapus.");
-      queryClient.invalidateQueries({
-        queryKey: termsKeys.list(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal menghapus termin"));
@@ -258,15 +272,9 @@ export function useCreatePaymentMutation() {
     }) => financeApi.createPayment(projectId, input),
     onSuccess: (_, variables) => {
       toast.success("Termin pembayaran berhasil ditambahkan!");
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.payments(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: financeKeys.payments(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal menambahkan termin pembayaran"));
@@ -292,18 +300,10 @@ export function useVerifyPaymentMutation() {
           ? "Pembayaran berhasil diverifikasi!"
           : "Verifikasi pembayaran berhasil dibatalkan."
       );
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.payments(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["tasks"],
-      });
+      queryClient.invalidateQueries({ queryKey: financeKeys.payments(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal memperbarui status verifikasi"));
@@ -325,12 +325,8 @@ export function useUploadProofMutation() {
     }) => financeApi.uploadProof(paymentId, file),
     onSuccess: (_, variables) => {
       toast.success("Bukti transfer berhasil diunggah!");
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.payments(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: financeKeys.payments(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal mengunggah bukti transfer"));
@@ -350,15 +346,9 @@ export function useDeletePaymentMutation() {
     }) => financeApi.deletePayment(paymentId),
     onSuccess: (_, variables) => {
       toast.success("Termin berhasil dihapus.");
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.payments(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: financeKeys.payments(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal menghapus termin"));
@@ -379,18 +369,10 @@ export function useUpdateContractValueMutation() {
     }) => financeApi.updateContractValue(projectId, contractValue),
     onSuccess: (_, variables) => {
       toast.success("Nilai kontrak berhasil diperbarui!");
-      queryClient.invalidateQueries({
-        queryKey: financeKeys.summary(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_KEYS.detail(variables.projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_KEYS.lists(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: activityKeys.lists(),
-      });
+      queryClient.invalidateQueries({ queryKey: financeKeys.summary(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.detail(variables.projectId) });
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: activityKeys.lists() });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal memperbarui nilai kontrak"));
