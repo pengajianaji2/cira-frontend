@@ -3,7 +3,6 @@ import { ApiResponse } from "@/shared/types/api.types";
 import {
   ActivityLog,
   ActivityCategory,
-  CreateActivityLogInput,
 } from "../types/activity.types";
 
 /**
@@ -25,19 +24,6 @@ export const activityApi = {
           category: category !== "all" ? category : undefined,
         },
       }
-    );
-    return response.data;
-  },
-
-  /**
-   * Mencatat satu kejadian aktivitas penting baru ke dalam log audit proyek.
-   */
-  async logActivity(
-    input: CreateActivityLogInput
-  ): Promise<ApiResponse<ActivityLog>> {
-    const response = await apiClient.post<ApiResponse<ActivityLog>>(
-      `/projects/${input.projectId}/activities`,
-      input
     );
     return response.data;
   },

@@ -18,11 +18,3 @@ export interface ActivityLog {
   createdAt: string;
 }
 
-export interface CreateActivityLogInput {
-  projectId: string;
-  category: "finance" | "project" | "task" | "asset";
-  action: string;
-  description: string;
-  user?: Partial<ActivityUser>;
-  metadata?: Record<string, unknown>;
-}
