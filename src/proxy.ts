@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 function getApiOrigin(): string {
@@ -12,11 +11,15 @@ function getApiOrigin(): string {
 export function proxy(request: NextRequest) {
   if (process.env.NODE_ENV !== "production") return NextResponse.next();
 
-  const nonce = Buffer.from(randomUUID()).toString("base64");
   const apiOrigin = getApiOrigin();
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    // Vercel production can strip Content-Security-Policy from forwarded request
+    // headers before Next.js adds its framework bootstrap scripts. Keep executable
+    // scripts same-origin; allow Next's inline hydration payloads and block inline
+    // event-handler attributes separately.
+    "script-src 'self' 'unsafe-inline'",
+    "script-src-attr 'none'",
     "style-src 'self'",
     "style-src-elem 'self' 'unsafe-inline'",
     "style-src-attr 'unsafe-inline'",
@@ -32,11 +35,7 @@ export function proxy(request: NextRequest) {
     "upgrade-insecure-requests",
   ].join("; ");
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-nonce", nonce);
-  requestHeaders.set("Content-Security-Policy", csp);
-
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const response = NextResponse.next();
   response.headers.set("Content-Security-Policy", csp);
   return response;
 }
