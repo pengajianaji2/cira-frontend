@@ -6,6 +6,7 @@ import {
   ChangePasswordInput,
   InviteInfoResponse,
   LoginInput,
+  normalizeProfileInput,
   ProfileInput,
 } from "../types/auth.types";
 
@@ -42,12 +43,12 @@ export const authApi = {
   },
 
   /**
-   * Memperbarui informasi profil pengguna (nama & email).
+   * Memperbarui informasi profil pengguna (nama, email, nomor WhatsApp, dan username Instagram).
    */
   async updateProfile(payload: ProfileInput): Promise<ApiResponse<{ user: User }>> {
     const response = await apiClient.put<ApiResponse<{ user: User }>>(
       "/auth/profile",
-      payload
+      normalizeProfileInput(payload)
     );
     return response.data;
   },

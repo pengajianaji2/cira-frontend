@@ -101,6 +101,8 @@ export function useUpdateProfileMutation() {
     onSuccess: (response) => {
       setUser(response.data.user);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
+      void queryClient.invalidateQueries({ queryKey: ["directory"] });
+      void queryClient.invalidateQueries({ queryKey: ["projects"] });
       toast.success(response.message || "Profil berhasil diperbarui!");
     },
     onError: (error: Error) => {
