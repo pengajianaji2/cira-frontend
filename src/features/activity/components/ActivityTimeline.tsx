@@ -37,7 +37,7 @@ function getCategoryConfig(category: ActivityLog["category"]) {
       return {
         label: "Keuangan",
         icon: Coins01Icon,
-        colorClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+        colorClass: "bg-status-success-surface text-status-success-text border-status-success-border",
         badgeVariant: "outline" as const,
       };
     case "project":
@@ -51,7 +51,7 @@ function getCategoryConfig(category: ActivityLog["category"]) {
       return {
         label: "Task",
         icon: Task01Icon,
-        colorClass: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+        colorClass: "bg-status-warning-surface text-status-warning-text border-status-warning-border",
         badgeVariant: "outline" as const,
       };
     case "asset":

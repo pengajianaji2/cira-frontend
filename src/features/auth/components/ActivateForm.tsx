@@ -243,13 +243,13 @@ export function ActivateForm() {
               autoComplete="new-password"
               placeholder="Minimal 8 karakter"
               {...register("password")}
-              className="w-full h-11 px-3.5 pr-11 text-xs rounded-xl border border-input-border bg-card text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
+              className="w-full h-11 px-3.5 pr-12 text-xs rounded-xl border border-input-border bg-card text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Sembunyikan password baru" : "Tampilkan password baru"}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+              className="absolute right-0.5 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             >
               <HugeiconsIcon
                 icon={showPassword ? ViewOffSlashIcon : ViewIcon}
@@ -277,7 +277,7 @@ export function ActivateForm() {
               autoComplete="new-password"
               placeholder="Ketik ulang password baru"
               {...register("confirmPassword")}
-              className="w-full h-11 px-3.5 pr-11 text-xs rounded-xl border border-input-border bg-card text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
+              className="w-full h-11 px-3.5 pr-12 text-xs rounded-xl border border-input-border bg-card text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
             />
             <button
               type="button"
@@ -287,7 +287,7 @@ export function ActivateForm() {
                   ? "Sembunyikan konfirmasi password"
                   : "Tampilkan konfirmasi password"
               }
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+              className="absolute right-0.5 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             >
               <HugeiconsIcon
                 icon={showConfirmPassword ? ViewOffSlashIcon : ViewIcon}

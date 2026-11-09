@@ -97,8 +97,8 @@ export function PaymentProofDialog({
               variant="outline"
               className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${
                 isVerified
-                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                  : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                  ? "bg-status-success-surface text-status-success-text border-status-success-border"
+                  : "bg-status-warning-surface text-status-warning-text border-status-warning-border"
               }`}
             >
               {isVerified ? "Terverifikasi" : "Menunggu Verifikasi"}

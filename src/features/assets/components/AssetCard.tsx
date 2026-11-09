@@ -93,7 +93,7 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
               {formatBytes(asset.originalSize)}
             </span>
             <HugeiconsIcon icon={ArrowRight01Icon} className="size-3 text-muted-foreground" aria-hidden="true" />
-            <span className="font-semibold text-emerald-600">
+            <span className="font-semibold text-status-success-text">
               {formatBytes(asset.compressedSize)}
             </span>
           </div>

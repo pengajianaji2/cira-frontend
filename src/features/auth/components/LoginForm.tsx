@@ -116,13 +116,13 @@ export function LoginForm() {
                   autoComplete="current-password"
                   placeholder="Password"
                   disabled={loginMutation.isPending || isSubmitting}
-                  className="w-full h-11 rounded-full border border-input-border bg-card px-4 pr-11 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
+                  className="w-full h-11 rounded-full border border-input-border bg-card px-4 pr-12 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
                   {...register("password")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+                  className="absolute right-0.5 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
                   aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                 >
                   <HugeiconsIcon

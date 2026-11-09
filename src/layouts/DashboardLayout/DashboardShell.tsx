@@ -18,8 +18,12 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { UserAvatar } from "@/shared/components";
 import { navigationConfig } from "../navigation.config";
-import { useAuthStore, useLogoutMutation, useCurrentUserQuery } from "@/features/auth";
-import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
+import {
+  useAuthStore,
+  useLogoutMutation,
+  useCurrentUserQuery,
+  useMyPermissionsQuery,
+} from "@/features/auth";
 import { cn } from "@/lib/utils";
 import {
   filterNavigationItems,
