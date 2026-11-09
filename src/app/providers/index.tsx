@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { GlobalStateProvider } from "@/shared/components/state/GlobalStateProvider";
@@ -22,6 +22,11 @@ export function Providers({ children }: ProvidersProps) {
         },
       })
   );
+
+  useEffect(() => {
+    // Remove the legacy persisted profile once; session state now comes from /auth/me.
+    window.localStorage.removeItem("cira-auth-storage");
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

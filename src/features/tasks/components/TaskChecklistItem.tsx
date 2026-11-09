@@ -23,10 +23,10 @@ interface TaskChecklistItemProps {
 }
 
 const PRIORITY_CONFIG: Record<TaskPriority, { label: string; className: string }> = {
-  urgent: { label: "Urgent", className: "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30" },
-  high: { label: "High", className: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30" },
-  medium: { label: "Medium", className: "bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30" },
-  low: { label: "Low", className: "bg-zinc-500/15 text-zinc-700 dark:text-zinc-400 border-zinc-500/30" },
+  urgent: { label: "Urgent", className: "bg-task-priority-urgent-bg text-task-priority-urgent-text border-task-priority-urgent-border" },
+  high: { label: "High", className: "bg-task-priority-high-bg text-task-priority-high-text border-task-priority-high-border" },
+  medium: { label: "Medium", className: "bg-task-priority-medium-bg text-task-priority-medium-text border-task-priority-medium-border" },
+  low: { label: "Low", className: "bg-task-priority-low-bg text-task-priority-low-text border-task-priority-low-border" },
 };
 
 export function TaskChecklistItem({
@@ -60,7 +60,7 @@ export function TaskChecklistItem({
           onCheckedChange={handleCheckboxChange}
           disabled={!onToggleStatus}
           aria-label={`Tandai "${task.title}" sebagai ${isDone ? "belum selesai" : "selesai"}`}
-          className={`size-4.5 rounded-md data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 ${
+          className={`size-4.5 rounded-md data-[state=checked]:bg-status-success-text data-[state=checked]:border-status-success-text ${
             onToggleStatus ? "cursor-pointer" : "cursor-not-allowed"
           }`}
         />

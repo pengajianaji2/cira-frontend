@@ -83,28 +83,37 @@ function DashboardBreadcrumb() {
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
   const logoutMutation = useLogoutMutation();
-  useCurrentUserQuery();
+  const currentUserQuery = useCurrentUserQuery();
   const { data: permissions = [] } = useMyPermissionsQuery();
-  const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    // Redirect ke login jika pengguna belum login di client
-    if (mounted && !isAuthenticated) {
+    if (currentUserQuery.error && (currentUserQuery.error as Error & { status?: number }).status === 401) {
       router.replace("/login");
     }
-  }, [mounted, isAuthenticated, router]);
+  }, [currentUserQuery.error, router]);
 
-  if (!mounted) {
+  if (currentUserQuery.isPending || (!currentUserQuery.data && !currentUserQuery.isError)) {
     return (
       <div className="h-screen h-dvh w-full flex items-center justify-center bg-background">
         <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (currentUserQuery.isError && (currentUserQuery.error as Error & { status?: number }).status === 401) {
+    return <div className="h-screen h-dvh w-full bg-background" aria-busy="true" />;
+  }
+
+  if (currentUserQuery.isError && (currentUserQuery.error as Error & { status?: number }).status !== 401) {
+    return (
+      <div className="min-h-screen grid place-items-center p-6 text-center">
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Sesi belum dapat diverifikasi karena koneksi bermasalah.</p>
+          <Button variant="outline" onClick={() => void currentUserQuery.refetch()}>Coba lagi</Button>
+        </div>
       </div>
     );
   }

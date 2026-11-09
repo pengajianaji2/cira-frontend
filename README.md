@@ -6,7 +6,7 @@ Dashboard web terpadu berbasis **Next.js App Router** untuk tim agensi/studio pe
 
 ## 🚀 Fitur Utama (US-1 s.d. US-4 & Fondasi Workspace)
 
-Mengacu pada spesifikasi [`docs/prd.md`](../docs/prd.md):
+Mengacu pada spesifikasi [`docs/prd.md`](docs/prd.md):
 
 ### 1. Autentikasi, RBAC Dinamis & Direktori Tim
 - **Autentikasi & Pemulihan Akun**: Halaman login (`/login`), lupa password (`/forgot-password`), atur ulang password token 30 menit (`/reset-password`), aktivasi akun undangan 24 jam dengan kontak WhatsApp/Instagram (`/activate`), serta pengaturan profil & foto avatar (`/profile`).
@@ -91,6 +91,8 @@ frontend/src/
 ---
 
 ## 💻 Panduan Menjalankan Frontend
+
+Styling token global dan warna per komponen dijelaskan di [`docs/styling-tokens.md`](docs/styling-tokens.md).
 
 ### 1. Prasyarat Sistem
 - Node.js versi 20 atau lebih baru

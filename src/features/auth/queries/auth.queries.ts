@@ -28,7 +28,7 @@ export function useMyPermissionsQuery() {
 }
 
 export function useCurrentUserQuery() {
-  const { setUser, isAuthenticated, logout } = useAuthStore();
+  const { setUser, logout } = useAuthStore();
 
   return useQuery({
     queryKey: AUTH_QUERY_KEY,
@@ -38,12 +38,14 @@ export function useCurrentUserQuery() {
         setUser(response.data.user);
         return response.data.user;
       } catch (err) {
-        logout();
+        if ((err as Error & { status?: number }).status === 401) logout();
         throw err;
       }
     },
-    enabled: isAuthenticated,
+    enabled: true,
+    staleTime: 0,
     retry: false,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -73,14 +75,18 @@ export function useLogoutMutation() {
 
   return useMutation({
     mutationFn: () => authApi.logout(),
-    onSuccess: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries();
       logout();
-      queryClient.clear();
+      queryClient.removeQueries();
+    },
+    onSuccess: () => {
       toast.info("Anda telah keluar dari aplikasi.");
       router.push("/login");
     },
     onError: () => {
       logout();
+      queryClient.removeQueries();
       router.push("/login");
     },
   });

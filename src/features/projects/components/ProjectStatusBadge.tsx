@@ -15,27 +15,23 @@ const STATUS_CONFIG: Record<
 > = {
   lead: {
     label: "Lead",
-    dotClass: "bg-slate-500",
-    badgeClass:
-      "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700",
+    dotClass: "bg-project-status-lead-fg",
+    badgeClass: "bg-project-status-lead-bg text-project-status-lead-fg border-project-status-lead-border hover:bg-project-status-lead-bg",
   },
   active: {
     label: "Active",
-    dotClass: "bg-blue-500 animate-pulse",
-    badgeClass:
-      "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800",
+    dotClass: "bg-project-status-active-fg animate-pulse",
+    badgeClass: "bg-project-status-active-bg text-project-status-active-fg border-project-status-active-border hover:bg-project-status-active-bg",
   },
   completed: {
     label: "Completed",
-    dotClass: "bg-emerald-500",
-    badgeClass:
-      "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800",
+    dotClass: "bg-project-status-completed-fg",
+    badgeClass: "bg-project-status-completed-bg text-project-status-completed-fg border-project-status-completed-border hover:bg-project-status-completed-bg",
   },
   cancelled: {
     label: "Cancelled",
-    dotClass: "bg-rose-500",
-    badgeClass:
-      "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-50 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800",
+    dotClass: "bg-project-status-cancelled-fg",
+    badgeClass: "bg-project-status-cancelled-bg text-project-status-cancelled-fg border-project-status-cancelled-border hover:bg-project-status-cancelled-bg",
   },
 };
 

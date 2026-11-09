@@ -2,6 +2,7 @@ import { apiClient } from "@/shared/lib/api-client";
 import { ApiResponse } from "@/shared/types/api.types";
 import {
   Project,
+  ProjectListingResponse,
   ProjectStatus,
   CreateProjectInput,
   UpdateProjectInput,
@@ -13,6 +14,10 @@ import {
  * Terhubung langsung ke Backend API Cira PM (/api/v1/projects)
  */
 export const projectsApi = {
+  async getProjectListing(filters: { status?: ProjectStatus; search?: string; page: number; limit: number }): Promise<ApiResponse<ProjectListingResponse>> {
+    const response = await apiClient.get<ApiResponse<ProjectListingResponse>>("/projects/listing", { params: filters });
+    return response.data;
+  },
   /**
    * Mengambil daftar proyek dari backend dengan filter status opsional.
    */

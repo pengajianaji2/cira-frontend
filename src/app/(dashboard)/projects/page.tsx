@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon } from "@hugeicons/core-free-icons";
+import { Input } from "@/components/ui/input";
 import {
-  useProjectsQuery,
+  useProjectListingQuery,
   ProjectFilterTabs,
   ProjectTable,
   CreateProjectDialog,
@@ -13,20 +14,32 @@ import {
 import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
 
 export default function ProjectsPage() {
-  const { filterStatus, setFilterStatus, searchQuery } = useGlobalState();
+  const { filterStatus, setFilterStatus, searchQuery, setSearchQuery } = useGlobalState();
+  const [page, setPage] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const pageSize = 25;
 
-  // Fetch all projects for badge counts
-  const { data: allProjects = [], isLoading: isLoadingAll } = useProjectsQuery("all");
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery]);
 
-  // Filtered projects by status and search query from global state
-  const filteredProjects = allProjects.filter((p) => {
-    const matchesStatus = filterStatus === "all" || p.status === filterStatus;
-    const matchesSearch =
-      !searchQuery ||
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.clientName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
+  useEffect(() => setPage(1), [filterStatus, debouncedSearch]);
+
+  const listingQuery = useProjectListingQuery({
+    status: filterStatus === "all" ? undefined : filterStatus,
+    search: debouncedSearch || undefined,
+    page,
+    limit: pageSize,
   });
+  const projects = listingQuery.data?.items ?? [];
+  const counts = {
+    all: Object.values(listingQuery.data?.counts ?? {}).reduce((sum, count) => sum + (count ?? 0), 0),
+    lead: listingQuery.data?.counts.lead ?? 0,
+    active: listingQuery.data?.counts.active ?? 0,
+    completed: listingQuery.data?.counts.completed ?? 0,
+    cancelled: listingQuery.data?.counts.cancelled ?? 0,
+  };
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -53,19 +66,43 @@ export default function ProjectsPage() {
         </div>
       </div>
 
+      <div className="max-w-md">
+        <label htmlFor="project-search" className="sr-only">Cari nama proyek atau klien</label>
+        <Input id="project-search" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Cari proyek atau klien…" autoComplete="off" />
+      </div>
+
       {/* Filter Tabs Bar */}
       <div className="space-y-4">
         <ProjectFilterTabs
           currentFilter={filterStatus as FilterStatus}
           onFilterChange={(s) => setFilterStatus(s)}
-          projects={allProjects}
+          projects={projects}
+          counts={counts}
         />
 
         {/* Projects List / Table */}
-        <ProjectTable
-          projects={filteredProjects}
-          isLoading={isLoadingAll}
-        />
+        {listingQuery.isError ? (
+          <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-sm">
+            <p className="font-medium">Daftar proyek belum dapat dimuat.</p>
+            <p className="mt-1 text-muted-foreground">{listingQuery.error.message}</p>
+            <button type="button" onClick={() => void listingQuery.refetch()} className="mt-3 rounded-lg border px-3 py-2 text-xs font-medium hover:bg-muted">
+              Coba lagi
+            </button>
+          </div>
+        ) : (
+          <ProjectTable projects={projects} isLoading={listingQuery.isPending} />
+        )}
+        {listingQuery.data && listingQuery.data.totalPages > 1 && (
+          <nav aria-label="Paginasi proyek" className="flex items-center justify-between gap-3 pt-2">
+            <p className="text-xs text-muted-foreground" aria-live="polite">
+              Halaman {listingQuery.data.page} dari {listingQuery.data.totalPages} · {listingQuery.data.total} proyek
+            </p>
+            <div className="flex gap-2">
+              <button type="button" disabled={page <= 1 || listingQuery.isFetching} onClick={() => setPage((value) => Math.max(1, value - 1))} className="rounded-lg border px-3 py-2 text-xs disabled:opacity-50">Sebelumnya</button>
+              <button type="button" disabled={page >= listingQuery.data.totalPages || listingQuery.isFetching} onClick={() => setPage((value) => value + 1)} className="rounded-lg border px-3 py-2 text-xs disabled:opacity-50">Selanjutnya</button>
+            </div>
+          </nav>
+        )}
       </div>
     </div>
   );

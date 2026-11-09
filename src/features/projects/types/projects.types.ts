@@ -8,6 +8,15 @@ import {
 
 export type ProjectStatus = "lead" | "active" | "completed" | "cancelled";
 
+export interface ProjectListingResponse {
+  items: Project[];
+  total: number;
+  totalPages: number;
+  page: number;
+  pageSize: number;
+  counts: Partial<Record<ProjectStatus, number>>;
+}
+
 export interface Project {
   id: string;
   name: string;
