@@ -39,10 +39,7 @@ let highlighter: Promise<HighlighterCore> | undefined
 
 function getHighlighter() {
   highlighter ??= createHighlighterCore({
-    themes: [
-      import("shiki/themes/github-light.mjs"),
-      import("shiki/themes/github-dark.mjs"),
-    ],
+    themes: [import("shiki/themes/github-light.mjs")],
     langs: [],
     engine: createJavaScriptRegexEngine({ forgiving: true }),
   })
@@ -86,7 +83,7 @@ export async function loadHighlighter(language: string) {
       const tokenize = (text: string) =>
         shiki.codeToTokens(text, {
           lang,
-          themes: { light: "github-light", dark: "github-dark" },
+          themes: { light: "github-light" },
           defaultColor: false,
           grammarState: state,
         }).tokens
@@ -104,7 +101,7 @@ export async function loadHighlighter(language: string) {
             <span
               key={index}
               style={token.htmlStyle as React.CSSProperties}
-              className="text-(--shiki-light) dark:text-(--shiki-dark)"
+              className="text-(--shiki-light)"
             >
               {token.content}
             </span>

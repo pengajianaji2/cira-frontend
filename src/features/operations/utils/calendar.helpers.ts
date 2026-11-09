@@ -75,14 +75,14 @@ export function getCalendarEventVisual(event: CalendarEvent): EventVisualMeta {
     if (event.status === "paid") {
       return {
         chipClass:
-          "bg-emerald-500/12 text-emerald-800 dark:text-emerald-200 border-emerald-500/30",
+          "bg-emerald-500/12 text-emerald-800 border-emerald-500/30",
         dotClass: "bg-emerald-500",
         badgeVariantLabel: "Invoice Lunas",
       };
     }
     return {
       chipClass:
-        "bg-zinc-900/8 text-foreground dark:bg-zinc-100/10 border-border",
+        "bg-zinc-900/8 text-foreground border-border",
       dotClass: "bg-foreground",
       badgeVariantLabel: "Invoice Jatuh Tempo",
     };
@@ -91,7 +91,7 @@ export function getCalendarEventVisual(event: CalendarEvent): EventVisualMeta {
   if (event.sourceType === "payment_term") {
     return {
       chipClass:
-        "bg-blue-500/12 text-blue-800 dark:text-blue-200 border-blue-500/30",
+        "bg-blue-500/12 text-blue-800 border-blue-500/30",
       dotClass: "bg-blue-500",
       badgeVariantLabel: "Termin Ready",
     };
@@ -100,7 +100,7 @@ export function getCalendarEventVisual(event: CalendarEvent): EventVisualMeta {
   if (event.sourceType === "sprint") {
     return {
       chipClass:
-        "bg-secondary/15 text-foreground dark:bg-secondary/40 border-border",
+        "bg-secondary/15 text-foreground border-border",
       dotClass:
         event.status === "active"
           ? "bg-emerald-500"
@@ -116,21 +116,21 @@ export function getCalendarEventVisual(event: CalendarEvent): EventVisualMeta {
     case "client_demo":
       return {
         chipClass:
-          "bg-orange-500/12 text-orange-800 dark:text-orange-200 border-orange-500/30",
+          "bg-orange-500/12 text-orange-800 border-orange-500/30",
         dotClass: "bg-orange-500",
         badgeVariantLabel: OPERATIONAL_EVENT_TYPE_LABELS.client_demo,
       };
     case "deployment":
       return {
         chipClass:
-          "bg-purple-500/12 text-purple-800 dark:text-purple-200 border-purple-500/30",
+          "bg-purple-500/12 text-purple-800 border-purple-500/30",
         dotClass: "bg-purple-500",
         badgeVariantLabel: OPERATIONAL_EVENT_TYPE_LABELS.deployment,
       };
     case "maintenance":
       return {
         chipClass:
-          "bg-amber-500/15 text-amber-900 dark:text-amber-200 border-amber-500/35",
+          "bg-amber-500/15 text-amber-900 border-amber-500/35",
         dotClass: "bg-amber-500",
         badgeVariantLabel: OPERATIONAL_EVENT_TYPE_LABELS.maintenance,
       };
@@ -138,7 +138,7 @@ export function getCalendarEventVisual(event: CalendarEvent): EventVisualMeta {
     default:
       return {
         chipClass:
-          "bg-blue-500/10 text-blue-800 dark:text-blue-200 border-blue-500/25",
+          "bg-blue-500/10 text-blue-800 border-blue-500/25",
         dotClass: "bg-blue-500",
         badgeVariantLabel: OPERATIONAL_EVENT_TYPE_LABELS.meeting,
       };

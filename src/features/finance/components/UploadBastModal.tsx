@@ -192,7 +192,7 @@ export function UploadBastModal({
               role="status"
               className={`p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 ${
                 sprintConditionMet
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900 dark:text-emerald-200"
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900"
                   : "bg-destructive/10 border-destructive/20 text-destructive"
               }`}
             >
@@ -216,7 +216,7 @@ export function UploadBastModal({
               role="status"
               className={`p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 ${
                 dateConditionMet
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900 dark:text-emerald-200"
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900"
                   : "bg-destructive/10 border-destructive/20 text-destructive"
               }`}
             >

@@ -342,7 +342,7 @@ export function EditPaymentTermModal({
           ) : (
             <div
               role="status"
-              className="p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-xs text-sky-900 dark:text-sky-200 flex items-start gap-2"
+              className="p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-xs text-sky-900 flex items-start gap-2"
             >
               <HugeiconsIcon icon={InformationCircleIcon} className="size-4 shrink-0 text-sky-600 mt-0.5" aria-hidden="true" />
               <span>

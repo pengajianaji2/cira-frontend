@@ -92,7 +92,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
             <span aria-hidden="true">•</span>
             <span>Snapshot GZIP</span>
             {isDirty && (
-              <span className="text-[11px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
+              <span className="text-[11px] bg-amber-500/10 text-amber-600 px-2 py-0.5 rounded-full font-medium">
                 Ada perubahan belum disimpan
               </span>
             )}
@@ -186,7 +186,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
           </div>
 
           <div className="p-6 flex-1 overflow-y-auto max-h-[580px] bg-background/50">
-            <div className="prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed space-y-3">
+            <div className="prose prose-sm max-w-none text-xs leading-relaxed space-y-3">
               <ReactMarkdown
                 components={{
                   h1: ({ children }) => (

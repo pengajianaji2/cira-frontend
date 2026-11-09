@@ -72,13 +72,13 @@ export function FinanceOverviewCards({
             </span>
             <Badge
               variant="outline"
-              className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] px-2 py-0.5 rounded-full font-semibold"
+              className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] px-2 py-0.5 rounded-full font-semibold"
             >
               {summary.verifiedCount} Lunas
             </Badge>
           </div>
           <div className="my-2">
-            <span className="text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 block">
+            <span className="text-xl font-bold tracking-tight text-emerald-600 block">
               {formatRupiah(summary.totalVerified)}
             </span>
           </div>
@@ -96,13 +96,13 @@ export function FinanceOverviewCards({
             </span>
             <Badge
               variant="outline"
-              className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] px-2 py-0.5 rounded-full font-semibold"
+              className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] px-2 py-0.5 rounded-full font-semibold"
             >
               {summary.pendingCount} Pending
             </Badge>
           </div>
           <div className="my-2">
-            <span className="text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400 block">
+            <span className="text-xl font-bold tracking-tight text-amber-600 block">
               {formatRupiah(summary.totalPending)}
             </span>
           </div>
@@ -157,10 +157,10 @@ export function FinanceOverviewCards({
 
         {/* DP Guard Banner Notice */}
         {summary.hasVerifiedDp ? (
-          <div className="flex items-center gap-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 rounded-2xl px-4 py-2.5 text-xs">
+          <div className="flex items-center gap-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 rounded-2xl px-4 py-2.5 text-xs">
             <HugeiconsIcon
               icon={CheckmarkCircle02Icon}
-              className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+              className="size-4 shrink-0 text-emerald-600"
               aria-hidden="true"
             />
             <p className="leading-relaxed">
@@ -169,10 +169,10 @@ export function FinanceOverviewCards({
             </p>
           </div>
         ) : (
-          <div className="flex items-center gap-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 rounded-2xl px-4 py-2.5 text-xs">
+          <div className="flex items-center gap-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-800 rounded-2xl px-4 py-2.5 text-xs">
             <HugeiconsIcon
               icon={AlertCircleIcon}
-              className="size-4 shrink-0 text-amber-600 dark:text-amber-400"
+              className="size-4 shrink-0 text-amber-600"
               aria-hidden="true"
             />
             <p className="leading-relaxed">

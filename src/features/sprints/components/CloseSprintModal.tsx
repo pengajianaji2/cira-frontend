@@ -172,7 +172,7 @@ export function CloseSprintModal({
                       className="size-4 text-emerald-600"
                       aria-hidden="true"
                     />
-                    <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                    <span className="text-xs font-semibold text-emerald-800">
                       Task Selesai (Done)
                     </span>
                   </div>
@@ -188,7 +188,7 @@ export function CloseSprintModal({
                       className="size-4 text-amber-600"
                       aria-hidden="true"
                     />
-                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                    <span className="text-xs font-semibold text-amber-800">
                       Task Tersisa (To Do)
                     </span>
                   </div>

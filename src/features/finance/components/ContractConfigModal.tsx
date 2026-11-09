@@ -392,7 +392,7 @@ export function ContractConfigModal({
           {hasLockedTerms && (
             <div
               role="status"
-              className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-200"
+              className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-2.5 text-xs text-amber-800"
             >
               <HugeiconsIcon
                 icon={InformationCircleIcon}
@@ -467,7 +467,7 @@ export function ContractConfigModal({
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-semibold text-foreground">Validasi Total Bobot Termin:</span>
                 {isExact100 ? (
-                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                  <Badge className="bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5" aria-hidden="true" />
                     Tepat 100% (Valid)
                   </Badge>
@@ -876,7 +876,7 @@ export function ContractConfigModal({
           <DialogFooter className="pt-4 border-t border-border flex sm:justify-between items-center gap-3">
             <div className="text-xs text-muted-foreground hidden sm:block">
               {isExact100 ? (
-                <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="text-emerald-700 font-semibold flex items-center gap-1">
                   <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4" aria-hidden="true" />
                   Siap disimpan (100% tepat)
                 </span>

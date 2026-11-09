@@ -124,7 +124,7 @@ export function StatusApprovalBanner({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+              <Badge className="bg-amber-500/20 text-amber-700 border-amber-500/30 text-xs px-2.5 py-0.5 rounded-full font-semibold">
                 <HugeiconsIcon icon={Alert02Icon} className="size-3.5 mr-1 inline" aria-hidden="true" />
                 Permohonan Perubahan Status Pending
               </Badge>
@@ -209,7 +209,7 @@ export function StatusApprovalBanner({
                   </div>
 
                   {memberVote?.vote === "approve" ? (
-                    <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full shrink-0">
+                    <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full shrink-0">
                       <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3 mr-1 inline" aria-hidden="true" />
                       Setuju
                     </Badge>
@@ -278,7 +278,7 @@ export function StatusApprovalBanner({
             <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-4 text-accent-foreground" aria-hidden="true" />
             <span>
               Anda telah memberikan suara:{" "}
-              <strong className={myVote.vote === "approve" ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}>
+              <strong className={myVote.vote === "approve" ? "text-emerald-600" : "text-destructive"}>
                 {myVote.vote === "approve" ? "SETUJU" : "MENOLAK"}
               </strong>
               {myVote.reason && ` ("${myVote.reason}")`}.

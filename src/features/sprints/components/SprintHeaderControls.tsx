@@ -111,7 +111,7 @@ export function SprintHeaderControls({
     switch (status) {
       case "active":
         return (
-          <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 text-[10px] font-semibold">
+          <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 text-[10px] font-semibold">
             Aktif Berjalan
           </Badge>
         );

@@ -201,7 +201,7 @@ export function InvoicePdfModal({
               )}
 
               {isInvoiced && (
-                <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1.5 font-mono">
+                <Badge className="bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1.5 font-mono">
                   <HugeiconsIcon icon={LockKeyIcon} className="size-3.5" aria-hidden="true" />
                   <span>{term.invoiceNumber}</span>
                 </Badge>
@@ -480,7 +480,7 @@ export function InvoicePdfModal({
           <DialogFooter className="p-4 border-t border-border bg-card flex sm:justify-between items-center gap-3">
             <div className="text-xs text-muted-foreground hidden sm:block">
               {isInvoiced ? (
-                <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="text-emerald-700 font-semibold flex items-center gap-1">
                   <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4" aria-hidden="true" />
                   Invoice Resmi Telah Terbit & Termin Terkunci
                 </span>

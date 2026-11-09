@@ -52,7 +52,7 @@ export function CumulativeProgressBar({
     progressData?.totalSprintCount ?? completedCount + activeCount + planningCount;
 
   const progressFillClass =
-    progress >= 100 ? "bg-emerald-600 dark:bg-emerald-500" : "bg-primary";
+    progress >= 100 ? "bg-emerald-600" : "bg-primary";
 
   return (
     <div className="bg-card border border-border rounded-3xl p-5 shadow-xs space-y-3.5 transition-colors">
@@ -69,7 +69,7 @@ export function CumulativeProgressBar({
               {activeSprintName && (
                 <Badge
                   variant="outline"
-                  className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 inline-flex items-center gap-1.5"
+                  className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-700 border-emerald-500/30 inline-flex items-center gap-1.5"
                 >
                   <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                   Sprint Aktif: {activeSprintName}
@@ -113,7 +113,7 @@ export function CumulativeProgressBar({
       {/* Breakdown Status Footer (Selesai, Aktif, Perencanaan) */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground pt-2 border-t border-border/50">
         <div className="flex flex-wrap items-center gap-4">
-          <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold">
+          <span className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold">
             <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5" aria-hidden="true" />
             <span>{completedCount} Selesai</span>
           </span>
