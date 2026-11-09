@@ -1,4 +1,9 @@
-import { Folder01Icon, UserGroupIcon, UserIcon } from "@hugeicons/core-free-icons";
+import {
+  Calendar03Icon,
+  Folder01Icon,
+  UserGroupIcon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 
 export interface NavigationItem {
   title: string;
@@ -14,6 +19,12 @@ export const navigationConfig: NavigationItem[] = [
     title: "Daftar Proyek",
     href: "/projects",
     icon: Folder01Icon,
+  },
+  {
+    title: "Kalender Operasional",
+    href: "/operations/calendar",
+    icon: Calendar03Icon,
+    permission: "operations.calendar.read",
   },
   {
     title: "Direktori Tim",

@@ -63,6 +63,8 @@ function DashboardBreadcrumb() {
   const title =
     segments[0] === "projects"
       ? "Projects"
+      : segments[0] === "operations"
+      ? "Kalender Operasional"
       : segments[0] === "directory"
       ? "Directory"
       : segments[0] === "profile"
