@@ -5,11 +5,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { UserIcon, Mail01Icon, Camera01Icon } from "@hugeicons/core-free-icons";
+import {
+  Camera01Icon,
+  InstagramIcon,
+  Mail01Icon,
+  UserIcon,
+  WhatsappIcon,
+} from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { UserAvatar } from "@/shared/components";
 import { profileSchema, ProfileInput } from "../types/auth.types";
 import { useAuthStore } from "../store/auth.store";
@@ -50,17 +57,36 @@ export function ProfileForm() {
   const {
     register,
     handleSubmit,
+    reset,
+    setError,
     formState: { errors, isDirty },
   } = useForm<ProfileInput>({
     resolver: zodResolver(profileSchema),
     values: {
       name: user?.name || "",
       email: user?.email || "",
+      whatsapp: user?.whatsapp || "",
+      instagram: user?.instagram || "",
     },
   });
 
   const onSubmit = (data: ProfileInput) => {
-    updateMutation.mutate(data);
+    updateMutation.mutate(data, {
+      onSuccess: (response) => {
+        const updated = response.data.user;
+        reset({
+          name: updated.name,
+          email: updated.email,
+          whatsapp: updated.whatsapp ?? "",
+          instagram: updated.instagram ?? "",
+        });
+      },
+      onError: (error: Error & { status?: number }) => {
+        if (error.status === 409) {
+          setError("email", { message: error.message });
+        }
+      },
+    });
   };
 
   const getRoleBadgeVariant = (role: string) => {
@@ -172,7 +198,7 @@ export function ProfileForm() {
           </div>
 
           {/* Form Edit Profile */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
             <div className="space-y-1.5">
               <label
                 htmlFor="profile-name-input"
@@ -184,7 +210,9 @@ export function ProfileForm() {
                 <Input
                   id="profile-name-input"
                   placeholder="Nama Anda"
-                  className="rounded-xl pl-4 pr-10 h-10"
+                  aria-invalid={Boolean(errors.name)}
+                  aria-describedby={errors.name ? "profile-name-error" : undefined}
+                  className="rounded-xl pl-4 pr-10 h-11"
                   disabled={updateMutation.isPending}
                   {...register("name")}
                 />
@@ -193,7 +221,9 @@ export function ProfileForm() {
                 </div>
               </div>
               {errors.name && (
-                <p className="text-xs text-status-danger-text">{errors.name.message}</p>
+                <p id="profile-name-error" role="alert" className="text-xs font-medium text-status-danger-text">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
@@ -209,7 +239,9 @@ export function ProfileForm() {
                   id="profile-email-input"
                   type="email"
                   placeholder="nama@cira.id"
-                  className="rounded-xl pl-4 pr-10 h-10"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? "profile-email-error" : undefined}
+                  className="rounded-xl pl-4 pr-10 h-11"
                   disabled={updateMutation.isPending}
                   {...register("email")}
                 />
@@ -218,16 +250,97 @@ export function ProfileForm() {
                 </div>
               </div>
               {errors.email && (
-                <p className="text-xs text-status-danger-text">{errors.email.message}</p>
+                <p id="profile-email-error" role="alert" className="text-xs font-medium text-status-danger-text">
+                  {errors.email.message}
+                </p>
               )}
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="profile-whatsapp-input"
+                className="text-xs font-medium text-foreground block"
+              >
+                Nomor WhatsApp
+              </label>
+              <div className="relative">
+                <Input
+                  id="profile-whatsapp-input"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="+6281234567890"
+                  aria-invalid={Boolean(errors.whatsapp)}
+                  aria-describedby={
+                    errors.whatsapp
+                      ? "profile-whatsapp-error profile-whatsapp-help"
+                      : "profile-whatsapp-help"
+                  }
+                  className="rounded-xl pl-4 pr-10 h-11 font-mono"
+                  disabled={updateMutation.isPending}
+                  {...register("whatsapp")}
+                />
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                  <HugeiconsIcon icon={WhatsappIcon} className="size-4" aria-hidden="true" />
+                </div>
+              </div>
+              {errors.whatsapp && (
+                <p id="profile-whatsapp-error" role="alert" className="text-xs font-medium text-status-danger-text">
+                  {errors.whatsapp.message}
+                </p>
+              )}
+              <p id="profile-whatsapp-help" className="text-xs text-muted-foreground">
+                Format internasional dengan kode negara, misal +6281234567890.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="profile-instagram-input"
+                className="text-xs font-medium text-foreground block"
+              >
+                Username Instagram
+              </label>
+              <div className="relative">
+                <Input
+                  id="profile-instagram-input"
+                  type="text"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  placeholder="username_anda"
+                  aria-invalid={Boolean(errors.instagram)}
+                  aria-describedby={
+                    errors.instagram
+                      ? "profile-instagram-error profile-instagram-help"
+                      : "profile-instagram-help"
+                  }
+                  className="rounded-xl pl-4 pr-10 h-11"
+                  disabled={updateMutation.isPending}
+                  {...register("instagram")}
+                />
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                  <HugeiconsIcon icon={InstagramIcon} className="size-4" aria-hidden="true" />
+                </div>
+              </div>
+              {errors.instagram && (
+                <p id="profile-instagram-error" role="alert" className="text-xs font-medium text-status-danger-text">
+                  {errors.instagram.message}
+                </p>
+              )}
+              <p id="profile-instagram-help" className="text-xs text-muted-foreground">
+                Tuliskan username saja tanpa tanda @ atau tautan URL.
+              </p>
             </div>
 
             <div className="flex justify-end pt-2">
               <Button
                 type="submit"
                 disabled={!isDirty || updateMutation.isPending}
-                className="rounded-full px-6 h-10 text-xs font-medium"
+                className="rounded-full px-6 h-11 text-xs font-medium cursor-pointer"
               >
+                {updateMutation.isPending && (
+                  <Spinner aria-hidden="true" className="size-3.5 mr-1.5" />
+                )}
                 {updateMutation.isPending ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </div>

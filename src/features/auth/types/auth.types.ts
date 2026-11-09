@@ -1,5 +1,8 @@
 import { z } from "zod";
-export * from "@/shared/types/auth.types";
+export type * from "@/shared/types/auth.types";
+
+export const WHATSAPP_INTERNATIONAL_REGEX = /^\+?[1-9]\d{6,14}$/;
+export const INSTAGRAM_HANDLE_REGEX = /^[a-zA-Z0-9._]+$/;
 
 export const loginSchema = z.object({
   email: z
@@ -15,13 +18,43 @@ export const loginSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const profileSchema = z.object({
-  name: z.string().min(2, "Nama minimal 2 karakter"),
-  email: z.string().email("Format email tidak valid"),
-  whatsapp: z.string().regex(/^\+?[1-9]\d{6,14}$/, "Nomor WhatsApp harus format internasional valid (misal: +6281234567890)").optional(),
-  instagram: z.string().regex(/^[a-zA-Z0-9._]+$/, "Username Instagram hanya boleh huruf, angka, titik, dan garis bawah tanpa @").optional(),
+  name: z.string().trim().min(2, "Nama minimal 2 karakter"),
+  email: z.string().trim().email("Format email tidak valid"),
+  whatsapp: z
+    .string()
+    .optional()
+    .refine((value) => {
+      const trimmed = value?.trim() ?? "";
+      return trimmed === "" || WHATSAPP_INTERNATIONAL_REGEX.test(trimmed);
+    }, "Nomor WhatsApp harus format internasional valid (misal: +6281234567890)"),
+  instagram: z
+    .string()
+    .optional()
+    .refine((value) => {
+      const trimmed = value?.trim() ?? "";
+      return trimmed === "" || INSTAGRAM_HANDLE_REGEX.test(trimmed);
+    }, "Username Instagram hanya boleh huruf, angka, titik, dan garis bawah (tanpa @ atau URL)"),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
+
+export interface NormalizedProfilePayload {
+  name: string;
+  email: string;
+  whatsapp: string | null;
+  instagram: string | null;
+}
+
+export function normalizeProfileInput(input: ProfileInput): NormalizedProfilePayload {
+  const whatsapp = input.whatsapp?.trim() ?? "";
+  const instagram = input.instagram?.trim() ?? "";
+  return {
+    name: input.name.trim(),
+    email: input.email.trim(),
+    whatsapp: whatsapp === "" ? null : whatsapp,
+    instagram: instagram === "" ? null : instagram,
+  };
+}
 
 export const changePasswordSchema = z
   .object({
