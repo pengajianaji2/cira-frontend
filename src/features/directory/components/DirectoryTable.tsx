@@ -9,8 +9,7 @@ import {
   UserGroupIcon,
   WhatsappIcon,
 } from "@hugeicons/core-free-icons";
-import { useAuthStore } from "@/features/auth";
-import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
+import { useAuthStore, useMyPermissionsQuery } from "@/features/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/shared/components";

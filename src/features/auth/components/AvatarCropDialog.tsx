@@ -326,10 +326,9 @@ export function AvatarCropDialog({
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
                 onClick={handleReset}
                 disabled={!naturalSize || busy}
-                className="h-7 px-2.5 text-[11px] rounded-full text-foreground"
+                className="min-h-11 h-11 px-3.5 text-xs rounded-full text-foreground"
               >
                 <HugeiconsIcon icon={RotateLeft01Icon} className="size-3.5 mr-1" aria-hidden="true" />
                 Reset

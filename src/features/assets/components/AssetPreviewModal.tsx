@@ -49,7 +49,7 @@ export function AssetPreviewModal({
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>Ukuran Asli: {formatBytes(asset.originalSize)}</span>
               <span>•</span>
-              <span className="text-emerald-600 font-semibold">
+              <span className="text-status-success-text font-semibold">
                 Ukuran Kompresi: {formatBytes(asset.compressedSize)}
               </span>
               {asset.compressionRatio > 0 && (

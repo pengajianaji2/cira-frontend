@@ -103,6 +103,9 @@ export function useUpdateProfileMutation() {
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
       void queryClient.invalidateQueries({ queryKey: ["directory"] });
       void queryClient.invalidateQueries({ queryKey: ["projects"] });
+      void queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      void queryClient.invalidateQueries({ queryKey: ["sprints"] });
+      void queryClient.invalidateQueries({ queryKey: ["activities"] });
       toast.success(response.message || "Profil berhasil diperbarui!");
     },
     onError: (error: Error) => {
