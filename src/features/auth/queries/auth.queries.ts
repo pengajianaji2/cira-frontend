@@ -129,6 +129,11 @@ export function useUploadAvatarMutation() {
     onSuccess: (response) => {
       setUser(response.data.user);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
+      void queryClient.invalidateQueries({ queryKey: ["directory"] });
+      void queryClient.invalidateQueries({ queryKey: ["projects"] });
+      void queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      void queryClient.invalidateQueries({ queryKey: ["sprints"] });
+      void queryClient.invalidateQueries({ queryKey: ["activities"] });
       toast.success(response.message || "Foto profil diperbarui.");
     },
     onError: (error: Error) => toast.error(error.message || "Gagal mengunggah foto profil."),

@@ -4,6 +4,7 @@ export interface ActivityUser {
   name: string;
   role: string;
   avatar?: string;
+  avatarUrl?: string | null;
 }
 
 export interface ActivityLog {

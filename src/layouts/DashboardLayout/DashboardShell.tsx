@@ -8,6 +8,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Menu01Icon, Logout01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { UserAvatar } from "@/shared/components";
 import { navigationConfig } from "../navigation.config";
 import { useAuthStore, useLogoutMutation, useCurrentUserQuery } from "@/features/auth";
 import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
@@ -153,9 +154,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
     <div className="p-3 border-t border-border mt-auto shrink-0">
       <div className="p-2 rounded-xl bg-muted/40 border border-border/60 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="size-8 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs shrink-0">
-            {user?.name ? user.name.slice(0, 2).toUpperCase() : "US"}
-          </div>
+          <UserAvatar
+            name={user?.name}
+            avatarUrl={user?.avatarUrl}
+            size="md"
+            decorative
+          />
           <div className="min-w-0">
             <p className="text-xs font-semibold text-foreground truncate">{user?.name || "Anggota Tim"}</p>
             <div className="flex items-center gap-1">
@@ -169,10 +173,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
           size="icon-xs"
           onClick={() => logoutMutation.mutate()}
           disabled={logoutMutation.isPending}
+          aria-label="Keluar dari akun"
           title="Keluar"
           className="text-muted-foreground hover:text-destructive shrink-0"
         >
-          <HugeiconsIcon icon={Logout01Icon} className="size-4" />
+          <HugeiconsIcon icon={Logout01Icon} className="size-4" aria-hidden="true" />
         </Button>
       </div>
     </div>
@@ -244,10 +249,14 @@ export function DashboardShell({ children }: DashboardShellProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/profile">
-              <div className="size-8 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs hover:opacity-80 transition-opacity">
-                {user?.name ? user.name.slice(0, 2).toUpperCase() : "US"}
-              </div>
+            <Link href="/profile" aria-label="Buka profil saya" className="rounded-full">
+              <UserAvatar
+                name={user?.name}
+                avatarUrl={user?.avatarUrl}
+                size="md"
+                decorative
+                className="hover:opacity-80 transition-opacity"
+              />
             </Link>
           </div>
         </header>

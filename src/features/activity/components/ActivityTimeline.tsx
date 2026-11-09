@@ -14,8 +14,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
+import { UserAvatar } from "@/shared/components";
 import { useActivitiesQuery } from "../queries/activity.queries";
 import { ActivityCategory, ActivityLog } from "../types/activity.types";
 
@@ -71,13 +71,6 @@ function getCategoryConfig(category: ActivityLog["category"]) {
   }
 }
 
-function getInitials(name: string): string {
-  if (!name) return "U";
-  const parts = name.trim().split(" ");
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
 export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
   const [selectedCategory, setSelectedCategory] = useState<ActivityCategory>("all");
   const { data: activities = [], isLoading, isError } = useActivitiesQuery(
@@ -90,8 +83,8 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
       {/* Filter Tabs Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border rounded-2xl p-4 shadow-xs">
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-            <HugeiconsIcon icon={FilterIcon} className="size-4" />
+          <div className="size-8 rounded-xl bg-accent text-accent-foreground flex items-center justify-center">
+            <HugeiconsIcon icon={FilterIcon} className="size-4" aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">Filter Kategori</h3>
@@ -127,7 +120,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
       {/* Timeline Content */}
       {isLoading ? (
         <div className="min-h-[260px] flex flex-col items-center justify-center gap-3 bg-card border border-border rounded-2xl p-12">
-          <Spinner className="size-6 text-primary" />
+          <Spinner className="size-6 text-foreground" />
           <p className="text-xs text-muted-foreground">Memuat riwayat aktivitas...</p>
         </div>
       ) : isError ? (
@@ -137,7 +130,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
       ) : activities.length === 0 ? (
         <div className="bg-card border border-border border-dashed rounded-3xl p-12 text-center">
           <div className="size-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3 text-muted-foreground">
-            <HugeiconsIcon icon={Time04Icon} className="size-6" />
+            <HugeiconsIcon icon={Time04Icon} className="size-6" aria-hidden="true" />
           </div>
           <h4 className="text-sm font-semibold text-foreground">Belum Ada Aktivitas</h4>
           <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
@@ -171,7 +164,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
                 <div
                   className={`absolute -left-[25px] sm:-left-[29px] top-1 size-8 rounded-full border flex items-center justify-center bg-background shadow-xs transition-transform group-hover:scale-110 ${config.colorClass}`}
                 >
-                  <HugeiconsIcon icon={config.icon} className="size-3.5" />
+                  <HugeiconsIcon icon={config.icon} className="size-3.5" aria-hidden="true" />
                 </div>
 
                 {/* Card Container */}
@@ -193,7 +186,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
                       className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
                       title={fullTime}
                     >
-                      <HugeiconsIcon icon={Time04Icon} className="size-3 text-muted-foreground/70" />
+                      <HugeiconsIcon icon={Time04Icon} className="size-3 text-muted-foreground/70" aria-hidden="true" />
                       <span>{relativeTime}</span>
                     </div>
                   </div>
@@ -204,16 +197,17 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
 
                   <div className="pt-2 border-t border-border/40 flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2">
-                      <Avatar className="size-6 text-[10px] font-bold">
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          {getInitials(actor.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar
+                        name={actor.name}
+                        avatarUrl={actor.avatarUrl || actor.avatar}
+                        size="sm"
+                        decorative
+                      />
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         <span className="font-semibold text-foreground">
                           {actor.name}
                         </span>
-                        <span>•</span>
+                        <span aria-hidden="true">•</span>
                         <span className="text-[11px]">{actor.role}</span>
                       </div>
                     </div>

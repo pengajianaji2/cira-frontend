@@ -9,6 +9,7 @@ export interface TaskAssignee {
   id?: string;
   name: string;
   avatar?: string;
+  avatarUrl?: string | null;
   email?: string;
   role?: string;
 }

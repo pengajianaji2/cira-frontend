@@ -6,11 +6,11 @@ import {
   Delete02Icon,
   ArrowRight01Icon,
   Undo02Icon,
-  UserIcon,
 } from "@hugeicons/core-free-icons";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/shared/components";
 import { Task, TaskPriority } from "../types/tasks.types";
 
 interface TaskChecklistItemProps {
@@ -40,6 +40,8 @@ export function TaskChecklistItem({
   const isDone = task.status === "done";
   const priority = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
   const isBacklog = !task.sprintId;
+  const assigneeDisplayName = task.assignee?.name || task.assigneeName;
+  const assigneeAvatarUrl = task.assignee?.avatarUrl || task.assignee?.avatar;
 
   const handleCheckboxChange = (checked: boolean | "indeterminate") => {
     onToggleStatus?.(task, checked === true ? "done" : "todo");
@@ -99,10 +101,15 @@ export function TaskChecklistItem({
           </Badge>
         )}
 
-        {(task.assignee?.name || task.assigneeName) && (
-          <div className="flex items-center gap-1 text-[11px] text-muted-foreground bg-muted/50 rounded-md px-1.5 py-0.5 max-w-[120px] truncate">
-            <HugeiconsIcon icon={UserIcon} className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
-            <span className="truncate">{task.assignee?.name || task.assigneeName}</span>
+        {assigneeDisplayName && (
+          <div className="flex items-center gap-1.5 text-[11px] text-foreground bg-muted/60 border border-border/60 rounded-full pl-0.5 pr-2 py-0.5 max-w-[140px] truncate">
+            <UserAvatar
+              name={assigneeDisplayName}
+              avatarUrl={assigneeAvatarUrl}
+              size="xs"
+              decorative
+            />
+            <span className="truncate">{assigneeDisplayName}</span>
           </div>
         )}
       </div>
@@ -114,7 +121,7 @@ export function TaskChecklistItem({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 text-[11px] px-2 text-primary hover:bg-primary/10 rounded-lg cursor-pointer"
+            className="h-7 text-[11px] px-2 text-accent-foreground hover:bg-accent rounded-lg cursor-pointer"
             onClick={() => onRequestMoveToSprint(task)}
             aria-label={`Pindahkan "${task.title}" ke Sprint Aktif`}
             title="Pindahkan ke Sprint Aktif"
