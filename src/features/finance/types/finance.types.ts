@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export type PaymentStatus = "pending" | "verified";
 
-// US-4: Tipe Trigger & Status Termin Kontrak
+// US-3: Tipe Trigger & Status Termin Kontrak
 export type TermTriggerType = "date" | "sprint" | "manual";
 export type TermStatus = "planned" | "ready" | "invoiced" | "paid";
 
@@ -36,17 +36,23 @@ export interface PaymentTerm {
   percentage: number;
   amount: number;
   triggerType: TermTriggerType;
+  triggerDate?: string | null;
+  requiredCompletedSprints?: number | null;
   triggerSprintId?: string | null;
   triggerSprint?: { id: string; name: string; status: string } | null;
   dueDate?: string | null;
   status: TermStatus;
+  readyAt?: string | null;
   bastUrl?: string | null;
   bastFileName?: string | null;
   bastUploadedAt?: string | null;
   invoiceNumber?: string | null;
   invoiceIssuedAt?: string | null;
+  invoiceDueDate?: string | null;
+  paidAt?: string | null;
   invoicePdfUrl?: string | null;
   isLocked: boolean;
+  overdue?: boolean;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -74,13 +80,23 @@ export interface UpdatePaymentInput {
   proofFileName?: string;
 }
 
-// US-4: Input DTOs untuk Kontrak & Termin 100%
+// US-3: Input DTOs untuk Kontrak, Pemicu Termin & Penerbitan Invoice
 export interface TerminInput {
   title: string;
   percentage: number;
   triggerType: TermTriggerType;
+  triggerDate?: string | null;
+  requiredCompletedSprints?: number | null;
   triggerSprintId?: string | null;
   dueDate?: string | null;
+  notes?: string | null;
+}
+
+export interface UpdateTermInput {
+  title?: string;
+  triggerType?: TermTriggerType;
+  triggerDate?: string | null;
+  requiredCompletedSprints?: number | null;
   notes?: string | null;
 }
 
@@ -90,11 +106,14 @@ export interface CreateContractInput {
 }
 
 export interface UploadBastInput {
-  bastUrl: string;
+  bastUrl?: string;
   bastFileName?: string;
+  notes?: string;
 }
 
 export interface IssueInvoiceInput {
+  invoiceNumber?: string;
+  invoiceDueDate: string;
   notes?: string;
   invoicePdfUrl?: string;
 }
