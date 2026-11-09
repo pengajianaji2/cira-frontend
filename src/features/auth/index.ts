@@ -1,3 +1,6 @@
+// Public API for features/auth module
+// External modules (pages/features) must import auth symbols only from this file.
+
 export * from "./types/auth.types";
 export * from "./store/auth.store";
 export * from "./api/auth.api";

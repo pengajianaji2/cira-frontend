@@ -22,6 +22,10 @@ interface CumulativeProgressBarProps {
   planningCount?: number;
 }
 
+/**
+ * Bilah indikator progres kumulatif proyek berbasis rasio `completedSprintCount / totalSprintCount * 100%` (AC-2.5)
+ * beserta rincian jumlah sprint selesai, aktif, dan perencanaan.
+ */
 export function CumulativeProgressBar({
   projectId,
   activeSprintName,

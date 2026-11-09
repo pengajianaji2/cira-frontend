@@ -16,6 +16,10 @@ import {
   UpdateRepoLinkInput,
 } from "../types/governance.types";
 
+/**
+ * Client API tata kelola proyek (`/api/v1/projects/:projectId/*`):
+ * manajemen roster voting, pengajuan/vote/arbitrase status, tautan repositori, dan arsip versi PRD GZIP.
+ */
 export const governanceApi = {
   // ==========================================
   // ROSTER API

@@ -29,6 +29,10 @@ interface FinanceTabContentProps {
   project: Project;
 }
 
+/**
+ * Konten tab Keuangan pada detail proyek: menyatukan kartu ringkasan kas, tabel termin 100%
+ * beserta pemicu/BAST/invoice/pelunasan (US-3), serta tab riwayat pembayaran manual proyek.
+ */
 export function FinanceTabContent({ project }: FinanceTabContentProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
   const canManageTerms =

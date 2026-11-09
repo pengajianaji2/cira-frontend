@@ -73,6 +73,10 @@ function formatSprintDateRange(sprint: Sprint): string {
   return `${startLabel} — ${endLabel}`;
 }
 
+/**
+ * Konten tab Sprints pada detail proyek (US-2): menampilkan progres kumulatif proyek serta
+ * seksi Sprint Aktif (maksimal 1), Sprint Perencanaan, dan Sprint Selesai lengkap dengan dialog konfirmasi.
+ */
 export function SprintsTabContent({ project }: SprintsTabContentProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
   const canWriteSprint = permissions.includes("sprints.write");

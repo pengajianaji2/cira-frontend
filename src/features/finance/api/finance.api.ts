@@ -22,7 +22,14 @@ import {
  * - /api/v1/payments/:id
  * - /api/v1/projects/:id/finance-summary
  */
+/**
+ * Client API Manajemen Keuangan, Kontrak 100%, Pemicu Termin, Upload BAST, Invoice Resmi & Pembayaran Proyek.
+ * Terhubung ke endpoint `/projects/:id/contracts`, `/projects/:id/payment-terms`, `/payment-terms/:id`, dan `/payments`.
+ */
 export const financeApi = {
+  /**
+   * Mengonfigurasi nilai kontrak dan daftar termin pembayaran berbobot tepat 100% pada suatu proyek.
+   */
   async createContract(
     projectId: string,
     input: CreateContractInput
@@ -33,6 +40,7 @@ export const financeApi = {
     return response.data;
   },
 
+  /** Mengambil daftar seluruh termin pembayaran (`PaymentTerm`) suatu proyek beserta status overdue WIB. */
   async getProjectTerms(projectId: string): Promise<ApiResponse<PaymentTerm[]>> {
     const response = await apiClient.get<ApiResponse<PaymentTerm[]>>(
       `/projects/${projectId}/payment-terms`
@@ -40,6 +48,7 @@ export const financeApi = {
     return response.data;
   },
 
+  /** Mengambil detail satu termin pembayaran (`PaymentTerm`) berdasarkan ID. */
   async getTermById(termId: string): Promise<ApiResponse<PaymentTerm>> {
     const response = await apiClient.get<ApiResponse<PaymentTerm>>(
       `/payment-terms/${termId}`
@@ -47,6 +56,7 @@ export const financeApi = {
     return response.data;
   },
 
+  /** Memperbarui judul, catatan, atau pemicu tunggal termin yang belum berstatus `invoiced`/`paid`. */
   async updateTerm(
     termId: string,
     input: UpdateTermInput
@@ -72,6 +82,7 @@ export const financeApi = {
     return response.data;
   },
 
+  /** Mengompresi gambar BAST (jika bertipe image) menjadi Data URL lalu menandai termin siap ditagih. */
   async uploadBastFile(
     termId: string,
     file: File
@@ -127,6 +138,7 @@ export const financeApi = {
     return response.data;
   },
 
+  /** Menghapus termin pembayaran yang belum memiliki invoice resmi atau terkunci. */
   async deleteTerm(termId: string): Promise<ApiResponse<{ success: boolean }>> {
     const response = await apiClient.delete<ApiResponse<{ success: boolean }>>(
       `/payment-terms/${termId}`
@@ -244,6 +256,9 @@ export const financeApi = {
     };
   },
 
+  /**
+   * Mengambil ringkasan kas dan status pembayaran DP proyek.
+   */
   async getFinanceSummary(projectId: string): Promise<FinanceSummary> {
     const response = await apiClient.get<ApiResponse<FinanceSummary>>(
       `/projects/${projectId}/finance-summary`
