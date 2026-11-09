@@ -89,7 +89,7 @@ export function CalendarEventDrawer({
 
   const deepLinkLabel =
     event.sourceType === "sprint"
-      ? "Buka Sprint & Board Task"
+      ? "Buka Tab Sprint"
       : event.sourceType === "payment_term" || event.sourceType === "invoice"
       ? "Buka Tab Keuangan & Invoice"
       : "Buka Halaman Proyek";

@@ -15,6 +15,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Payment } from "../types/finance.types";
 import {
   useVerifyPaymentMutation,
@@ -45,6 +55,7 @@ export function PaymentMilestoneList({
     null
   );
   const [proofDialogOpen, setProofDialogOpen] = useState(false);
+  const [paymentToDelete, setPaymentToDelete] = useState<Payment | null>(null);
 
   const verifyMutation = useVerifyPaymentMutation();
   const deleteMutation = useDeletePaymentMutation();
@@ -62,13 +73,20 @@ export function PaymentMilestoneList({
     });
   };
 
-  const handleDelete = (payment: Payment) => {
-    if (confirm(`Hapus termin pembayaran "${payment.title}"?`)) {
-      deleteMutation.mutate({
-        paymentId: payment.id,
-        projectId: payment.projectId,
-      });
-    }
+  const handleConfirmDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!paymentToDelete) return;
+    deleteMutation.mutate(
+      {
+        paymentId: paymentToDelete.id,
+        projectId: paymentToDelete.projectId,
+      },
+      {
+        onSuccess: () => {
+          setPaymentToDelete(null);
+        },
+      }
+    );
   };
 
   if (isLoading) {
@@ -84,13 +102,14 @@ export function PaymentMilestoneList({
     return (
       <div className="bg-card border border-border border-dashed rounded-3xl p-12 text-center">
         <div className="size-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3 text-muted-foreground">
-          <HugeiconsIcon icon={Coins01Icon} className="size-6" />
+          <HugeiconsIcon icon={Coins01Icon} className="size-6" aria-hidden="true" />
         </div>
         <h4 className="text-sm font-semibold text-foreground">Belum Ada Termin Pembayaran</h4>
         <p className="text-xs text-muted-foreground mt-1 mb-6 max-w-sm mx-auto">
           Catat termin pembayaran untuk proyek ini agar termin DP, milestone, dan pelunasan dapat dipantau dan diverifikasi dengan transparan.
         </p>
         <Button
+          type="button"
           onClick={onOpenCreate}
           size="sm"
           className="rounded-full text-xs h-8 px-4 font-semibold"
@@ -143,12 +162,12 @@ export function PaymentMilestoneList({
                   >
                     {isVerified ? (
                       <span className="flex items-center gap-1">
-                        <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3" />
+                        <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3" aria-hidden="true" />
                         Terverifikasi
                       </span>
                     ) : (
                       <span className="flex items-center gap-1">
-                        <HugeiconsIcon icon={AlertCircleIcon} className="size-3" />
+                        <HugeiconsIcon icon={AlertCircleIcon} className="size-3" aria-hidden="true" />
                         Pending Approval
                       </span>
                     )}
@@ -161,18 +180,18 @@ export function PaymentMilestoneList({
                   </span>
                   {p.dueDate && (
                     <>
-                      <span>•</span>
+                      <span aria-hidden="true">•</span>
                       <span className="flex items-center gap-1">
-                        <HugeiconsIcon icon={Calendar01Icon} className="size-3 text-muted-foreground/70" />
+                        <HugeiconsIcon icon={Calendar01Icon} className="size-3 text-muted-foreground/70" aria-hidden="true" />
                         Jatuh tempo: {p.dueDate}
                       </span>
                     </>
                   )}
                   {p.proofFileName && (
                     <>
-                      <span>•</span>
+                      <span aria-hidden="true">•</span>
                       <span className="flex items-center gap-1 text-primary">
-                        <HugeiconsIcon icon={File01Icon} className="size-3" />
+                        <HugeiconsIcon icon={File01Icon} className="size-3" aria-hidden="true" />
                         {p.proofFileName}
                       </span>
                     </>
@@ -187,7 +206,7 @@ export function PaymentMilestoneList({
 
                 {isVerified && p.verifiedBy && (
                   <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 font-medium">
-                    ✓ Diverifikasi oleh {p.verifiedBy.name} ({p.verifiedBy.role})
+                    Diverifikasi oleh {p.verifiedBy.name} ({p.verifiedBy.role})
                   </p>
                 )}
               </div>
@@ -196,6 +215,7 @@ export function PaymentMilestoneList({
               <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-border/50">
                 {/* Proof Button */}
                 <Button
+                  type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => handleOpenProof(p)}
@@ -204,6 +224,7 @@ export function PaymentMilestoneList({
                   <HugeiconsIcon
                     icon={p.proofUrl ? EyeIcon : Upload04Icon}
                     className="size-3.5 mr-1.5 text-primary"
+                    aria-hidden="true"
                   />
                   {p.proofUrl ? "Lihat Bukti Transfer" : "Upload Bukti"}
                 </Button>
@@ -211,6 +232,7 @@ export function PaymentMilestoneList({
                 {/* Verification Toggle Button */}
                 {isVerified ? (
                   <Button
+                    type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => handleVerifyToggle(p, false)}
@@ -222,6 +244,7 @@ export function PaymentMilestoneList({
                   </Button>
                 ) : (
                   <Button
+                    type="button"
                     variant="default"
                     size="sm"
                     onClick={() => handleVerifyToggle(p, true)}
@@ -231,7 +254,7 @@ export function PaymentMilestoneList({
                     {verifyMutation.isPending ? (
                       <Spinner className="size-3.5 mr-1.5 text-white" />
                     ) : (
-                      <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5 mr-1.5" />
+                      <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5 mr-1.5" aria-hidden="true" />
                     )}
                     Verifikasi Pembayaran
                   </Button>
@@ -239,14 +262,16 @@ export function PaymentMilestoneList({
 
                 {/* Delete Button */}
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon-sm"
-                  onClick={() => handleDelete(p)}
+                  onClick={() => setPaymentToDelete(p)}
                   disabled={deleteMutation.isPending}
-                  className="rounded-full text-muted-foreground/60 hover:text-destructive size-8"
+                  className="rounded-full text-muted-foreground/60 hover:text-destructive size-8 cursor-pointer"
+                  aria-label={`Hapus termin "${p.title}"`}
                   title="Hapus termin"
                 >
-                  <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
+                  <HugeiconsIcon icon={Delete02Icon} className="size-3.5" aria-hidden="true" />
                 </Button>
               </div>
             </div>
@@ -260,6 +285,44 @@ export function PaymentMilestoneList({
         open={proofDialogOpen}
         onOpenChange={setProofDialogOpen}
       />
+
+      {/* AlertDialog Konfirmasi Hapus Termin */}
+      <AlertDialog
+        open={Boolean(paymentToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !deleteMutation.isPending) {
+            setPaymentToDelete(null);
+          }
+        }}
+      >
+        <AlertDialogContent className="rounded-3xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-bold text-foreground">
+              Hapus Termin Pembayaran?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Apakah Anda yakin ingin menghapus termin pembayaran &ldquo;{paymentToDelete?.title}&rdquo;? Data verifikasi yang terkait tidak dapat dipulihkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="rounded-full text-xs h-9"
+            >
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={deleteMutation.isPending}
+              onClick={handleConfirmDelete}
+              className="rounded-full text-xs h-9 font-semibold"
+            >
+              {deleteMutation.isPending && <Spinner className="size-3.5 mr-1.5" />}
+              Ya, Hapus Termin
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

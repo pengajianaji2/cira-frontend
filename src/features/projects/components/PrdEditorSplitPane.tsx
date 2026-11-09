@@ -11,6 +11,16 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Project, DEFAULT_PRD_TEMPLATE } from "../types/projects.types";
 import { useUpdateProjectPrdMutation } from "../queries/projects.queries";
 import { PrdExportButton } from "./PrdExportButton";
@@ -25,6 +35,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
     project.prdContent || DEFAULT_PRD_TEMPLATE(project.name, project.clientName)
   );
   const [activeMobileView, setActiveMobileView] = useState<"editor" | "preview">("editor");
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
   const updatePrdMutation = useUpdateProjectPrdMutation();
 
@@ -37,14 +48,9 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
     });
   };
 
-  const handleResetTemplate = () => {
-    if (
-      window.confirm(
-        "Apakah Anda yakin ingin mengatur ulang dokumen PRD ke template bawaan?"
-      )
-    ) {
-      setContent(DEFAULT_PRD_TEMPLATE(project.name, project.clientName));
-    }
+  const handleConfirmResetTemplate = () => {
+    setContent(DEFAULT_PRD_TEMPLATE(project.name, project.clientName));
+    setIsResetDialogOpen(false);
   };
 
   return (
@@ -80,10 +86,10 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
 
           <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
             <span className="font-semibold text-foreground flex items-center gap-1.5">
-              <HugeiconsIcon icon={FileEditIcon} className="size-4 text-primary" />
+              <HugeiconsIcon icon={FileEditIcon} className="size-4 text-primary" aria-hidden="true" />
               Editor PRD Markdown Terstruktur
             </span>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <span>Snapshot GZIP</span>
             {isDirty && (
               <span className="text-[11px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
@@ -99,11 +105,11 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
             type="button"
             variant="ghost"
             size="sm"
-            onClick={handleResetTemplate}
-            className="rounded-full text-xs h-9 px-3 text-muted-foreground hover:text-foreground"
+            onClick={() => setIsResetDialogOpen(true)}
+            className="rounded-full text-xs h-9 px-3 text-muted-foreground hover:text-foreground cursor-pointer"
             title="Reset ke template bawaan"
           >
-            <HugeiconsIcon icon={RefreshIcon} className="size-3.5 mr-1" />
+            <HugeiconsIcon icon={RefreshIcon} className="size-3.5 mr-1" aria-hidden="true" />
             Reset Template
           </Button>
 
@@ -128,7 +134,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
               </>
             ) : (
               <>
-                <HugeiconsIcon icon={FloppyDiskIcon} className="size-4 mr-1.5" />
+                <HugeiconsIcon icon={FloppyDiskIcon} className="size-4 mr-1.5" aria-hidden="true" />
                 Simpan Versi PRD
               </>
             )}
@@ -146,7 +152,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
         >
           <div className="px-4 py-2.5 border-b border-border bg-muted/20 flex items-center justify-between text-xs text-muted-foreground">
             <span className="font-medium flex items-center gap-1.5">
-              <HugeiconsIcon icon={FileEditIcon} className="size-3.5 text-primary" />
+              <HugeiconsIcon icon={FileEditIcon} className="size-3.5 text-primary" aria-hidden="true" />
               Source Markdown
             </span>
             <span className="text-[11px]">Format Markdown didukung</span>
@@ -155,6 +161,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              aria-label="Editor Source Markdown PRD"
               placeholder="Tuliskan spesifikasi PRD proyek di sini menggunakan format Markdown..."
               className="w-full flex-1 p-3 font-mono text-xs text-foreground bg-transparent resize-none focus:outline-none leading-relaxed placeholder:text-muted-foreground/50 rounded-xl"
               style={{ minHeight: "520px" }}
@@ -170,7 +177,7 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
         >
           <div className="px-4 py-2.5 border-b border-border bg-muted/20 flex items-center justify-between text-xs text-muted-foreground">
             <span className="font-medium flex items-center gap-1.5">
-              <HugeiconsIcon icon={ViewIcon} className="size-3.5 text-emerald-500" />
+              <HugeiconsIcon icon={ViewIcon} className="size-3.5 text-emerald-500" aria-hidden="true" />
               Live Document Preview
             </span>
             <span className="text-[11px] text-muted-foreground/70">
@@ -238,6 +245,32 @@ export function PrdEditorSplitPane({ project }: PrdEditorSplitPaneProps) {
           </div>
         </div>
       </div>
+
+      {/* AlertDialog Konfirmasi Reset Template PRD */}
+      <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+        <AlertDialogContent className="rounded-3xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-bold text-foreground">
+              Atur Ulang Dokumen PRD?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Isi editor saat ini akan diganti dengan template PRD bawaan proyek. Perubahan belum memengaruhi riwayat tersimpan sebelum Anda menekan Simpan Versi PRD.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-full text-xs h-9">
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleConfirmResetTemplate}
+              className="rounded-full text-xs h-9 font-semibold"
+            >
+              Ya, Reset Template
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

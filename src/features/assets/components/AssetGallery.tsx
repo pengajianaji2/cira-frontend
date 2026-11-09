@@ -5,6 +5,16 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Image01Icon } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAssetsQuery, useDeleteAssetMutation } from "../queries/assets.queries";
 import { DesignAsset } from "../types/assets.types";
 import { AssetDropzone } from "./AssetDropzone";
@@ -23,11 +33,21 @@ export function AssetGallery({ project }: AssetGalleryProps) {
   const deleteMutation = useDeleteAssetMutation(project.id);
 
   const [previewAsset, setPreviewAsset] = useState<DesignAsset | null>(null);
+  const [assetToDelete, setAssetToDelete] = useState<DesignAsset | null>(null);
 
-  const handleDelete = (assetId: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus aset desain ini?")) {
-      deleteMutation.mutate(assetId);
-    }
+  const handleRequestDelete = (assetId: string) => {
+    const target = assets.find((a) => a.id === assetId) || null;
+    setAssetToDelete(target);
+  };
+
+  const handleConfirmDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!assetToDelete) return;
+    deleteMutation.mutate(assetToDelete.id, {
+      onSuccess: () => {
+        setAssetToDelete(null);
+      },
+    });
   };
 
   return (
@@ -56,7 +76,7 @@ export function AssetGallery({ project }: AssetGalleryProps) {
       ) : assets.length === 0 ? (
         <div className="bg-card border border-border rounded-3xl p-10 text-center max-w-md mx-auto my-6">
           <div className="size-12 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center mx-auto mb-3">
-            <HugeiconsIcon icon={Image01Icon} className="size-6" />
+            <HugeiconsIcon icon={Image01Icon} className="size-6" aria-hidden="true" />
           </div>
           <h4 className="text-sm font-bold text-foreground">
             Belum Ada Aset Diunggah
@@ -72,7 +92,7 @@ export function AssetGallery({ project }: AssetGalleryProps) {
               key={asset.id}
               asset={asset}
               onPreview={setPreviewAsset}
-              onDelete={handleDelete}
+              onDelete={handleRequestDelete}
             />
           ))}
         </div>
@@ -84,6 +104,44 @@ export function AssetGallery({ project }: AssetGalleryProps) {
         isOpen={!!previewAsset}
         onClose={() => setPreviewAsset(null)}
       />
+
+      {/* AlertDialog Konfirmasi Hapus Aset */}
+      <AlertDialog
+        open={Boolean(assetToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !deleteMutation.isPending) {
+            setAssetToDelete(null);
+          }
+        }}
+      >
+        <AlertDialogContent className="rounded-3xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-bold text-foreground">
+              Hapus Aset Desain?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Apakah Anda yakin ingin menghapus aset &ldquo;{assetToDelete?.name}&rdquo;? Berkas tidak dapat dipulihkan setelah dihapus.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="rounded-full text-xs h-9"
+            >
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={deleteMutation.isPending}
+              onClick={handleConfirmDelete}
+              className="rounded-full text-xs h-9 font-semibold"
+            >
+              {deleteMutation.isPending && <Spinner className="size-3.5 mr-1.5" />}
+              Ya, Hapus Aset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

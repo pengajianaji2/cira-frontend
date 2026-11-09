@@ -4,6 +4,6 @@ export * from "./queries/sprints.queries";
 export * from "./components/CumulativeProgressBar";
 export * from "./components/SprintHeaderControls";
 export * from "./components/CreateSprintModal";
-export * from "./components/CompleteSprintModal";
 export * from "./components/CloseSprintModal";
 export * from "./components/StartSprintModal";
+export * from "./components/SprintsTabContent";

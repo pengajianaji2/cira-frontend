@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export interface TabContentSkeletonProps {
-  tab?: "prd" | "tasks" | "finance" | "assets" | "activity" | string;
+  tab?: "prd" | "tasks" | "sprints" | "finance" | "assets" | "activity" | string;
   className?: string;
 }
 
@@ -54,41 +54,124 @@ export function TabContentSkeleton({ tab = "prd", className }: TabContentSkeleto
 
   if (tab === "tasks") {
     return (
-      <div className={cn("space-y-4", className)}>
-        {/* Banner placeholder */}
-        <div className="h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-pulse flex items-center px-4 gap-3">
-          <Skeleton className="size-5 rounded-full" />
-          <Skeleton className="h-4 w-72 rounded-md" />
+      <div className={cn("space-y-6", className)}>
+        {/* Search & Add task control bar */}
+        <div className="bg-card border border-border rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <Skeleton className="h-9 w-full sm:w-80 rounded-xl" />
+          <Skeleton className="h-9 w-44 rounded-full" />
         </div>
 
-        {/* Kanban 3-columns skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[500px]">
-          {[1, 2, 3].map((col) => (
-            <div
-              key={col}
-              className="bg-muted/40 border border-border rounded-3xl p-4 space-y-3"
-            >
-              <div className="flex items-center justify-between pb-2">
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-5 w-24 rounded-lg" />
-                  <Skeleton className="size-5 rounded-full" />
-                </div>
-                <Skeleton className="h-7 w-7 rounded-lg" />
+        {/* Seksi 1: Sprint Aktif Checklist skeleton */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-24 rounded-md" />
+                <Skeleton className="h-5 w-44 rounded-md" />
               </div>
-
-              {[1, 2, 3].map((card) => (
-                <div
-                  key={card}
-                  className="bg-card border border-border rounded-2xl p-4 space-y-2.5 shadow-xs"
-                >
-                  <Skeleton className="h-4 w-4/5 rounded-md" />
-                  <Skeleton className="h-3 w-full rounded-md" />
-                  <div className="flex items-center justify-between pt-2">
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                    <Skeleton className="size-6 rounded-full" />
-                  </div>
+              <Skeleton className="h-3.5 w-64 rounded-md" />
+            </div>
+            <div className="space-y-1.5 min-w-[180px]">
+              <Skeleton className="h-3.5 w-32 rounded-md ml-auto" />
+              <Skeleton className="h-2 w-full rounded-full" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            {[1, 2, 3].map((row) => (
+              <div
+                key={row}
+                className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/70 bg-background"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <Skeleton className="size-4.5 rounded-md shrink-0" />
+                  <Skeleton className="h-4 w-56 rounded-md" />
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-14 rounded-md" />
+                  <Skeleton className="h-5 w-12 rounded-md" />
+                  <Skeleton className="h-7 w-20 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Seksi 2: Backlog Proyek Checklist skeleton */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-border/60">
+            <Skeleton className="size-4 rounded-md" />
+            <Skeleton className="h-5 w-32 rounded-md" />
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </div>
+          <div className="space-y-2">
+            {[1, 2].map((row) => (
+              <div
+                key={row}
+                className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/70 bg-background"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <Skeleton className="size-4.5 rounded-md shrink-0" />
+                  <Skeleton className="h-4 w-64 rounded-md" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-16 rounded-md" />
+                  <Skeleton className="h-7 w-24 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tab === "sprints") {
+    return (
+      <div className={cn("space-y-6", className)}>
+        {/* Top action header skeleton */}
+        <div className="bg-card border border-border rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-52 rounded-lg" />
+            <Skeleton className="h-3.5 w-80 rounded-md" />
+          </div>
+          <Skeleton className="h-9 w-36 rounded-full" />
+        </div>
+
+        {/* Cumulative progress bar skeleton */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-48 rounded-md" />
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-20 rounded-full" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-5 w-28 rounded-full" />
+              </div>
+            </div>
+            <Skeleton className="h-8 w-16 rounded-lg" />
+          </div>
+          <Skeleton className="h-3 w-full rounded-full" />
+        </div>
+
+        {/* Sprint list cards skeleton */}
+        <div className="space-y-3">
+          {[1, 2].map((card) => (
+            <div
+              key={card}
+              className="bg-card border border-border rounded-3xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs"
+            >
+              <div className="space-y-2 flex-1">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-40 rounded-md" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <Skeleton className="h-3.5 w-72 rounded-md" />
+                <Skeleton className="h-3 w-48 rounded-md" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-9 w-24 rounded-full" />
+                <Skeleton className="h-9 w-36 rounded-full" />
+              </div>
             </div>
           ))}
         </div>

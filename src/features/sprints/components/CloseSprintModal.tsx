@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   CheckmarkCircle02Icon,
   AlertCircleIcon,
-  Folder01Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Dialog,
@@ -26,7 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sprint, TaskMoveTarget } from "../types/sprints.types";
-import { useCompleteSprintMutation } from "../queries/sprints.queries";
+import {
+  useCompleteSprintMutation,
+  useSprintByIdQuery,
+} from "../queries/sprints.queries";
 
 interface CloseSprintModalProps {
   projectId: string;
@@ -44,29 +46,40 @@ export function CloseSprintModal({
   onClose,
 }: CloseSprintModalProps) {
   const completeMutation = useCompleteSprintMutation(projectId);
+  const {
+    data: sprintDetail,
+    isLoading: isLoadingDetail,
+    isError: isDetailError,
+    refetch: refetchDetail,
+  } = useSprintByIdQuery(isOpen ? sprint.id : "");
 
-  const tasks = sprint.tasks || [];
-  const todoTasks = tasks.filter((t) => t.status !== "done");
-  const doneTasks = tasks.filter((t) => t.status === "done");
+  const resolvedSprint = sprintDetail ?? sprint;
 
-  // State untuk menyimpan alokasi tujuan per task TODO
-  // Record<taskId, string | "backlog">
+  const { todoTasks, doneTasks } = useMemo(() => {
+    const tasks = resolvedSprint.tasks || [];
+    return {
+      todoTasks: tasks.filter((t) => t.status !== "done"),
+      doneTasks: tasks.filter((t) => t.status === "done"),
+    };
+  }, [resolvedSprint.tasks]);
+
   const [destinations, setDestinations] = useState<Record<string, string>>({});
 
-  // Reset destinasi saat modal dibuka
   useEffect(() => {
-    if (isOpen) {
-      const initial: Record<string, string> = {};
-      todoTasks.forEach((t) => {
-        initial[t.id] = "backlog"; // default ke Backlog
+    if (!isOpen) return;
+    setDestinations((prev) => {
+      const next: Record<string, string> = {};
+      todoTasks.forEach((task) => {
+        next[task.id] = prev[task.id] || "backlog";
       });
-      setDestinations(initial);
-    }
-  }, [isOpen, sprint.id]);
+      return next;
+    });
+  }, [isOpen, sprint.id, todoTasks]);
 
-  // Daftar sprint planning lain yang dapat menerima task
-  const planningSprints = allSprints.filter(
-    (s) => s.id !== sprint.id && s.status === "planning"
+  // Daftar sprint planning lain yang dapat menerima task sisa (BR-SPRINT-04)
+  const planningSprints = useMemo(
+    () => allSprints.filter((s) => s.id !== sprint.id && s.status === "planning"),
+    [allSprints, sprint.id]
   );
 
   const handleDestinationChange = (taskId: string, target: string) => {
@@ -99,110 +112,173 @@ export function CloseSprintModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !completeMutation.isPending) {
+          onClose();
+        }
+      }}
+    >
       <DialogContent className="max-w-xl rounded-3xl p-6">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold tracking-tight">
-            Tutup Sprint: {sprint.name}
+            Tutup Sprint: {resolvedSprint.name}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Sesuai aturan bisnis BR-SPRINT-04, seluruh task TODO yang tersisa wajib dialokasikan tujuannya ke Backlog atau sprint rencana lain.
+            Sesuai aturan bisnis BR-SPRINT-04, seluruh task TODO yang tersisa wajib dialokasikan tujuannya ke Backlog atau sprint perencanaan lain.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 my-2">
-          {/* Ringkasan Status Task */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-emerald-600" />
-                <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-                  Task Selesai (Done)
-                </span>
-              </div>
-              <Badge className="bg-emerald-600 text-white text-xs font-mono">
-                {doneTasks.length}
-              </Badge>
+          {isLoadingDetail ? (
+            <div className="py-10 flex flex-col items-center justify-center gap-2.5 bg-muted/20 border border-border/60 rounded-2xl">
+              <Spinner className="size-6 text-primary" />
+              <p className="text-xs text-muted-foreground">
+                Memuat daftar task terbaru dalam sprint...
+              </p>
             </div>
-
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <HugeiconsIcon icon={AlertCircleIcon} className="size-4 text-amber-600" />
-                <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
-                  Task Tersisa (To Do)
-                </span>
-              </div>
-              <Badge variant="secondary" className="text-xs font-mono">
-                {todoTasks.length}
-              </Badge>
-            </div>
-          </div>
-
-          {/* Tabel Resolusi Task TODO jika ada */}
-          {todoTasks.length > 0 ? (
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-foreground">
-                  Resolusi Task Belum Selesai ({todoTasks.length})
-                </h4>
-                <p className="text-[11px] text-muted-foreground">
-                  Pilih ke mana task akan dipindahkan
-                </p>
-              </div>
-
-              <div className="max-h-[220px] overflow-y-auto space-y-2 pr-1 border border-border/60 rounded-2xl p-2 bg-muted/10">
-                {todoTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-card border border-border/80 rounded-xl"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-foreground truncate">
-                        {task.title}
-                      </p>
-                      <span className="text-[10px] text-muted-foreground font-mono">
-                        {task.storyPoints ? `${task.storyPoints} SP` : "Tanpa SP"} · {task.priority}
-                      </span>
-                    </div>
-
-                    <div className="w-full sm:w-[200px] shrink-0">
-                      <Select
-                        value={destinations[task.id] || "backlog"}
-                        onValueChange={(val) => handleDestinationChange(task.id, val)}
-                      >
-                        <SelectTrigger className="w-full h-8 text-xs rounded-lg">
-                          <SelectValue placeholder="Pilih tujuan" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                          <SelectItem value="backlog" className="text-xs">
-                            📦 Kembalikan ke Backlog
-                          </SelectItem>
-                          {planningSprints.map((ps) => (
-                            <SelectItem key={ps.id} value={ps.id} className="text-xs">
-                              ⚪ {ps.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          ) : isDetailError ? (
+            <div
+              role="alert"
+              className="py-6 px-4 text-center bg-destructive/10 border border-destructive/20 rounded-2xl space-y-2.5"
+            >
+              <HugeiconsIcon
+                icon={AlertCircleIcon}
+                className="size-6 text-destructive mx-auto"
+                aria-hidden="true"
+              />
+              <p className="text-xs font-semibold text-destructive">
+                Gagal memuat rincian task sprint.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => refetchDetail()}
+                className="rounded-full text-xs h-8 px-4"
+              >
+                Coba Muat Ulang
+              </Button>
             </div>
           ) : (
-            <div className="py-6 text-center bg-muted/20 border border-border/50 rounded-2xl space-y-1">
-              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-6 text-emerald-600 mx-auto mb-1.5" />
-              <p className="text-xs font-semibold text-foreground">
-                Seluruh Task Telah Selesai!
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                Tidak ada task TODO yang tersisa di sprint ini.
-              </p>
-            </div>
+            <>
+              {/* Ringkasan Status Task */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={CheckmarkCircle02Icon}
+                      className="size-4 text-emerald-600"
+                      aria-hidden="true"
+                    />
+                    <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                      Task Selesai (Done)
+                    </span>
+                  </div>
+                  <Badge className="bg-emerald-600 text-white text-xs font-mono">
+                    {doneTasks.length}
+                  </Badge>
+                </div>
+
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={AlertCircleIcon}
+                      className="size-4 text-amber-600"
+                      aria-hidden="true"
+                    />
+                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                      Task Tersisa (To Do)
+                    </span>
+                  </div>
+                  <Badge variant="secondary" className="text-xs font-mono">
+                    {todoTasks.length}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Tabel Resolusi Task TODO jika ada */}
+              {todoTasks.length > 0 ? (
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-xs font-bold text-foreground">
+                      Resolusi Task Belum Selesai ({todoTasks.length})
+                    </h4>
+                    <p className="text-[11px] text-muted-foreground">
+                      Pilih tujuan setiap task
+                    </p>
+                  </div>
+
+                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1 border border-border/60 rounded-2xl p-2 bg-muted/10">
+                    {todoTasks.map((task) => {
+                      const selectId = `close-sprint-target-${task.id}`;
+                      return (
+                        <div
+                          key={task.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-card border border-border/80 rounded-xl"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <label
+                              htmlFor={selectId}
+                              className="text-xs font-medium text-foreground truncate block cursor-pointer"
+                            >
+                              {task.title}
+                            </label>
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {task.storyPoints ? `${task.storyPoints} SP` : "Tanpa SP"} · {task.priority}
+                            </span>
+                          </div>
+
+                          <div className="w-full sm:w-[210px] shrink-0">
+                            <Select
+                              value={destinations[task.id] || "backlog"}
+                              onValueChange={(val) => handleDestinationChange(task.id, val)}
+                            >
+                              <SelectTrigger
+                                id={selectId}
+                                aria-label={`Tujuan pemindahan untuk task "${task.title}"`}
+                                className="w-full h-8 text-xs rounded-lg"
+                              >
+                                <SelectValue placeholder="Pilih tujuan" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-xl">
+                                <SelectItem value="backlog" className="text-xs">
+                                  Kembalikan ke Backlog
+                                </SelectItem>
+                                {planningSprints.map((ps) => (
+                                  <SelectItem key={ps.id} value={ps.id} className="text-xs">
+                                    Sprint Planning: {ps.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="py-6 text-center bg-muted/20 border border-border/50 rounded-2xl space-y-1">
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    className="size-6 text-emerald-600 mx-auto mb-1.5"
+                    aria-hidden="true"
+                  />
+                  <p className="text-xs font-semibold text-foreground">
+                    Seluruh Task Telah Selesai!
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Tidak ada task TODO yang tersisa di sprint ini.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0 pt-2 border-t border-border/40">
+        <DialogFooter className="gap-2 pt-2 border-t border-border/40">
           <Button
             type="button"
             variant="outline"
@@ -216,10 +292,10 @@ export function CloseSprintModal({
             type="button"
             className="rounded-full text-xs h-9 px-5 bg-primary text-primary-foreground font-semibold cursor-pointer"
             onClick={handleConfirm}
-            disabled={completeMutation.isPending}
+            disabled={isLoadingDetail || isDetailError || completeMutation.isPending}
           >
             {completeMutation.isPending && <Spinner className="size-3.5 mr-1.5" />}
-            Selesaikan Sprint & Pindahkan Task
+            Selesaikan Sprint &amp; Pindahkan Task
           </Button>
         </DialogFooter>
       </DialogContent>

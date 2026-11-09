@@ -1,4 +1,4 @@
-import { Task } from "@/features/tasks/types/tasks.types";
+import type { Task } from "@/features/tasks";
 
 export type SprintStatus = "planning" | "active" | "completed";
 
@@ -33,8 +33,8 @@ export interface CreateSprintInput {
 export interface UpdateSprintInput {
   name?: string;
   goal?: string;
-  startDate?: string;
-  endDate?: string;
+  startDate?: string | null;
+  endDate?: string | null;
 }
 
 export interface StartSprintInput {

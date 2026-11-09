@@ -9,6 +9,7 @@ import {
   Time02Icon,
   UserCheck01Icon,
   CrownIcon,
+  ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuthStore } from "@/features/auth";
-import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
+import { useAuthStore, useMyPermissionsQuery } from "@/features/auth";
 import {
   useActiveStatusRequestQuery,
   useOwnerFinalDecisionMutation,
@@ -118,27 +118,28 @@ export function StatusApprovalBanner({
 
   return (
     <>
-      <div className="bg-gradient-to-r from-amber-500/10 via-card to-amber-500/5 border border-amber-500/30 rounded-3xl p-6 shadow-sm space-y-5">
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-6 shadow-xs space-y-5">
         {/* Header Banner */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30 text-xs px-2.5 py-0.5 rounded-full font-semibold">
-                <HugeiconsIcon icon={Alert02Icon} className="size-3.5 mr-1 inline" />
+                <HugeiconsIcon icon={Alert02Icon} className="size-3.5 mr-1 inline" aria-hidden="true" />
                 Permohonan Perubahan Status Pending
               </Badge>
               <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
                 <span className="capitalize px-2 py-0.5 rounded-md bg-muted text-muted-foreground line-through">
                   {statusDisplayLabels[currentStatus] || currentStatus}
                 </span>
-                <span>➔</span>
+                <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 text-muted-foreground" aria-hidden="true" />
                 <span className="capitalize px-2 py-0.5 rounded-md bg-primary/20 text-primary font-bold">
                   {statusDisplayLabels[request.targetStatus] || request.targetStatus}
                 </span>
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Diajukan oleh <span className="font-semibold text-foreground">{request.requestedBy.name}</span> •{" "}
+              Diajukan oleh <span className="font-semibold text-foreground">{request.requestedBy.name}</span>{" "}
+              <span aria-hidden="true">•</span>{" "}
               {new Date(request.createdAt).toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "short",
@@ -154,7 +155,14 @@ export function StatusApprovalBanner({
             <div className="text-xs font-semibold text-foreground">
               Konsensus Roster: {approveCount} / {totalRoster} ({progressPercent}%)
             </div>
-            <div className="w-36 h-2 bg-muted rounded-full mt-1.5 overflow-hidden">
+            <div
+              role="progressbar"
+              aria-label="Konsensus persetujuan roster"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progressPercent}
+              className="w-36 h-2 bg-muted rounded-full mt-1.5 overflow-hidden"
+            >
               <div
                 className={`h-full transition-all duration-500 rounded-full ${
                   hasReject ? "bg-destructive" : progressPercent === 100 ? "bg-emerald-500" : "bg-amber-500"
@@ -198,17 +206,17 @@ export function StatusApprovalBanner({
 
                   {memberVote?.vote === "approve" ? (
                     <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full shrink-0">
-                      <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3 mr-1 inline" />
+                      <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3 mr-1 inline" aria-hidden="true" />
                       Setuju
                     </Badge>
                   ) : memberVote?.vote === "reject" ? (
                     <Badge className="bg-destructive/15 text-destructive border-destructive/30 text-[10px] px-2 py-0.5 rounded-full shrink-0" title={memberVote.reason || "Menolak"}>
-                      <HugeiconsIcon icon={Cancel01Icon} className="size-3 mr-1 inline" />
+                      <HugeiconsIcon icon={Cancel01Icon} className="size-3 mr-1 inline" aria-hidden="true" />
                       Menolak
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="text-muted-foreground text-[10px] px-2 py-0.5 rounded-full shrink-0">
-                      <HugeiconsIcon icon={Time02Icon} className="size-3 mr-1 inline" />
+                      <HugeiconsIcon icon={Time02Icon} className="size-3 mr-1 inline" aria-hidden="true" />
                       Menunggu
                     </Badge>
                   )}
@@ -223,7 +231,7 @@ export function StatusApprovalBanner({
           <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-xs">
               <span className="font-bold text-foreground flex items-center gap-1.5">
-                <HugeiconsIcon icon={UserCheck01Icon} className="size-4 text-primary" />
+                <HugeiconsIcon icon={UserCheck01Icon} className="size-4 text-primary" aria-hidden="true" />
                 Anda terdaftar di Roster Proyek ini.
               </span>
               <p className="text-muted-foreground mt-0.5">
@@ -232,16 +240,18 @@ export function StatusApprovalBanner({
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 onClick={() => setIsRejectDialogOpen(true)}
                 disabled={submitVoteMutation.isPending}
                 className="rounded-full text-xs h-8 px-3 border-destructive/40 text-destructive hover:bg-destructive/10"
               >
-                <HugeiconsIcon icon={Cancel01Icon} className="size-3.5 mr-1" />
+                <HugeiconsIcon icon={Cancel01Icon} className="size-3.5 mr-1" aria-hidden="true" />
                 Tolak
               </Button>
               <Button
+                type="button"
                 size="sm"
                 onClick={handleApproveVote}
                 disabled={submitVoteMutation.isPending}
@@ -250,7 +260,7 @@ export function StatusApprovalBanner({
                 {submitVoteMutation.isPending ? (
                   <Spinner className="size-3 mr-1" />
                 ) : (
-                  <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3.5 mr-1" />
+                  <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3.5 mr-1" aria-hidden="true" />
                 )}
                 Setujui Permohonan
               </Button>
@@ -261,7 +271,7 @@ export function StatusApprovalBanner({
         {/* Already Voted Badge Pill */}
         {hasVoted && myVote && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border">
-            <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-4 text-primary" />
+            <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-4 text-primary" aria-hidden="true" />
             <span>
               Anda telah memberikan suara:{" "}
               <strong className={myVote.vote === "approve" ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}>
@@ -277,7 +287,7 @@ export function StatusApprovalBanner({
           <div className="bg-destructive/10 border border-destructive/30 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-xs font-bold text-destructive">
-                <HugeiconsIcon icon={Alert02Icon} className="size-4" />
+                <HugeiconsIcon icon={Alert02Icon} className="size-4" aria-hidden="true" />
                 Terdapat Penolakan Pada Voting Roster
               </div>
               <p className="text-xs text-muted-foreground">
@@ -288,6 +298,7 @@ export function StatusApprovalBanner({
             {isOwner && (
               <div className="flex items-center gap-2 shrink-0">
                 <Button
+                  type="button"
                   size="sm"
                   variant="outline"
                   onClick={() => {
@@ -297,10 +308,11 @@ export function StatusApprovalBanner({
                   disabled={ownerDecisionMutation.isPending}
                   className="rounded-full text-xs h-8 px-3 border-destructive text-destructive hover:bg-destructive/10"
                 >
-                  <HugeiconsIcon icon={Cancel01Icon} className="size-3.5 mr-1" />
+                  <HugeiconsIcon icon={Cancel01Icon} className="size-3.5 mr-1" aria-hidden="true" />
                   Batalkan Pengajuan
                 </Button>
                 <Button
+                  type="button"
                   size="sm"
                   onClick={() => {
                     setOverrideDecision("approve");
@@ -309,7 +321,7 @@ export function StatusApprovalBanner({
                   disabled={ownerDecisionMutation.isPending}
                   className="rounded-full text-xs h-8 px-3.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
                 >
-                  <HugeiconsIcon icon={CrownIcon} className="size-3.5 mr-1" />
+                  <HugeiconsIcon icon={CrownIcon} className="size-3.5 mr-1" aria-hidden="true" />
                   Putusan Final: Setujui (Override)
                 </Button>
               </div>
@@ -319,7 +331,13 @@ export function StatusApprovalBanner({
       </div>
 
       {/* Dialog Alasan Penolakan Suara */}
-      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+      <Dialog
+        open={isRejectDialogOpen}
+        onOpenChange={(open) => {
+          if (!open && submitVoteMutation.isPending) return;
+          setIsRejectDialogOpen(open);
+        }}
+      >
         <DialogContent className="sm:max-w-md rounded-3xl p-6">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-foreground">
@@ -331,26 +349,36 @@ export function StatusApprovalBanner({
           </DialogHeader>
 
           <div className="space-y-2 my-2">
-            <label className="text-xs font-semibold text-foreground">Alasan Penolakan (Opsional)</label>
+            <label
+              htmlFor="reject-reason-textarea"
+              className="text-xs font-semibold text-foreground block"
+            >
+              Alasan Penolakan (Opsional)
+            </label>
             <Textarea
+              id="reject-reason-textarea"
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder="Contoh: Modul pengujian belum selesai, atau menunggu approval klien..."
               rows={3}
+              disabled={submitVoteMutation.isPending}
               className="text-xs rounded-xl"
             />
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
+              type="button"
               variant="ghost"
               size="sm"
               onClick={() => setIsRejectDialogOpen(false)}
+              disabled={submitVoteMutation.isPending}
               className="rounded-full text-xs"
             >
               Batal
             </Button>
             <Button
+              type="button"
               variant="destructive"
               size="sm"
               onClick={handleConfirmReject}
@@ -365,11 +393,17 @@ export function StatusApprovalBanner({
       </Dialog>
 
       {/* Dialog Putusan Final Owner */}
-      <Dialog open={isOverrideDialogOpen} onOpenChange={setIsOverrideDialogOpen}>
+      <Dialog
+        open={isOverrideDialogOpen}
+        onOpenChange={(open) => {
+          if (!open && ownerDecisionMutation.isPending) return;
+          setIsOverrideDialogOpen(open);
+        }}
+      >
         <DialogContent className="sm:max-w-md rounded-3xl p-6">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <HugeiconsIcon icon={CrownIcon} className="size-5 text-amber-500" />
+              <HugeiconsIcon icon={CrownIcon} className="size-5 text-amber-500" aria-hidden="true" />
               Arbitrase Final Owner ({overrideDecision === "approve" ? "Setujui Proyek" : "Tolak Pengajuan"})
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
@@ -378,26 +412,36 @@ export function StatusApprovalBanner({
           </DialogHeader>
 
           <div className="space-y-2 my-2">
-            <label className="text-xs font-semibold text-foreground">Catatan Putusan Arbitrase (Opsional)</label>
+            <label
+              htmlFor="override-reason-textarea"
+              className="text-xs font-semibold text-foreground block"
+            >
+              Catatan Putusan Arbitrase (Opsional)
+            </label>
             <Textarea
+              id="override-reason-textarea"
               value={overrideReason}
               onChange={(e) => setOverrideReason(e.target.value)}
               placeholder="Tuliskan pertimbangan bisnis atas keputusan arbitrase ini..."
               rows={3}
+              disabled={ownerDecisionMutation.isPending}
               className="text-xs rounded-xl"
             />
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
+              type="button"
               variant="ghost"
               size="sm"
               onClick={() => setIsOverrideDialogOpen(false)}
+              disabled={ownerDecisionMutation.isPending}
               className="rounded-full text-xs"
             >
               Batal
             </Button>
             <Button
+              type="button"
               variant={overrideDecision === "approve" ? "default" : "destructive"}
               size="sm"
               onClick={handleConfirmOwnerDecision}
