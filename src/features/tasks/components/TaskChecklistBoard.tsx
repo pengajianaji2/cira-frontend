@@ -248,7 +248,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1.5">
+                  <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1.5">
                     <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                     <span>Sprint Aktif</span>
                   </Badge>

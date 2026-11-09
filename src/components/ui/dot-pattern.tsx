@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useId, useRef, useState } from "react"
-import { motion } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -56,8 +56,8 @@ interface DotPatternProps extends React.SVGProps<SVGSVGElement> {
  * @notes
  * - The component is client-side only ("use client")
  * - Automatically responds to container size changes
- * - When glow is enabled, dots will animate with random delays and durations
- * - Uses Motion for animations
+ * - When glow is enabled and reduced motion is not requested, dots animate with deterministic staggered timing
+ * - Uses Motion for animations and honors prefers-reduced-motion
  * - Dots color can be controlled via the text color utility classes
  */
 
@@ -76,6 +76,8 @@ export function DotPattern({
   const id = useId()
   const containerRef = useRef<SVGSVGElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const prefersReducedMotion = useReducedMotion()
+  const shouldGlow = Boolean(glow) && !prefersReducedMotion
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -90,20 +92,21 @@ export function DotPattern({
     return () => window.removeEventListener("resize", updateDimensions)
   }, [])
 
+  const cols = width > 0 ? Math.ceil(dimensions.width / width) : 0
+  const rows = height > 0 ? Math.ceil(dimensions.height / height) : 0
+
   const dots = Array.from(
     {
-      length:
-        Math.ceil(dimensions.width / width) *
-        Math.ceil(dimensions.height / height),
+      length: cols * rows,
     },
     (_, i) => {
-      const col = i % Math.ceil(dimensions.width / width)
-      const row = Math.floor(i / Math.ceil(dimensions.width / width))
+      const col = cols > 0 ? i % cols : 0
+      const row = cols > 0 ? Math.floor(i / cols) : 0
       return {
         x: col * width + cx + x,
         y: row * height + cy + y,
-        delay: Math.random() * 5,
-        duration: Math.random() * 3 + 2,
+        delay: (i % 7) * 0.6,
+        duration: 2 + (i % 5) * 0.6,
       }
     }
   )
@@ -124,35 +127,37 @@ export function DotPattern({
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </radialGradient>
       </defs>
-      {dots.map((dot) => (
-        <motion.circle
-          key={`${dot.x}-${dot.y}`}
-          cx={dot.x}
-          cy={dot.y}
-          r={cr}
-          fill={glow ? `url(#${id}-gradient)` : "currentColor"}
-          initial={glow ? { opacity: 0.4, scale: 1 } : {}}
-          animate={
-            glow
-              ? {
-                  opacity: [0.4, 1, 0.4],
-                  scale: [1, 1.5, 1],
-                }
-              : {}
-          }
-          transition={
-            glow
-              ? {
-                  duration: dot.duration,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: dot.delay,
-                  ease: "easeInOut",
-                }
-              : {}
-          }
-        />
-      ))}
+      {dots.map((dot) =>
+        shouldGlow ? (
+          <motion.circle
+            key={`${dot.x}-${dot.y}`}
+            cx={dot.x}
+            cy={dot.y}
+            r={cr}
+            fill={`url(#${id}-gradient)`}
+            initial={{ opacity: 0.4, scale: 1 }}
+            animate={{
+              opacity: [0.4, 1, 0.4],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: dot.duration,
+              repeat: Infinity,
+              repeatType: "reverse",
+              delay: dot.delay,
+              ease: "easeInOut",
+            }}
+          />
+        ) : (
+          <circle
+            key={`${dot.x}-${dot.y}`}
+            cx={dot.x}
+            cy={dot.y}
+            r={cr}
+            fill="currentColor"
+          />
+        )
+      )}
     </svg>
   )
 }

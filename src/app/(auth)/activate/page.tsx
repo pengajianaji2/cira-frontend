@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
-import { ActivateForm } from "@/features/auth";
+import { ActivateForm, AuthBackdrop } from "@/features/auth";
 
 export const metadata: Metadata = {
   title: "Aktivasi Akun Tim - Cira PM",
@@ -9,14 +9,17 @@ export const metadata: Metadata = {
 
 export default function ActivatePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen min-h-dvh flex items-center justify-center p-4 bg-neutral-50/50">
-          <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      }
-    >
-      <ActivateForm />
-    </Suspense>
+    <AuthBackdrop>
+      <Suspense
+        fallback={
+          <div className="w-full max-w-md bg-card border border-border rounded-3xl p-8 shadow-lg text-center space-y-3">
+            <div className="size-7 border-2 border-secondary border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs text-muted-foreground font-medium">Memuat halaman aktivasi...</p>
+          </div>
+        }
+      >
+        <ActivateForm />
+      </Suspense>
+    </AuthBackdrop>
   );
 }

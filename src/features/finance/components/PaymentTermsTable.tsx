@@ -147,19 +147,19 @@ export function PaymentTermsTable({
     switch (status) {
       case "ready":
         return (
-          <Badge className="bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/20 text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+          <Badge className="bg-sky-500/10 text-sky-700 border border-sky-500/20 text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
             Siap Ditagih
           </Badge>
         );
       case "invoiced":
         return (
-          <Badge className="bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/20 text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+          <Badge className="bg-amber-500/10 text-amber-800 border border-amber-500/20 text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
             Tagihan Terbit
           </Badge>
         );
       case "paid":
         return (
-          <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit">
+          <Badge className="bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit">
             <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3" aria-hidden="true" />
             <span>Lunas</span>
           </Badge>
@@ -239,7 +239,7 @@ export function PaymentTermsTable({
                 {totalPercentage}%
               </span>
               {Math.abs(totalPercentage - 100) < 0.001 ? (
-                <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] px-2 py-0 rounded-full font-semibold">
+                <Badge className="bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 text-[10px] px-2 py-0 rounded-full font-semibold">
                   Valid 100%
                 </Badge>
               ) : (
@@ -332,7 +332,7 @@ export function PaymentTermsTable({
                             {term.isLocked && (
                               <Badge
                                 variant="outline"
-                                className="text-[10px] py-0 px-1.5 rounded-full text-amber-700 dark:text-amber-300 border-amber-500/30 font-medium flex items-center gap-1"
+                                className="text-[10px] py-0 px-1.5 rounded-full text-amber-700 border-amber-500/30 font-medium flex items-center gap-1"
                               >
                                 <HugeiconsIcon icon={LockKeyIcon} className="size-2.5" aria-hidden="true" />
                                 <span>Terkunci</span>
@@ -511,7 +511,7 @@ export function PaymentTermsTable({
                         )}
 
                         {term.status === "paid" && term.paidAt && (
-                          <p className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono">
+                          <p className="text-[10px] text-emerald-700 font-mono">
                             Lunas: {formatDateWibDisplay(term.paidAt)}
                           </p>
                         )}

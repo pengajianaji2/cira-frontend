@@ -151,7 +151,7 @@ export function PrdVersionDrawer({
                           Versi #{ver.versionNumber}
                         </span>
                         {isLatest && (
-                          <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[9px] px-1.5 py-0 rounded-full font-semibold">
+                          <Badge className="bg-emerald-500/20 text-emerald-600 border-emerald-500/30 text-[9px] px-1.5 py-0 rounded-full font-semibold">
                             Terbaru
                           </Badge>
                         )}
@@ -203,7 +203,7 @@ export function PrdVersionDrawer({
                     </Button>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-6 text-xs prose prose-sm dark:prose-invert max-w-none">
+                  <div className="flex-1 overflow-y-auto p-6 text-xs prose prose-sm max-w-none">
                     {isLoadingDetail ? (
                       <div className="py-12 flex justify-center">
                         <Spinner className="size-6 text-primary" />

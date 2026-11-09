@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authApi } from "@/features/auth/api/auth.api";
+import { authApi, AuthBackdrop } from "@/features/auth";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -42,32 +42,76 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen grid place-items-center p-6 bg-neutral-50">
-      <section className="w-full max-w-md rounded-3xl border bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-bold">Atur password baru</h1>
-        <p className="mt-2 text-sm text-neutral-500">Gunakan password minimal 8 karakter. Tautan hanya dapat digunakan sekali.</p>
+    <AuthBackdrop>
+      <section className="w-full max-w-md rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-lg">
+        <h1 className="text-xl font-bold text-foreground">Atur password baru</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Gunakan password minimal 8 karakter. Tautan hanya dapat digunakan sekali.
+        </p>
+
         {!tokenReady ? (
-          <p role="status" className="mt-5 text-sm text-neutral-500">Memeriksa tautan reset…</p>
+          <p role="status" className="mt-5 text-sm text-muted-foreground">
+            Memeriksa tautan reset…
+          </p>
         ) : !token ? (
-          <p role="alert" className="mt-5 text-sm text-red-600">Token reset tidak ditemukan.</p>
+          <p role="alert" className="mt-5 text-sm text-status-danger-text font-medium">
+            Token reset tidak ditemukan.
+          </p>
         ) : (
           <form onSubmit={submit} className="mt-6 space-y-4">
-            <label className="block space-y-1 text-sm font-medium">
-              Password baru
-              <input type="password" required minLength={8} maxLength={72} autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-xl border px-4 py-3 text-sm" />
+            <label htmlFor="reset-password-new" className="block space-y-1.5 text-sm font-medium text-foreground">
+              <span>Password baru</span>
+              <input
+                id="reset-password-new"
+                type="password"
+                required
+                minLength={8}
+                maxLength={72}
+                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="w-full h-11 rounded-xl border border-input-border bg-card px-4 text-sm text-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50"
+              />
             </label>
-            <label className="block space-y-1 text-sm font-medium">
-              Ulangi password baru
-              <input type="password" required minLength={8} maxLength={72} autoComplete="new-password" value={confirm} onChange={(event) => setConfirm(event.target.value)} className="w-full rounded-xl border px-4 py-3 text-sm" />
+
+            <label htmlFor="reset-password-confirm" className="block space-y-1.5 text-sm font-medium text-foreground">
+              <span>Ulangi password baru</span>
+              <input
+                id="reset-password-confirm"
+                type="password"
+                required
+                minLength={8}
+                maxLength={72}
+                autoComplete="new-password"
+                value={confirm}
+                onChange={(event) => setConfirm(event.target.value)}
+                className="w-full h-11 rounded-xl border border-input-border bg-card px-4 text-sm text-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50"
+              />
             </label>
-            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-            <button disabled={busy} className="w-full rounded-xl bg-[#f7941e] py-3 text-sm font-semibold text-white disabled:opacity-60">
+
+            {error && (
+              <p role="alert" className="text-sm text-status-danger-text font-medium">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full min-h-11 rounded-xl bg-[#f7941e] hover:bg-[#e68310] py-3 text-sm font-semibold text-white transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+            >
               {busy ? "Menyimpan…" : "Simpan password"}
             </button>
           </form>
         )}
-        <Link href="/login" className="mt-6 inline-block text-sm text-primary hover:underline">Kembali ke login</Link>
+
+        <Link
+          href="/login"
+          className="mt-5 inline-flex items-center py-2 text-sm font-medium text-accent-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+        >
+          Kembali ke login
+        </Link>
       </section>
-    </main>
+    </AuthBackdrop>
   );
 }

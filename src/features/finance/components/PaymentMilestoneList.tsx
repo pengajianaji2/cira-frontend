@@ -156,8 +156,8 @@ export function PaymentMilestoneList({
                     variant="outline"
                     className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold ${
                       isVerified
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
+                        : "bg-amber-500/10 text-amber-600 border-amber-500/30"
                     }`}
                   >
                     {isVerified ? (
@@ -205,7 +205,7 @@ export function PaymentMilestoneList({
                 )}
 
                 {isVerified && p.verifiedBy && (
-                  <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 font-medium">
+                  <p className="text-[11px] text-emerald-600/80 font-medium">
                     Diverifikasi oleh {p.verifiedBy.name} ({p.verifiedBy.role})
                   </p>
                 )}

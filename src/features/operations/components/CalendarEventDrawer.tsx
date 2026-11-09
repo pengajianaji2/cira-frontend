@@ -235,7 +235,7 @@ export function CalendarEventDrawer({
                 {event.metadata?.paidAt && (
                   <>
                     <dt className="text-muted-foreground">Dilunasi Pada</dt>
-                    <dd className="text-right font-mono font-semibold text-emerald-700 dark:text-emerald-300">
+                    <dd className="text-right font-mono font-semibold text-emerald-700">
                       {formatDateTimeWibDisplay(event.metadata.paidAt)}
                     </dd>
                   </>

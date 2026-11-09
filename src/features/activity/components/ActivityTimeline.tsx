@@ -37,28 +37,28 @@ function getCategoryConfig(category: ActivityLog["category"]) {
       return {
         label: "Keuangan",
         icon: Coins01Icon,
-        colorClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+        colorClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
         badgeVariant: "outline" as const,
       };
     case "project":
       return {
         label: "Proyek",
         icon: Folder01Icon,
-        colorClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        colorClass: "bg-blue-500/10 text-blue-600 border-blue-500/20",
         badgeVariant: "outline" as const,
       };
     case "task":
       return {
         label: "Task",
         icon: Task01Icon,
-        colorClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+        colorClass: "bg-amber-500/10 text-amber-600 border-amber-500/20",
         badgeVariant: "outline" as const,
       };
     case "asset":
       return {
         label: "Aset",
         icon: Image01Icon,
-        colorClass: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+        colorClass: "bg-purple-500/10 text-purple-600 border-purple-500/20",
         badgeVariant: "outline" as const,
       };
     default:

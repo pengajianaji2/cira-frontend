@@ -49,13 +49,13 @@ export function AssetPreviewModal({
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>Ukuran Asli: {formatBytes(asset.originalSize)}</span>
               <span>•</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+              <span className="text-emerald-600 font-semibold">
                 Ukuran Kompresi: {formatBytes(asset.compressedSize)}
               </span>
               {asset.compressionRatio > 0 && (
                 <Badge
                   variant="outline"
-                  className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300 text-[10px] px-2 py-0 rounded-full"
+                  className="bg-emerald-50 text-emerald-700 border-emerald-300 text-[10px] px-2 py-0 rounded-full"
                 >
                   <HugeiconsIcon icon={SparklesIcon} className="size-2.5 mr-1" />
                   Hemat {asset.compressionRatio}%
