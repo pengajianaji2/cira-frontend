@@ -35,12 +35,22 @@ export function MoveToActiveSprintDialog({
   if (!task || !activeSprintId) return null;
 
   const handleConfirm = async () => {
-    await onConfirm(task.id, activeSprintId);
-    onOpenChange(false);
+    try {
+      await onConfirm(task.id, activeSprintId);
+      onOpenChange(false);
+    } catch {
+      // Error feedback ditampilkan oleh mutation toast
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen && isLoading) return;
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold text-foreground">

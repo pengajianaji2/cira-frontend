@@ -32,6 +32,13 @@ const TaskChecklistBoard = dynamic(
   }
 );
 
+const SprintsTabContent = dynamic(
+  () => import("@/features/sprints").then((mod) => mod.SprintsTabContent),
+  {
+    loading: () => <TabContentSkeleton tab="sprints" />,
+  }
+);
+
 const FinanceTabContent = dynamic(
   () => import("@/features/finance").then((mod) => mod.FinanceTabContent),
   {
@@ -83,18 +90,18 @@ function ProjectDetailContent() {
     return (
       <div className="bg-card border border-border rounded-3xl p-12 text-center max-w-lg mx-auto my-12">
         <div className="size-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mx-auto mb-4">
-          <HugeiconsIcon icon={Folder01Icon} className="size-6" />
+          <HugeiconsIcon icon={Folder01Icon} className="size-6" aria-hidden="true" />
         </div>
         <h2 className="text-lg font-bold text-foreground">Proyek Tidak Ditemukan</h2>
         <p className="text-xs text-muted-foreground mt-1 mb-6">
           {error?.message || "Proyek dengan ID tersebut tidak terdaftar di dalam sistem."}
         </p>
-        <Link href="/projects">
-          <Button variant="outline" className="rounded-full text-xs h-9 px-4">
-            <HugeiconsIcon icon={ArrowLeft02Icon} className="size-3.5 mr-1.5" />
+        <Button asChild variant="outline" className="rounded-full text-xs h-9 px-4">
+          <Link href="/projects">
+            <HugeiconsIcon icon={ArrowLeft02Icon} className="size-3.5 mr-1.5" aria-hidden="true" />
             Kembali ke Daftar Proyek
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -111,6 +118,7 @@ function ProjectDetailContent() {
 
       {tab === "prd" && <PrdEditorSplitPane project={project} />}
       {tab === "tasks" && <TaskChecklistBoard project={project} />}
+      {tab === "sprints" && <SprintsTabContent project={project} />}
       {tab === "finance" && <FinanceTabContent project={project} />}
       {tab === "assets" && <AssetGallery project={project} />}
       {tab === "activity" && <ActivityTabContent project={project} />}

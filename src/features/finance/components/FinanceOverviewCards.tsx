@@ -42,13 +42,15 @@ export function FinanceOverviewCards({
               Total Nilai Kontrak
             </span>
             <Button
+              type="button"
               variant="ghost"
               size="icon-xs"
               onClick={onOpenUpdateContract}
+              aria-label="Sesuaikan nilai kontrak"
               title="Sesuaikan nilai kontrak"
-              className="text-muted-foreground hover:text-foreground size-6 rounded-full"
+              className="text-muted-foreground hover:text-foreground size-6 rounded-full cursor-pointer"
             >
-              <HugeiconsIcon icon={Edit02Icon} className="size-3.5" />
+              <HugeiconsIcon icon={Edit02Icon} className="size-3.5" aria-hidden="true" />
             </Button>
           </div>
           <div className="my-2">
@@ -57,7 +59,7 @@ export function FinanceOverviewCards({
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <HugeiconsIcon icon={CreditCardIcon} className="size-3.5 text-primary" />
+            <HugeiconsIcon icon={CreditCardIcon} className="size-3.5 text-primary" aria-hidden="true" />
             <span>{summary.milestonesCount} Termin Tercatat</span>
           </div>
         </div>
@@ -81,7 +83,7 @@ export function FinanceOverviewCards({
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5 text-emerald-600" />
+            <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5 text-emerald-600" aria-hidden="true" />
             <span>{summary.paidPercentage}% Dari total kontrak</span>
           </div>
         </div>
@@ -105,7 +107,7 @@ export function FinanceOverviewCards({
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <HugeiconsIcon icon={AlertCircleIcon} className="size-3.5 text-amber-600" />
+            <HugeiconsIcon icon={AlertCircleIcon} className="size-3.5 text-amber-600" aria-hidden="true" />
             <span>Membutuhkan tinjauan Owner</span>
           </div>
         </div>
@@ -126,10 +128,10 @@ export function FinanceOverviewCards({
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-muted-foreground" />
+            <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-muted-foreground" aria-hidden="true" />
             <span>
               {summary.remainingBalance === 0
-                ? "Lunas sepenuhnya 🎉"
+                ? "Lunas sepenuhnya"
                 : "Belum terbayarkan"}
             </span>
           </div>
@@ -159,10 +161,11 @@ export function FinanceOverviewCards({
             <HugeiconsIcon
               icon={CheckmarkCircle02Icon}
               className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+              aria-hidden="true"
             />
             <p className="leading-relaxed">
               <span className="font-bold">DP Proyek Terverifikasi:</span> Pembayaran termin telah
-              dikonfirmasi oleh Owner. Pengerjaan task kanban board telah aman dan tidak ada banner peringatan DP.
+              dikonfirmasi oleh Owner. Pengerjaan checklist task telah aman dan tidak ada banner peringatan DP.
             </p>
           </div>
         ) : (
@@ -170,6 +173,7 @@ export function FinanceOverviewCards({
             <HugeiconsIcon
               icon={AlertCircleIcon}
               className="size-4 shrink-0 text-amber-600 dark:text-amber-400"
+              aria-hidden="true"
             />
             <p className="leading-relaxed">
               <span className="font-bold">Perhatian Operasional:</span> Belum ada pembayaran yang

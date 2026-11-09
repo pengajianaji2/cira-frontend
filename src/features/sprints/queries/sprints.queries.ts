@@ -7,7 +7,6 @@ import {
   StartSprintInput,
   UpdateSprintInput,
 } from "../types/sprints.types";
-import { tasksKeys } from "@/features/tasks/queries/tasks.queries";
 
 export const sprintsKeys = {
   all: ["sprints"] as const,
@@ -26,6 +25,25 @@ function getErrorMessage(err: unknown, fallback: string): string {
     return err.message;
   }
   return fallback;
+}
+
+function invalidateSprintRelatedQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+  projectId: string,
+  options?: { includeTasksAndFinance?: boolean }
+) {
+  queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
+  queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
+  queryClient.invalidateQueries({ queryKey: [...sprintsKeys.all, "detail"] });
+  queryClient.invalidateQueries({ queryKey: ["projects", "detail", projectId] });
+  queryClient.invalidateQueries({ queryKey: ["projects", "list"] });
+  queryClient.invalidateQueries({ queryKey: ["operations", "calendar"] });
+  queryClient.invalidateQueries({ queryKey: ["activities", "list", projectId] });
+
+  if (options?.includeTasksAndFinance) {
+    queryClient.invalidateQueries({ queryKey: ["tasks", "list", projectId] });
+    queryClient.invalidateQueries({ queryKey: ["payment-terms", "list", projectId] });
+  }
 }
 
 export function useProjectSprintsQuery(projectId: string) {
@@ -68,8 +86,7 @@ export function useCreateSprintMutation(projectId: string) {
     mutationFn: (input: CreateSprintInput) => sprintsApi.createSprint(projectId, input),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil dibuat");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId);
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal membuat sprint"));
@@ -85,8 +102,7 @@ export function useUpdateSprintMutation(projectId: string) {
       sprintsApi.updateSprint(sprintId, input),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil diperbarui");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId);
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal memperbarui sprint"));
@@ -102,9 +118,9 @@ export function useStartSprintMutation(projectId: string) {
       sprintsApi.startSprint(sprintId, input),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil diaktifkan");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId, {
+        includeTasksAndFinance: true,
+      });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal mengaktifkan sprint"));
@@ -120,9 +136,9 @@ export function useCompleteSprintMutation(projectId: string) {
       sprintsApi.completeSprint(sprintId, input),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil diselesaikan");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId, {
+        includeTasksAndFinance: true,
+      });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal menyelesaikan sprint"));
@@ -137,9 +153,9 @@ export function useReopenSprintMutation(projectId: string) {
     mutationFn: (sprintId: string) => sprintsApi.reopenSprint(sprintId),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil dibuka kembali");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId, {
+        includeTasksAndFinance: true,
+      });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal membuka kembali sprint"));
@@ -154,9 +170,9 @@ export function useDeleteSprintMutation(projectId: string) {
     mutationFn: (sprintId: string) => sprintsApi.deleteSprint(sprintId),
     onSuccess: (res) => {
       toast.success(res.message || "Sprint berhasil dihapus");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId, {
+        includeTasksAndFinance: true,
+      });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal menghapus sprint"));
@@ -172,9 +188,9 @@ export function useAssignTasksToSprintMutation(projectId: string) {
       sprintsApi.assignTasks(sprintId, taskIds),
     onSuccess: (res) => {
       toast.success(res.message || "Task berhasil dimasukkan ke dalam sprint");
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.list(projectId) });
-      queryClient.invalidateQueries({ queryKey: sprintsKeys.progress(projectId) });
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateSprintRelatedQueries(queryClient, projectId, {
+        includeTasksAndFinance: true,
+      });
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err, "Gagal memasukkan task ke sprint"));

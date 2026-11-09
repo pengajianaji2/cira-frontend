@@ -11,7 +11,7 @@ import {
   Coins01Icon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
-import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
+import { useMyPermissionsQuery } from "@/features/auth";
 import { Project } from "../types/projects.types";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
 import { RequestStatusDialog } from "./RequestStatusDialog";
@@ -41,6 +41,7 @@ export function ProjectDetailHeader({
   const navTabs: { id: string; label: string; available: boolean; badge?: string }[] = [
     { id: "prd", label: "PRD & Spesifikasi", available: true },
     { id: "tasks", label: "Task Board", available: true },
+    { id: "sprints", label: "Sprint & Progres", available: true },
     { id: "finance", label: "Keuangan & Termin", available: permissions.includes("finance.read") },
     { id: "assets", label: "Aset Desain", available: true },
     { id: "activity", label: "Riwayat Aktivitas", available: true },
@@ -54,10 +55,10 @@ export function ProjectDetailHeader({
           href="/projects"
           className="hover:text-foreground inline-flex items-center gap-1 transition-colors font-medium"
         >
-          <HugeiconsIcon icon={ArrowLeft02Icon} className="size-3.5" />
+          <HugeiconsIcon icon={ArrowLeft02Icon} className="size-3.5" aria-hidden="true" />
           Daftar Proyek
         </Link>
-        <span>/</span>
+        <span aria-hidden="true">/</span>
         <span className="text-foreground font-semibold truncate max-w-[240px]">
           {project.name}
         </span>
@@ -68,7 +69,7 @@ export function ProjectDetailHeader({
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2.5">
             <div className="size-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <HugeiconsIcon icon={Folder01Icon} className="size-5" />
+              <HugeiconsIcon icon={Folder01Icon} className="size-5" aria-hidden="true" />
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
@@ -76,17 +77,17 @@ export function ProjectDetailHeader({
               </h1>
               <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
                 <span className="flex items-center gap-1 text-foreground/80 font-medium">
-                  <HugeiconsIcon icon={UserIcon} className="size-3.5" />
+                  <HugeiconsIcon icon={UserIcon} className="size-3.5" aria-hidden="true" />
                   {project.clientName}
                 </span>
-                <span>•</span>
+                <span aria-hidden="true">•</span>
                 <span className="flex items-center gap-1">
-                  <HugeiconsIcon icon={Call02Icon} className="size-3.5" />
+                  <HugeiconsIcon icon={Call02Icon} className="size-3.5" aria-hidden="true" />
                   {project.clientContact}
                 </span>
-                <span>•</span>
+                <span aria-hidden="true">•</span>
                 <span className="flex items-center gap-1 font-semibold text-foreground">
-                  <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-primary" />
+                  <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-primary" aria-hidden="true" />
                   {formatRupiah(project.contractValue)}
                 </span>
               </div>
@@ -110,7 +111,10 @@ export function ProjectDetailHeader({
       </div>
 
       {/* Navigation Tabs Bar */}
-      <div className="border-b border-border flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <nav
+        aria-label="Tab Proyek"
+        className="border-b border-border flex items-center gap-2 overflow-x-auto no-scrollbar"
+      >
         {navTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           if (!tab.available) {
@@ -118,7 +122,7 @@ export function ProjectDetailHeader({
               <div
                 key={tab.id}
                 className="py-2.5 px-3.5 text-xs text-muted-foreground/60 flex items-center gap-1.5 cursor-not-allowed select-none whitespace-nowrap"
-                title="Akan tersedia pada fase selanjutnya"
+                title="Akses modul memerlukan izin peran tambahan"
               >
                 <span>{tab.label}</span>
                 {tab.badge && (
@@ -136,6 +140,7 @@ export function ProjectDetailHeader({
             <Link
               key={tab.id}
               href={`/projects/${project.id}?tab=${tab.id}`}
+              aria-current={isActive ? "page" : undefined}
               className={`py-2.5 px-3.5 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 isActive
                   ? "border-primary text-foreground"
@@ -146,7 +151,7 @@ export function ProjectDetailHeader({
             </Link>
           );
         })}
-      </div>
+      </nav>
     </div>
   );
 }

@@ -10,6 +10,16 @@ export const tasksKeys = {
   paymentStatus: (projectId: string) => ["projects", projectId, "paymentStatus"] as const,
 };
 
+function invalidateTaskRelatedQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+  projectId: string
+) {
+  queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+  queryClient.invalidateQueries({ queryKey: ["sprints"] });
+  queryClient.invalidateQueries({ queryKey: ["projects", projectId, "cumulativeProgress"] });
+  queryClient.invalidateQueries({ queryKey: ["activities", "list", projectId] });
+}
+
 export function useTasksQuery(projectId: string) {
   return useQuery({
     queryKey: tasksKeys.list(projectId),
@@ -41,7 +51,7 @@ export function useCreateTaskMutation(projectId: string) {
     },
     onSuccess: (newTask) => {
       toast.success(`Task "${newTask.title}" berhasil ditambahkan`);
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateTaskRelatedQueries(queryClient, projectId);
     },
     onError: (err: Error) => {
       toast.error(err?.message || "Gagal menambahkan task");
@@ -85,7 +95,7 @@ export function useUpdateTaskStatusMutation(projectId: string) {
       toast.error("Gagal memperbarui status task");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateTaskRelatedQueries(queryClient, projectId);
     },
   });
 }
@@ -110,7 +120,7 @@ export function useMoveTaskToSprintMutation(projectId: string) {
           ? "Task berhasil dipindahkan ke Sprint Aktif"
           : "Task berhasil dikembalikan ke Backlog"
       );
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateTaskRelatedQueries(queryClient, projectId);
     },
     onError: (err: Error) => {
       toast.error(err?.message || "Gagal memindahkan task");
@@ -128,7 +138,7 @@ export function useDeleteTaskMutation(projectId: string) {
     },
     onSuccess: () => {
       toast.success("Task berhasil dihapus");
-      queryClient.invalidateQueries({ queryKey: tasksKeys.list(projectId) });
+      invalidateTaskRelatedQueries(queryClient, projectId);
     },
     onError: (err: Error) => {
       toast.error(err?.message || "Gagal menghapus task");

@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useProjectSprintsQuery } from "@/features/sprints";
+import { useProjectRosterQuery } from "@/features/projects";
 import {
   createTaskSchema,
   CreateTaskInput,
@@ -28,8 +31,6 @@ import {
   TaskPriority,
   FIBONACCI_TASK_POINTS,
 } from "../types/tasks.types";
-import { useProjectSprintsQuery } from "@/features/sprints/queries/sprints.queries";
-import { useProjectRosterQuery } from "@/features/projects/queries/governance.queries";
 
 interface TaskCreateDialogProps {
   projectId: string;
@@ -58,6 +59,8 @@ export function TaskCreateDialog({
 
   const { data: sprints = [] } = useProjectSprintsQuery(projectId);
   const { data: roster = [] } = useProjectRosterQuery(projectId);
+
+  const assignableSprints = sprints.filter((s) => s.status !== "completed");
 
   const {
     register,
@@ -120,7 +123,14 @@ export function TaskCreateDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isPending) {
+          onClose();
+        }
+      }}
+    >
       <DialogContent className="max-w-md rounded-3xl p-6">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold tracking-tight">
@@ -134,17 +144,28 @@ export function TaskCreateDialog({
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 my-2">
           {/* Judul Task */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label
+              htmlFor="task-create-title"
+              className="text-xs font-semibold text-foreground block"
+            >
               Judul Task <span className="text-destructive">*</span>
             </label>
             <Input
+              id="task-create-title"
               {...register("title")}
               placeholder="Contoh: Implementasi validasi checkout"
+              aria-invalid={Boolean(errors.title)}
+              aria-describedby={errors.title ? "task-create-title-error" : undefined}
+              disabled={isPending}
               className="rounded-xl text-xs h-10"
               autoFocus
             />
             {errors.title && (
-              <p className="text-[11px] text-destructive">
+              <p
+                id="task-create-title-error"
+                role="alert"
+                className="text-[11px] text-destructive"
+              >
                 {errors.title.message}
               </p>
             )}
@@ -152,13 +173,18 @@ export function TaskCreateDialog({
 
           {/* Deskripsi */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label
+              htmlFor="task-create-description"
+              className="text-xs font-semibold text-foreground block"
+            >
               Deskripsi Singkat
             </label>
             <Textarea
+              id="task-create-description"
               {...register("description")}
               placeholder="Jelaskan kebutuhan teknis atau kriteria selesai task ini..."
               rows={2}
+              disabled={isPending}
               className="rounded-xl text-xs"
             />
           </div>
@@ -166,7 +192,10 @@ export function TaskCreateDialog({
           {/* Story Points Fibonacci & Alokasi Sprint */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="task-create-points"
+                className="text-xs font-semibold text-foreground block"
+              >
                 Story Points (Fibonacci)
               </label>
               <Select
@@ -179,7 +208,7 @@ export function TaskCreateDialog({
                   );
                 }}
               >
-                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                <SelectTrigger id="task-create-points" className="w-full rounded-xl text-xs h-10">
                   <SelectValue placeholder="Pilih Story Points" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -188,7 +217,16 @@ export function TaskCreateDialog({
                   </SelectItem>
                   {FIBONACCI_TASK_POINTS.map((pt) => (
                     <SelectItem key={pt} value={String(pt)} className="text-xs font-medium">
-                      {pt} SP {pt === 1 ? "(Sangat Kecil)" : pt === 3 ? "(Sedang)" : pt === 8 ? "(Besar)" : pt === 13 ? "(Sangat Kompleks)" : ""}
+                      {pt} SP{" "}
+                      {pt === 1
+                        ? "(Sangat Kecil)"
+                        : pt === 3
+                        ? "(Sedang)"
+                        : pt === 8
+                        ? "(Besar)"
+                        : pt === 13
+                        ? "(Sangat Kompleks)"
+                        : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -196,7 +234,10 @@ export function TaskCreateDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="task-create-sprint"
+                className="text-xs font-semibold text-foreground block"
+              >
                 Alokasi Sprint
               </label>
               <Select
@@ -206,16 +247,16 @@ export function TaskCreateDialog({
                   setValue("sprintId", val !== "none" ? val : undefined);
                 }}
               >
-                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                <SelectTrigger id="task-create-sprint" className="w-full rounded-xl text-xs h-10">
                   <SelectValue placeholder="Pilih Sprint" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
                   <SelectItem value="none" className="text-xs text-muted-foreground font-medium">
-                    📦 Backlog (Default)
+                    Backlog (Default)
                   </SelectItem>
-                  {sprints.map((s) => (
+                  {assignableSprints.map((s) => (
                     <SelectItem key={s.id} value={s.id} className="text-xs">
-                      {s.status === "active" ? "🟢" : "⚪"} {s.name}
+                      {s.name} ({s.status === "active" ? "Aktif" : "Perencanaan"})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -226,7 +267,10 @@ export function TaskCreateDialog({
           {/* Status Task & Prioritas */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="task-create-status"
+                className="text-xs font-semibold text-foreground block"
+              >
                 Status Awal
               </label>
               <Select
@@ -236,7 +280,7 @@ export function TaskCreateDialog({
                   setValue("status", val);
                 }}
               >
-                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                <SelectTrigger id="task-create-status" className="w-full rounded-xl text-xs h-10">
                   <SelectValue placeholder="Pilih Status" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -251,7 +295,10 @@ export function TaskCreateDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="task-create-priority"
+                className="text-xs font-semibold text-foreground block"
+              >
                 Prioritas
               </label>
               <Select
@@ -261,7 +308,7 @@ export function TaskCreateDialog({
                   setValue("priority", val);
                 }}
               >
-                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                <SelectTrigger id="task-create-priority" className="w-full rounded-xl text-xs h-10">
                   <SelectValue placeholder="Prioritas" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -284,7 +331,10 @@ export function TaskCreateDialog({
 
           {/* Assignee dari Roster Proyek */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label
+              htmlFor="task-create-assignee"
+              className="text-xs font-semibold text-foreground block"
+            >
               Penanggung Jawab (Assignee)
             </label>
             {roster.length > 0 ? (
@@ -299,7 +349,7 @@ export function TaskCreateDialog({
                   }
                 }}
               >
-                <SelectTrigger className="w-full rounded-xl text-xs h-10">
+                <SelectTrigger id="task-create-assignee" className="w-full rounded-xl text-xs h-10">
                   <SelectValue placeholder="Pilih dari Roster Proyek" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -315,8 +365,10 @@ export function TaskCreateDialog({
               </Select>
             ) : (
               <Input
+                id="task-create-assignee"
                 {...register("assigneeName")}
                 placeholder="Contoh: Ivan Developer"
+                disabled={isPending}
                 className="rounded-xl text-xs h-10"
               />
             )}
@@ -337,6 +389,7 @@ export function TaskCreateDialog({
               disabled={isPending}
               className="rounded-full text-xs h-9 px-5 bg-primary text-primary-foreground font-semibold"
             >
+              {isPending && <Spinner className="size-3.5 mr-1.5" />}
               {isPending ? "Menyimpan..." : "Buat Task"}
             </Button>
           </DialogFooter>

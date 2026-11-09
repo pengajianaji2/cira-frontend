@@ -15,7 +15,7 @@ import { Task, TaskPriority } from "../types/tasks.types";
 
 interface TaskChecklistItemProps {
   task: Task;
-  onToggleStatus: (task: Task, nextStatus: "todo" | "done") => void;
+  onToggleStatus?: (task: Task, nextStatus: "todo" | "done") => void;
   onDelete?: (taskId: string) => void;
   onRequestMoveToSprint?: (task: Task) => void;
   onReturnToBacklog?: (taskId: string) => void;
@@ -41,8 +41,8 @@ export function TaskChecklistItem({
   const priority = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
   const isBacklog = !task.sprintId;
 
-  const handleCheckboxChange = (checked: boolean) => {
-    onToggleStatus(task, checked ? "done" : "todo");
+  const handleCheckboxChange = (checked: boolean | "indeterminate") => {
+    onToggleStatus?.(task, checked === true ? "done" : "todo");
   };
 
   return (
@@ -58,8 +58,11 @@ export function TaskChecklistItem({
         <Checkbox
           checked={isDone}
           onCheckedChange={handleCheckboxChange}
+          disabled={!onToggleStatus}
           aria-label={`Tandai "${task.title}" sebagai ${isDone ? "belum selesai" : "selesai"}`}
-          className="size-4.5 rounded-md data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 cursor-pointer"
+          className={`size-4.5 rounded-md data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 ${
+            onToggleStatus ? "cursor-pointer" : "cursor-not-allowed"
+          }`}
         />
         <div className="min-w-0 flex-1">
           <p
@@ -98,49 +101,55 @@ export function TaskChecklistItem({
 
         {(task.assignee?.name || task.assigneeName) && (
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground bg-muted/50 rounded-md px-1.5 py-0.5 max-w-[120px] truncate">
-            <HugeiconsIcon icon={UserIcon} className="size-3 shrink-0 text-muted-foreground" />
+            <HugeiconsIcon icon={UserIcon} className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
             <span className="truncate">{task.assignee?.name || task.assigneeName}</span>
           </div>
         )}
       </div>
 
       {/* Kolom Kanan: Aksi (Pindah Sprint / Hapus) */}
-      <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
         {isBacklog && hasActiveSprint && onRequestMoveToSprint && (
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             className="h-7 text-[11px] px-2 text-primary hover:bg-primary/10 rounded-lg cursor-pointer"
             onClick={() => onRequestMoveToSprint(task)}
+            aria-label={`Pindahkan "${task.title}" ke Sprint Aktif`}
             title="Pindahkan ke Sprint Aktif"
           >
             <span className="hidden sm:inline mr-1">Ke Sprint</span>
-            <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5" />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5" aria-hidden="true" />
           </Button>
         )}
 
         {!isBacklog && onReturnToBacklog && (
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             className="h-7 text-[11px] px-2 text-muted-foreground hover:bg-muted rounded-lg cursor-pointer"
             onClick={() => onReturnToBacklog(task.id)}
+            aria-label={`Kembalikan "${task.title}" ke Backlog`}
             title="Kembalikan ke Backlog"
           >
-            <HugeiconsIcon icon={Undo02Icon} className="size-3.5 mr-1" />
+            <HugeiconsIcon icon={Undo02Icon} className="size-3.5 mr-1" aria-hidden="true" />
             <span className="hidden sm:inline">Ke Backlog</span>
           </Button>
         )}
 
         {onDelete && (
           <Button
+            type="button"
             variant="ghost"
             size="icon"
             className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg cursor-pointer"
             onClick={() => onDelete(task.id)}
+            aria-label={`Hapus task "${task.title}"`}
             title="Hapus task"
           >
-            <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
+            <HugeiconsIcon icon={Delete02Icon} className="size-3.5" aria-hidden="true" />
           </Button>
         )}
       </div>

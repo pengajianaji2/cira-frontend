@@ -7,6 +7,7 @@ import {
   Download04Icon,
   Delete02Icon,
   SparklesIcon,
+  ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,19 +44,20 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+        {/* Hover / Focus Overlay */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex items-center justify-center gap-2">
           <Button
             type="button"
             size="sm"
             variant="secondary"
-            className="rounded-full text-xs h-8 px-3.5 bg-white/90 text-slate-900 hover:bg-white shadow-md font-semibold"
+            className="rounded-full text-xs h-8 px-3.5 bg-white/90 text-slate-900 hover:bg-white shadow-md font-semibold cursor-pointer"
+            aria-label={`Pratinjau aset "${asset.name}"`}
             onClick={(e) => {
               e.stopPropagation();
               onPreview(asset);
             }}
           >
-            <HugeiconsIcon icon={ViewIcon} className="size-3.5 mr-1" />
+            <HugeiconsIcon icon={ViewIcon} className="size-3.5 mr-1" aria-hidden="true" />
             Pratinjau
           </Button>
         </div>
@@ -64,7 +66,7 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
         {asset.compressionRatio > 0 && (
           <div className="absolute top-2.5 right-2.5">
             <Badge className="bg-emerald-600/90 hover:bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold shadow-xs flex items-center gap-1">
-              <HugeiconsIcon icon={SparklesIcon} className="size-2.5" />
+              <HugeiconsIcon icon={SparklesIcon} className="size-2.5" aria-hidden="true" />
               Hemat {asset.compressionRatio}%
             </Badge>
           </div>
@@ -74,12 +76,15 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
       {/* Info Body */}
       <div className="p-4 flex-1 flex flex-col justify-between gap-3">
         <div>
-          <h4
-            className="text-xs font-bold text-foreground truncate cursor-pointer hover:underline"
-            title={asset.name}
-            onClick={() => onPreview(asset)}
-          >
-            {asset.name}
+          <h4 className="text-xs font-bold text-foreground">
+            <button
+              type="button"
+              className="w-full text-left truncate cursor-pointer hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+              title={asset.name}
+              onClick={() => onPreview(asset)}
+            >
+              {asset.name}
+            </button>
           </h4>
 
           {/* Size Comparison */}
@@ -87,7 +92,7 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
             <span className="line-through text-muted-foreground/70">
               {formatBytes(asset.originalSize)}
             </span>
-            <span>➔</span>
+            <HugeiconsIcon icon={ArrowRight01Icon} className="size-3 text-muted-foreground" aria-hidden="true" />
             <span className="font-semibold text-emerald-600 dark:text-emerald-400">
               {formatBytes(asset.compressedSize)}
             </span>
@@ -110,10 +115,11 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
               variant="ghost"
               size="icon-xs"
               onClick={handleDownload}
-              className="text-muted-foreground hover:text-foreground rounded-lg"
+              className="text-muted-foreground hover:text-foreground rounded-lg cursor-pointer"
+              aria-label={`Unduh aset "${asset.name}"`}
               title="Unduh aset"
             >
-              <HugeiconsIcon icon={Download04Icon} className="size-3.5" />
+              <HugeiconsIcon icon={Download04Icon} className="size-3.5" aria-hidden="true" />
             </Button>
             <Button
               type="button"
@@ -123,10 +129,11 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
                 e.stopPropagation();
                 onDelete(asset.id);
               }}
-              className="text-muted-foreground hover:text-destructive rounded-lg"
+              className="text-muted-foreground hover:text-destructive rounded-lg cursor-pointer"
+              aria-label={`Hapus aset "${asset.name}"`}
               title="Hapus aset"
             >
-              <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
+              <HugeiconsIcon icon={Delete02Icon} className="size-3.5" aria-hidden="true" />
             </Button>
           </div>
         </div>
