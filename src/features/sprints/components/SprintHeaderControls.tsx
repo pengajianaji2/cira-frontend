@@ -55,6 +55,10 @@ const SPRINT_STATUS_LABELS: Record<string, string> = {
   planning: "Perencanaan",
 };
 
+/**
+ * Kontrol selektor filter tampilan sprint dan aksi cepat siklus sprint (Mulai, Selesaikan, Buka Kembali, Hapus)
+ * pada panel checklist task proyek.
+ */
 export function SprintHeaderControls({
   projectId,
   sprints,

@@ -33,6 +33,10 @@ const DEFAULT_TYPES: CalendarSourceType[] = [
   "operational_event",
 ];
 
+/**
+ * Ruang kerja utama Kalender Operasional (`/operations/calendar`): mengatur filter rentang WIB <= 90 hari,
+ * tampilan grid bulanan vs daftar kronologis, strip alert invoice overdue, drawer detail, serta modal agenda manual.
+ */
 export function OperationalCalendarWorkspace() {
   const searchParams = useSearchParams();
   const deepLinkedEventId = searchParams.get("eventId");

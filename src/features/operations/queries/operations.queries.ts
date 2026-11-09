@@ -11,6 +11,7 @@ import {
   UpdateOperationalEventInput,
 } from "../types/operations.types";
 
+/** Factory TanStack Query keys untuk modul kalender operasional dan invalidasi agenda. */
 export const OPERATION_KEYS = {
   all: ["operations"] as const,
   calendars: () => [...OPERATION_KEYS.all, "calendar"] as const,
@@ -18,6 +19,10 @@ export const OPERATION_KEYS = {
     [...OPERATION_KEYS.calendars(), filters] as const,
 };
 
+/**
+ * Hook TanStack Query untuk memuat feed Kalender Operasional teragregasi berdasarkan filter aktif.
+ * Menolak retry otomatis pada error autentikasi/otorisasi/validasi (`400`, `401`, `403`).
+ */
 export function useOperationalCalendarQuery(
   filters: CalendarQueryFilters,
   options?: { enabled?: boolean }
@@ -38,6 +43,7 @@ export function useOperationalCalendarQuery(
   });
 }
 
+/** Hook mutasi pembuatan agenda manual operasional beserta invalidasi cache kalender. */
 export function useCreateOperationalEventMutation() {
   const queryClient = useQueryClient();
 
@@ -60,6 +66,7 @@ export function useCreateOperationalEventMutation() {
   });
 }
 
+/** Hook mutasi pembaruan jadwal atau detail agenda manual operasional. */
 export function useUpdateOperationalEventMutation() {
   const queryClient = useQueryClient();
 
@@ -88,6 +95,7 @@ export function useUpdateOperationalEventMutation() {
   });
 }
 
+/** Hook mutasi pembatalan soft-status agenda operasional tanpa penghapusan data persisten. */
 export function useCancelOperationalEventMutation() {
   const queryClient = useQueryClient();
 
@@ -116,6 +124,7 @@ export function useCancelOperationalEventMutation() {
   });
 }
 
+/** Hook mutasi pencatatan tindak lanjut (follow-up) manual agenda tanpa otomasi pihak ketiga. */
 export function useRecordReminderMutation() {
   const queryClient = useQueryClient();
 

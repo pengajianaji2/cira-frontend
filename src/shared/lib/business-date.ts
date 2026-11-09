@@ -25,6 +25,9 @@ export function isValidDateOnly(value: string): boolean {
   );
 }
 
+/**
+ * Memvalidasi format jam 24-jam lokal `HH:mm` (`00:00` s.d. `23:59`).
+ */
 export function isValidTimeHHmm(value: string): boolean {
   return TIME_HHMM_REGEX.test(value);
 }

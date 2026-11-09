@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { tasksApi } from "../api/tasks.api";
 import { CreateTaskInput, Task, TaskStatus } from "../types/tasks.types";
 
+/** Query key factory TanStack Query untuk daftar task dan status DP proyek. */
 export const tasksKeys = {
   all: ["tasks"] as const,
   lists: () => [...tasksKeys.all, "list"] as const,
@@ -20,6 +21,7 @@ function invalidateTaskRelatedQueries(
   queryClient.invalidateQueries({ queryKey: ["activities", "list", projectId] });
 }
 
+/** Hook TanStack Query untuk mengambil daftar seluruh task (Backlog & Sprint) proyek. */
 export function useTasksQuery(projectId: string) {
   return useQuery({
     queryKey: tasksKeys.list(projectId),
@@ -33,6 +35,7 @@ export function useTasksQuery(projectId: string) {
   });
 }
 
+/** Hook TanStack Query untuk mengecek status kelengkapan verifikasi DP proyek bagi banner peringatan task. */
 export function useProjectPaymentStatusQuery(projectId: string) {
   return useQuery({
     queryKey: tasksKeys.paymentStatus(projectId),
@@ -41,6 +44,7 @@ export function useProjectPaymentStatusQuery(projectId: string) {
   });
 }
 
+/** Hook mutasi pembuatan task baru (default Backlog bila `sprintId` dikosongkan). */
 export function useCreateTaskMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -59,6 +63,7 @@ export function useCreateTaskMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi toggle status checklist task (`todo` <-> `done`) dengan optimistic update. */
 export function useUpdateTaskStatusMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -100,6 +105,7 @@ export function useUpdateTaskStatusMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi pemindahan task ke Sprint target atau kembali ke Backlog (`targetSprintId = null`). */
 export function useMoveTaskToSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -128,6 +134,7 @@ export function useMoveTaskToSprintMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi penghapusan permanen task proyek. */
 export function useDeleteTaskMutation(projectId: string) {
   const queryClient = useQueryClient();
 

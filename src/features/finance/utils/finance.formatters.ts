@@ -1,3 +1,8 @@
+/**
+ * Memformat angka nominal menjadi string mata uang Rupiah Indonesia (`IDR`) tanpa desimal.
+ *
+ * @param amount - Nominal angka dalam Rupiah.
+ */
 export function formatRupiah(amount: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -6,6 +11,9 @@ export function formatRupiah(amount: number): string {
   }).format(amount);
 }
 
+/**
+ * Mengekstrak bagian tanggal `YYYY-MM-DD` dari string ISO atau tanggal kalender.
+ */
 export function extractDateOnly(value?: string | null): string {
   if (!value) return "";
   const trimmed = value.trim();

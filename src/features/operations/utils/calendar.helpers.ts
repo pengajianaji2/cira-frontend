@@ -145,6 +145,11 @@ export function getCalendarEventVisual(event: CalendarEvent): EventVisualMeta {
   }
 }
 
+/**
+ * Mengekstrak rentang tanggal awal dan akhir WIB (`YYYY-MM-DD`) suatu acara kalender serta penanda multi-hari.
+ *
+ * @param event - Item acara kalender dari feed teragregasi.
+ */
 export function getEventWibDateSpan(event: CalendarEvent): {
   startDate: string;
   endDate: string;
@@ -160,6 +165,9 @@ export function getEventWibDateSpan(event: CalendarEvent): {
   };
 }
 
+/**
+ * Memformat jadwal acara kalender (sepanjang hari maupun jam terjadwal WIB) untuk ditampilkan pada UI drawer/daftar.
+ */
 export function formatEventWibSchedule(event: CalendarEvent): string {
   const span = getEventWibDateSpan(event);
   if (event.allDay) {
@@ -180,6 +188,7 @@ export function formatEventWibSchedule(event: CalendarEvent): string {
   return `${startFormatted} – ${formatDateTimeWibDisplay(event.endAt)}`;
 }
 
+/** Menghasilkan label singkat non-warna untuk badge sel tanggal kalender (overdue, dibatalkan, multi-hari, atau jam WIB). */
 export function getEventDayBadgeLabel(event: CalendarEvent, cellDate: string): string {
   const span = getEventWibDateSpan(event);
   if (event.overdue) return "[Terlambat / Overdue]";

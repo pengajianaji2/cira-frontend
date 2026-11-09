@@ -28,6 +28,7 @@ export const financeKeys = {
   summary: (projectId: string) => [...financeKeys.all, "summary", projectId] as const,
 };
 
+/** Query key factory TanStack Query untuk daftar termin pembayaran proyek (`PaymentTerm`). */
 export const termsKeys = {
   all: ["payment-terms"] as const,
   lists: () => [...termsKeys.all, "list"] as const,
@@ -35,6 +36,7 @@ export const termsKeys = {
   detail: (id: string) => [...termsKeys.all, "detail", id] as const,
 };
 
+/** Hook TanStack Query untuk mengambil daftar termin pembayaran resmi (`PaymentTerm`) milik proyek. */
 export function useProjectTermsQuery(projectId: string) {
   return useQuery({
     queryKey: termsKeys.list(projectId),
@@ -46,6 +48,7 @@ export function useProjectTermsQuery(projectId: string) {
   });
 }
 
+/** Hook TanStack Query untuk mengambil detail satu termin pembayaran berdasarkan ID. */
 export function useTermDetailQuery(termId: string) {
   return useQuery({
     queryKey: termsKeys.detail(termId),
@@ -57,6 +60,9 @@ export function useTermDetailQuery(termId: string) {
   });
 }
 
+/**
+ * Hook mutasi konfigurasi kontrak dan daftar termin berbobot 100%, sekaligus menginvalidasi cache termin, proyek, dan kalender.
+ */
 export function useCreateContractMutation() {
   const queryClient = useQueryClient();
 
@@ -82,6 +88,7 @@ export function useCreateContractMutation() {
   });
 }
 
+/** Hook mutasi pembaruan judul, catatan, atau pemicu tunggal termin pembayaran. */
 export function useUpdateTermMutation() {
   const queryClient = useQueryClient();
 
@@ -108,6 +115,7 @@ export function useUpdateTermMutation() {
   });
 }
 
+/** Hook mutasi untuk menandai termin siap ditagih (`ready`) dengan atau tanpa dokumen BAST. */
 export function useMarkTermReadyWithBastMutation() {
   const queryClient = useQueryClient();
 
@@ -134,6 +142,7 @@ export function useMarkTermReadyWithBastMutation() {
   });
 }
 
+/** Hook mutasi unggah berkas BAST dan transisi termin ke status Siap Ditagih (`ready`). */
 export function useUploadBastFileMutation() {
   const queryClient = useQueryClient();
 
@@ -160,6 +169,7 @@ export function useUploadBastFileMutation() {
   });
 }
 
+/** Hook mutasi pencatatan invoice resmi dari termin berstatus `ready` (mengunci termin secara permanen). */
 export function useIssueInvoiceMutation() {
   const queryClient = useQueryClient();
 
@@ -187,6 +197,7 @@ export function useIssueInvoiceMutation() {
   });
 }
 
+/** Hook mutasi pelunasan manual invoice termin (`invoiced` -> `paid`). */
 export function useMarkTermPaidMutation() {
   const queryClient = useQueryClient();
 

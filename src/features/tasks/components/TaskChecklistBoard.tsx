@@ -48,6 +48,10 @@ interface TaskChecklistBoardProps {
   };
 }
 
+/**
+ * Papan checklist task tunggal (`todo` / `done`) dengan pengelompokan Backlog dan Sprint proyek (US-1),
+ * pencarian, peringatan DP belum terverifikasi, serta dialog konfirmasi saat memindahkan task ke sprint aktif.
+ */
 export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
   const canWriteTasks = permissions.includes("tasks.write");

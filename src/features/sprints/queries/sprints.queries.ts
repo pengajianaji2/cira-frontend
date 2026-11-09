@@ -8,6 +8,7 @@ import {
   UpdateSprintInput,
 } from "../types/sprints.types";
 
+/** Query key factory TanStack Query untuk daftar sprint, detail sprint, dan progres kumulatif proyek. */
 export const sprintsKeys = {
   all: ["sprints"] as const,
   lists: () => [...sprintsKeys.all, "list"] as const,
@@ -46,6 +47,7 @@ function invalidateSprintRelatedQueries(
   }
 }
 
+/** Hook TanStack Query untuk mengambil daftar sprint milik proyek target. */
 export function useProjectSprintsQuery(projectId: string) {
   return useQuery({
     queryKey: sprintsKeys.list(projectId),
@@ -57,6 +59,7 @@ export function useProjectSprintsQuery(projectId: string) {
   });
 }
 
+/** Hook TanStack Query untuk memuat progres kumulatif proyek berbasis rasio sprint selesai. */
 export function useProjectProgressQuery(projectId: string) {
   return useQuery({
     queryKey: sprintsKeys.progress(projectId),
@@ -68,6 +71,7 @@ export function useProjectProgressQuery(projectId: string) {
   });
 }
 
+/** Hook TanStack Query untuk mengambil detail satu sprint beserta task di dalamnya. */
 export function useSprintByIdQuery(sprintId: string) {
   return useQuery({
     queryKey: sprintsKeys.detail(sprintId),
@@ -79,6 +83,7 @@ export function useSprintByIdQuery(sprintId: string) {
   });
 }
 
+/** Hook mutasi pembuatan sprint baru berstatus `planning`. */
 export function useCreateSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -94,6 +99,7 @@ export function useCreateSprintMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi pembaruan metadata atau tanggal sprint (`planning`/`active`). */
 export function useUpdateSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -110,6 +116,7 @@ export function useUpdateSprintMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi aktivasi sprint (`planning` -> `active`) beserta invalidasi task & termin proyek. */
 export function useStartSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -128,6 +135,7 @@ export function useStartSprintMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi penutupan sprint aktif secara atomik beserta pemetaan task `todo` yang belum selesai. */
 export function useCompleteSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -146,6 +154,7 @@ export function useCompleteSprintMutation(projectId: string) {
   });
 }
 
+/** Hook mutasi pembukaan kembali sprint `completed` ke `planning` dan rekalkulasi progres proyek. */
 export function useReopenSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 

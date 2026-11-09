@@ -1,83 +1,91 @@
-# Cira Project Management (Frontend: `cira-pm-frontend`)
+# Cira Project Management — Frontend Web (`cira-pm-frontend`)
 
-Platform dashboard web terpadu untuk tim agensi dan studio pengembang proyek klien (skala 3–5 orang) guna mengelola tata kelola persetujuan status proyek, PRD versioning kompresi GZIP, daur hidup sprint dengan story points Fibonacci matematis, serta rantai penagihan keuangan resmi: kontrak termin berbobot tepat 100%, trigger modul BAST, dan generator invoice PDF resmi.
+Dashboard web terpadu berbasis **Next.js App Router** untuk tim agensi/studio pengembang mengelola proyek klien, checklist task & backlog, daur hidup sprint, tata kelola persetujuan status proyek & versi PRD, kontrak termin berbobot 100% & pencatatan invoice, serta kalender operasional teragregasi berzona waktu `Asia/Jakarta` (WIB).
 
 ---
 
-## 🚀 Fitur Utama (MVP: US-1 s/d US-4)
+## 🚀 Fitur Utama (US-1 s.d. US-4 & Fondasi Workspace)
 
-Sistem telah menyelesaikan seluruh cakupan kebutuhan fungsional MVP sesuai dokumen spesifikasi [`docs/prd.md`](../docs/prd.md):
+Mengacu pada spesifikasi [`docs/prd.md`](../docs/prd.md):
 
-### 1. Autentikasi RBAC 3-Role & Direktori Tim (US-1)
-- **Login Split-Screen Responsif:** Formulir masuk aman dengan validasi Zod (`loginSchema`), proteksi CSRF, dan persistensi sesi.
-- **Aktivasi Token 24 Jam:** Pendaftaran anggota tim melalui token undangan 24 jam dengan input wajib WhatsApp standar internasional (`^\+?[1-9]\d{1,14}$`) dan profil Instagram.
-- **Direktori Tim Terfilter:** Daftar anggota tim dengan filter role (`Owner`, `Developer`, `Operasional`) dan kontak langsung.
+### 1. Autentikasi, RBAC Dinamis & Direktori Tim
+- **Autentikasi & Pemulihan Akun**: Halaman login (`/login`), lupa password (`/forgot-password`), atur ulang password token 30 menit (`/reset-password`), aktivasi akun undangan 24 jam dengan kontak WhatsApp/Instagram (`/activate`), serta pengaturan profil & foto avatar (`/profile`).
+- **Direktori Tim (`/directory`)**: Daftar anggota tim beserta kontak WhatsApp/Instagram, pencarian/filter role, pengiriman undangan anggota baru, serta pengelolaan role & status akun oleh Owner.
+- **Kelola Akses (`/access-policies`)**: Pengaturan capability matrix dinamis per role (`Owner`, `Developer`, `Operasional`) beserta histori audit perubahannya khusus Owner.
 
-### 2. Tata Kelola Status Proyek, Voting Roster & PRD Versioning (US-2)
-- **Persetujuan Status via Voting Roster:** Perubahan status proyek (`Lead`, `Active`, `Completed`, `Cancelled`) mewajibkan konsensus 100% dari roster tim atau arbitrase final Owner.
-- **Tautan Repositori Berlabel:** Manajemen URL repositori proyek berlabel (`monorepo` vs `separate`) dengan otorisasi khusus Owner & Developer.
-- **Riwayat Audit Append-Only:** Log histori audit perubahan proyek yang tidak dapat dimanipulasi.
-- **PRD Versioning GZIP:** Riwayat snapshot spesifikasi PRD terkompresi GZIP yang dapat ditinjau dan dipulihkan (*restore*) tanpa menimpa histori audit masa lalu.
+### 2. US-1: Task Checklist TODO/DONE & Manajemen Backlog (`/projects/[id]?tab=tasks`)
+- **Checklist Status Tunggal**: Setiap task hanya menggunakan dua status (`todo` dan `done`) dengan antarmuka daftar checklist (tanpa drag-and-drop Kanban), sekaligus banner pengingat status verifikasi DP proyek (`DpWarningBanner`).
+- **Default Backlog**: Task baru otomatis masuk ke Backlog proyek (`sprintId = null`) bila pengguna tidak memilih sprint secara eksplisit.
+- **Konfirmasi Pindah ke Sprint Aktif**: Memindahkan task dari Backlog/sprint lain ke Sprint yang sedang berstatus `active` wajib melewati dialog konfirmasi (`MoveToActiveSprintDialog`).
 
-### 3. Sprint Lifecycle, Fibonacci Story Points, & Progres Kumulatif (US-3)
-- **Daur Hidup Sprint Terurut:** Siklus sprint terstruktur (`planning` -> `active` -> `completed`) dengan aturan ketat 1 sprint aktif.
-- **Story Points Fibonacci:** Penetapan bobot tugas berbasis deret Fibonacci murni `[1, 2, 3, 5, 8, 13]` dengan tepat 1 assignee per tugas.
-- **Validasi Selesai Sprint:** Penolakan penyelesaian sprint jika masih terdapat task yang belum berstatus `Done`.
-- **Progres Kumulatif Matematis:** Bar pengukur progres proyek dihitung secara matematis berdasarkan akumulasi story points sprint yang telah selesai terhadap total ruang lingkup yang disetujui.
+### 3. US-2: Tata Kelola Proyek, Sprint Lifecycle & Progres Kumulatif (`/projects`, `/projects/[id]`)
+- **Tata Kelola Proyek & PRD Versioning (`?tab=prd`)**: Pengajuan & voting konsensus 100% perubahan status proyek (`lead` / `active` / `completed` / `cancelled`) beserta arbitrase final Owner (`StatusApprovalBanner`), manajemen roster voting, tautan repositori berlabel (`monorepo` / `separate`), editor PRD, arsip versi GZIP + *restore* versi, dan ekspor PDF PRD.
+- **Daur Hidup Sprint (`?tab=sprints`)**: Pengelolaan sprint berurutan (`planning` ➔ `active` ➔ `completed`) dengan aturan maksimal satu sprint aktif per proyek.
+- **Penutupan Sprint Atomik (`CloseSprintModal`)**: Menutup sprint aktif yang masih memiliki task `todo` mewajibkan pengguna menentukan tujuan pemindahan setiap task (ke Backlog `sprintId = null` atau sprint non-completed lain dalam proyek yang sama).
+- **Progres Kumulatif Proyek (`CumulativeProgressBar`)**: Dihitung secara matematis berdasarkan rasio jumlah sprint selesai terhadap total seluruh sprint proyek ($\frac{\text{completedSprintCount}}{\text{totalSprintCount}} \times 100\%$, dibulatkan 1 desimal; bernilai $0\%$ bila total sprint 0).
 
-### 4. Kontrak Termin 100%, Trigger BAST, & Invoice PDF Resmi (US-4)
-- **Konfigurasi Kontrak & Termin 100%:** Form interaktif penyusunan termin dengan validasi total tepat 100%. Baris termin terakhir secara otomatis menyerap selisih pembulatan rupiah (*rounding discrepancy absorption*).
-- **Trigger Penyelesaian & Bukti BAST:** Dukungan trigger Tanggal, Modul/Sprint, dan Manual. Khusus trigger sprint, sistem memvalidasi bahwa sprint terkait wajib berstatus `completed` sebelum dokumen BAST (PDF/JPG/PNG) dapat diunggah untuk mengubah status termin ke `Siap ditagih`.
-- **Penerbitan Invoice PDF Resmi:** Pembuatan invoice bernomor seri unik otomatis `INV-YYYY-NNN/Tn` (misal `INV-2026-001/T1`), mengunci termin secara permanen (`isLocked = true`) dari perubahan, serta pratinjau dokumen dan pencetakan/unduh langsung via browser.
-- **Proteksi RBAC Finansial:** Akses kelola termin dan invoice dibatasi hanya untuk role `Owner` dan `Operasional`.
+### 4. US-3: Kontrak Termin 100%, Pemicu Termin & Penerbitan Invoice Manual (`/projects/[id]?tab=finance`)
+- **Konfigurasi Kontrak & Termin 100% (`ContractConfigModal`)**: Form penyusunan nilai kontrak dan daftar termin berbobot total persis 100%; termin terakhir otomatis menyerap selisih pembulatan rupiah.
+- **Pemicu Tunggal & Evaluasi Kesiapan Idempotent (`EditPaymentTermModal`, `UploadBastModal`)**: Setiap termin wajib memilih tepat satu pemicu: `date` (`YYYY-MM-DD` WIB), `sprint` (ambang `requiredCompletedSprints`), atau `manual`. Termin berstatus `planned` otomatis menjadi `ready` saat pemicu terpenuhi, atau dapat ditandai `ready` secara manual dengan lampiran BAST opsional.
+- **Pencatatan Invoice Manual & Overdue WIB (`PaymentTermsTable`, `InvoicePdfModal`)**: Penerbitan invoice resmi dari termin `ready` mewajibkan pengisian `invoiceDueDate`, mengunci termin (`isLocked = true`), mendukung pratinjau/cetak dokumen PDF invoice, penandaan lunas manual (`invoiced` ➔ `paid`), dan penandaan status `Overdue` otomatis berdasarkan tanggal `Asia/Jakarta` (WIB).
+
+### 5. US-4: Kalender Operasional Teragregasi & Agenda Manual (`/operations/calendar`)
+- **Read-Aggregation Kalender WIB (`OperationalCalendarWorkspace`)**: Kalender bulanan Senin-pertama yang menggabungkan Sprint, Termin `Ready`, Invoice Jatuh Tempo / Overdue (`OverdueAlertStrip`), dan Agenda Manual (`OperationalEvent`: `client_demo`, `deployment`, `maintenance`, `meeting`).
+- **Filter, Drawer & Deep Link (`CalendarHeaderControls`, `CalendarEventDrawer`)**: Filter rentang tanggal (maks 90 hari), sumber event, proyek, status proyek, serta toggle agenda dibatalkan; drawer detail menyediakan tautan navigasi langsung ke modul/proyek sumber.
+- **Agenda Manual Tanpa Gateway Otomatis (`OperationalEventModal`, `CancelAgendaDialog`)**: Pembuatan agenda mendukung mode terjadwal/all-day dengan `projectId` opsional (lintas agensi maupun spesifik proyek), pembatalan soft-status (`cancelled`), dan pencatatan tindak lanjut (follow-up) manual.
+- **Proteksi Akses RBAC**: Pengguna yang tidak memiliki permission `operations.calendar.read` (misal `Developer`) ditolak oleh middleware/backend dan diarahkan ke tampilan `CalendarAccessDenied`.
 
 ---
 
 ## 🛠️ Tech Stack & Primitives
 
-- **Framework:** Next.js 16.4.5 (App Router, React 19)
-- **Bahasa:** TypeScript 5+ (Strict Mode)
-- **Styling:** Tailwind CSS v4, PostCSS, tw-animate-css
-- **Design System & Komponen:** Radix UI, Base UI, shadcn/ui (`radix-maia` style)
+- **Framework:** Next.js `16.4.5` (App Router), React `19.3.0`
+- **Bahasa:** TypeScript `5+`
+- **Styling:** Tailwind CSS `v4`, PostCSS, `tw-animate-css`
+- **Design System & Primitives UI:** Radix UI (`radix-ui`), Base UI (`@base-ui/react`), shadcn/ui
 - **Ikonografi:** Hugeicons (`@hugeicons/react`, `@hugeicons/core-free-icons`)
-- **Server State & Caching:** TanStack React Query v5
-- **Client State:** Zustand v5
-- **Tabel & Data Grid:** TanStack Table v9
-- **Form & Validasi:** React Hook Form + Zod
+- **Server State & Caching:** TanStack React Query `v5` (`@tanstack/react-query`)
+- **Client State:** Zustand `v5`
+- **Tabel & Data Grid:** TanStack Table `v9`
+- **Form & Validasi:** React Hook Form + `@hookform/resolvers` + Zod `v4`
 - **Notifikasi Toast:** Sonner
-- **Markdown & PDF:** `react-markdown`, `@react-pdf/renderer`
-- **Manipulasi Gambar:** `browser-image-compression`
-- **Tanggal & Waktu:** `date-fns` (dengan locale `id`)
+- **Markdown, Chart & PDF:** `react-markdown`, `recharts`, `@react-pdf/renderer`, `react-to-print`
+- **Manipulasi Gambar & Tanggal:** `browser-image-compression`, `date-fns`
 
 ---
 
-## 📁 Struktur Direktori (Feature-based Modular)
+## 📁 Struktur Direktori (`src/`)
 
-Mengikuti arsitektur 5 layer ketat (`types` ➔ `api` ➔ `queries` ➔ `components` ➔ `page`):
+Mengikuti arsitektur modular berbasis fitur (`types` ➔ `api` ➔ `queries` ➔ `components` ➔ `page`):
 
 ```text
-frontend/
-├── src/
-│   ├── app/                          # Next.js App Router (Pages & Layouts)
-│   │   ├── (auth)/                   # Halaman autentikasi (/login, /activate)
-│   │   ├── (dashboard)/              # Halaman operasional (/projects, /projects/[id])
-│   │   ├── globals.css               # Definisi theme tokens Tailwind v4
-│   │   └── layout.tsx                # Root layout & providers
-│   ├── components/
-│   │   └── ui/                       # Primitives UI reusable (Button, Dialog, Badge, Card, dll.)
-│   ├── features/                     # Modul fitur mandiri (Encapsulated)
-│   │   ├── auth/                     # Autentikasi tim, token aktivasi & profil
-│   │   ├── projects/                 # Pipeline proyek, voting roster, repo links & PRD versioning
-│   │   ├── tasks/                    # Kanban board, story points & DP banner
-│   │   ├── sprints/                  # Daur hidup sprint & progres kumulatif
-│   │   ├── finance/                  # Kontrak termin 100%, upload BAST & invoice PDF
-│   │   ├── activity/                 # Timeline audit log kronologis
-│   │   ├── assets/                   # Galeri aset & kompresi gambar
-│   │   └── [feature]/index.ts        # Public API modul
-│   ├── layouts/
-│   │   ├── DashboardLayout/          # Komponen layout dashboard terpadu
-│   │   └── navigation.config.ts      # Konfigurasi menu navigasi terpusat
-│   └── shared/                       # Helper, lib instance (apiClient), & types lintas modul
+frontend/src/
+├── app/                                  # Next.js App Router Pages & Layouts
+│   ├── (auth)/                           # /login, /activate, /forgot-password, /reset-password
+│   ├── (dashboard)/                      # /projects, /projects/[id], /operations/calendar, /directory, /profile, /access-policies
+│   ├── providers/                        # Root client providers (QueryClient, Theme, Toaster)
+│   ├── globals.css & tw-animate.css      # Theme tokens & styling utilitas Tailwind v4
+│   └── layout.tsx & global-error.tsx
+├── components/
+│   └── ui/                               # Primitives UI reusable (Button, Dialog, AlertDialog, Table, Badge, dll.)
+├── features/                             # Modul fitur mandiri (Encapsulated per domain)
+│   ├── auth/                             # Login, aktivasi token 24j, ubah password, profil & store permission
+│   ├── directory/                        # Tabel direktori tim, undangan anggota & ubah role/status
+│   ├── projects/                         # Pipeline proyek, voting roster, repo links & editor/arsip PRD GZIP
+│   ├── tasks/                            # Task checklist TODO/DONE, Backlog & dialog pindah ke sprint aktif
+│   ├── sprints/                          # Daur hidup sprint, tutup atomik & progres rasio sprint
+│   ├── finance/                          # Kontrak termin 100%, pemicu tunggal, BAST, invoice PDF & pelunasan
+│   ├── operations/                       # Kalender operasional WIB, filter 90 hari, agenda manual & reminder log
+│   ├── activity/                         # Timeline riwayat aktivitas kronologis
+│   └── assets/                           # Galeri aset desain & kompresi gambar
+├── layouts/
+│   ├── DashboardLayout/                  # Shell layout sidebar & topbar terpadu
+│   └── navigation.config.ts              # Konfigurasi menu navigasi berbasis permission
+└── shared/
+    ├── components/state/                 # Skeletons, EmptyState, GlobalStateProvider, LoadingAction, LocalizedComponentError
+    ├── lib/                              # api-client.ts (Axios + CSRF + cookie credentials), business-date.ts (WIB)
+    ├── store/                            # workspace.store.ts
+    └── types/                            # api.types.ts, auth.types.ts
 ```
 
 ---
@@ -85,7 +93,7 @@ frontend/
 ## 💻 Panduan Menjalankan Frontend
 
 ### 1. Prasyarat Sistem
-- Node.js versi 20+ (disarankan Node.js 20 LTS atau 22+)
+- Node.js versi 20 atau lebih baru
 - Package manager: `npm`
 
 ### 2. Instalasi Dependensi
@@ -94,22 +102,40 @@ npm install
 ```
 
 ### 3. Konfigurasi Environment (`.env.local`)
+Salin `.env.example` menjadi `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Isi konfigurasi dasar:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 ```
 
-### 4. Menjalankan Server Development
-```bash
-npm run dev
-```
-Buka browser pada [http://localhost:3000](http://localhost:3000).
+*(Opsional khusus development)* `NEXT_PUBLIC_DEMO_EMAIL` dan `NEXT_PUBLIC_DEMO_PASSWORD` hanya untuk fitur quick-fill login saat development. Jangan set variabel tersebut pada build production karena nilainya tersimpan di bundle browser.
 
-### 5. Verifikasi Kualitas
+### 4. Menjalankan Server
+- **Development Mode**:
+  ```bash
+  npm run dev
+  ```
+  Buka [http://localhost:3000](http://localhost:3000).
+- **Build & Start Produksi**:
+  ```bash
+  npm run build
+  npm run start
+  ```
+
+### 5. Verifikasi Kualitas Kode
 ```bash
-# Typecheck
+# Typecheck TypeScript
 npx tsc -p tsconfig.json --noEmit
 
-# Lint
+# Linting ESLint
 npm run lint
+
+# Build Produksi Next.js
+npm run build
 ```
-*Hasil Verifikasi: 0 Error, 0 Warning.*

@@ -1,3 +1,6 @@
+// Public API for features/finance module
+// External modules (pages/features) must import finance symbols only from this file.
+
 export * from "./types/finance.types";
 export * from "./api/finance.api";
 export * from "./queries/finance.queries";
