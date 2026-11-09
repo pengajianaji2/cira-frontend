@@ -4,6 +4,7 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
+/** Ukuran preset standar untuk komponen `UserAvatar`. */
 export type UserAvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 const AVATAR_SIZE_CLASS: Record<UserAvatarSize, string> = {
@@ -22,6 +23,7 @@ const AVATAR_TEXT_CLASS: Record<UserAvatarSize, string> = {
   xl: "text-xl",
 };
 
+/** Menghasilkan maksimal dua huruf inisial dari nama pengguna, atau `"US"` bila kosong. */
 export function getUserInitials(name?: string | null): string {
   if (!name) return "US";
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -30,6 +32,7 @@ export function getUserInitials(name?: string | null): string {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
+/** Properti komponen `UserAvatar`. */
 export interface UserAvatarProps {
   name?: string | null;
   avatarUrl?: string | null;
@@ -40,6 +43,9 @@ export interface UserAvatarProps {
   fallbackClassName?: string;
 }
 
+/**
+ * Komponen avatar lingkaran 1:1 seragam dengan fallback inisial otomatis saat gambar kosong atau gagal dimuat.
+ */
 export function UserAvatar({
   name,
   avatarUrl,

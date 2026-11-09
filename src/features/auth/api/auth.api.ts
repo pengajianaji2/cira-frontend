@@ -85,21 +85,33 @@ export const authApi = {
     return response.data;
   },
 
+  /**
+   * Mengirim permintaan tautan reset password 30 menit ke email pengguna aktif.
+   */
   async forgotPassword(email: string): Promise<ApiResponse<null>> {
     const response = await apiClient.post<ApiResponse<null>>("/auth/forgot-password", { email });
     return response.data;
   },
 
+  /**
+   * Memperbarui password akun menggunakan token reset password sekali pakai.
+   */
   async resetPassword(token: string, newPassword: string): Promise<ApiResponse<null>> {
     const response = await apiClient.post<ApiResponse<null>>("/auth/reset-password", { token, newPassword });
     return response.data;
   },
 
+  /**
+   * Mengunggah foto profil hasil potongan 1:1 dalam format base64 data URL ke backend.
+   */
   async uploadAvatar(dataUrl: string): Promise<ApiResponse<{ user: User }>> {
     const response = await apiClient.post<ApiResponse<{ user: User }>>("/auth/avatar", { dataUrl });
     return response.data;
   },
 
+  /**
+   * Mengambil daftar permission key efektif milik pengguna yang sedang terautentikasi.
+   */
   async getMyPermissions(): Promise<ApiResponse<{ permissions: string[] }>> {
     const response = await apiClient.get<ApiResponse<{ permissions: string[] }>>("/policies/me");
     return response.data;
