@@ -30,6 +30,7 @@ const VIEWPORT_SIZE = 272;
 const ZOOM_STEP = 0.15;
 const KEYBOARD_PAN_STEP = 12;
 
+/** Properti dialog pemotongan foto profil 1:1 sebelum diunggah ke server. */
 interface AvatarCropDialogProps {
   open: boolean;
   file: File | null;
@@ -38,6 +39,10 @@ interface AvatarCropDialogProps {
   onConfirm: (dataUrl: string) => Promise<void> | void;
 }
 
+/**
+ * Dialog interaktif pemotongan foto profil rasio 1:1 dengan dukungan geser pointer/sentuh,
+ * tombol panah keyboard, dan pengaturan zoom sebelum mengirim hasil ke backend.
+ */
 export function AvatarCropDialog({
   open,
   file,

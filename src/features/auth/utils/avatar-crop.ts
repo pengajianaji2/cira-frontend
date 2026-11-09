@@ -10,6 +10,7 @@ export const AVATAR_MAX_DATA_URL_LENGTH = 2_600_000;
 export const AVATAR_MIN_ZOOM = 1;
 export const AVATAR_MAX_ZOOM = 3;
 
+/** Parameter masukan untuk menghitung koordinat viewport dan area potong persegi 1:1. */
 export interface SquareCropInput {
   naturalWidth: number;
   naturalHeight: number;
@@ -19,6 +20,7 @@ export interface SquareCropInput {
   offsetY: number;
 }
 
+/** Hasil perhitungan skala, batas offset, dan koordinat sumber untuk crop persegi 1:1. */
 export interface SquareCropFrame {
   zoom: number;
   baseScale: number;
@@ -40,6 +42,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
+/** Memvalidasi tipe MIME (PNG/JPG/WebP) dan ukuran file avatar (maksimal 2 MB); mengembalikan `null` bila valid. */
 export function validateAvatarFile(file: {
   type: string;
   size: number;
@@ -63,6 +66,11 @@ export function validateAvatarFile(file: {
   return null;
 }
 
+/**
+ * Menghitung skala render, rentang pan valid, serta koordinat persegi sumber 1:1 (`sourceX`, `sourceY`, `sourceSize`).
+ *
+ * @throws {Error} Bila dimensi gambar atau viewport tidak positif.
+ */
 export function computeSquareCropFrame({
   naturalWidth,
   naturalHeight,
@@ -117,6 +125,11 @@ export function computeSquareCropFrame({
   };
 }
 
+/**
+ * Merender area potongan 1:1 ke kanvas HTML5 lalu mengekspor data URL WebP/JPEG terkompresi di bawah batas server.
+ *
+ * @throws {Error} Bila konteks kanvas 2D tidak tersedia atau ukuran data URL masih melebihi batas.
+ */
 export function renderCroppedSquareDataUrl({
   image,
   viewportSize,

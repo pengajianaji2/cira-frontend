@@ -21,7 +21,7 @@ Aturan perubahan:
 
 - Ubah token komponen jika hanya satu primitive/varian yang perlu berubah.
 - Ubah token semantik jika perubahan memang diinginkan untuk semua pemakai peran semantik itu.
-- Tambahkan pasangan nilai `.dark` untuk setiap token komponen baru.
+- Pertahankan satu tema terang konsisten pada `:root` tanpa menambahkan varian `.dark`.
 - Hindari warna literal atau kelas palette langsung untuk komponen yang sudah memiliki token domain.
 - Status tidak boleh dibedakan lewat warna saja; label teks tetap ditampilkan.
-- Verifikasi kontras teks, hover, focus, disabled, light mode, dan dark mode saat menambah atau mengganti token.
+- Verifikasi kontras teks, hover, focus, disabled, dan konsistensi kanvas tema terang saat menambah atau mengganti token.

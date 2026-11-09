@@ -17,6 +17,7 @@ export const loginSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
+/** Skema validasi formulir profil pengguna (nama, email wajib; WhatsApp & Instagram opsional). */
 export const profileSchema = z.object({
   name: z.string().trim().min(2, "Nama minimal 2 karakter"),
   email: z.string().trim().email("Format email tidak valid"),
@@ -38,6 +39,7 @@ export const profileSchema = z.object({
 
 export type ProfileInput = z.infer<typeof profileSchema>;
 
+/** Payload pembaruan profil terstandardisasi dengan kontak opsional dinormalisasi ke `null` bila kosong. */
 export interface NormalizedProfilePayload {
   name: string;
   email: string;
@@ -45,6 +47,7 @@ export interface NormalizedProfilePayload {
   instagram: string | null;
 }
 
+/** Men-trim field input profil dan mengubah string WhatsApp/Instagram kosong menjadi `null`. */
 export function normalizeProfileInput(input: ProfileInput): NormalizedProfilePayload {
   const whatsapp = input.whatsapp?.trim() ?? "";
   const instagram = input.instagram?.trim() ?? "";
