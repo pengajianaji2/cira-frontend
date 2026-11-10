@@ -153,17 +153,17 @@ test("AC-3: Breadcrumb, teks muat, paginasi, catatan, dan heading di luar kartu 
   assert.match(projectDetailPage, /\btext-canvas-muted\b[^>]*>Memuat data proyek\.\.\.</);
   assert.match(projectDetailPage, /\btext-canvas-muted\b[^>]*>Menyiapkan halaman\.\.\.</);
 
+  // Daftar Proyek (/projects) dan Kelola Akses (/access-policies) kini membungkus pencarian,
+  // paginasi, status/notice, catatan multi-role, dan tombol muat ulang di dalam kartu konten putih (US-3 AC-6 & AC-8).
   const projectsPage = readSrc("app/(dashboard)/projects/page.tsx");
-  assert.match(projectsPage, /id="project-search"[\s\S]*?className="[^"]*\bbg-card\b[^"]*\btext-foreground\b/);
-  assert.match(projectsPage, /aria-label="Paginasi proyek"[\s\S]*?\btext-canvas-muted\b/);
-  assert.match(projectsPage, /Sebelumnya[\s\S]*?\bbg-card\b[\s\S]*?Selanjutnya/);
+  assert.match(projectsPage, /<section[\s\S]*?\bbg-card\b[\s\S]*?id="project-search"[\s\S]*?aria-label="Paginasi proyek"/);
+  assert.match(projectsPage, /aria-label="Paginasi proyek"[\s\S]*?\btext-muted-foreground\b/);
+  assert.match(projectsPage, /Sebelumnya[\s\S]*?Selanjutnya/);
+  assert.doesNotMatch(projectsPage, /\btext-canvas-muted\b/);
 
-  // Catatan: heading menu /profile, /access-policies, dan /directory kini memakai kartu putih PageHeaderCard (US-2 AC-4).
-  // Elemen teks luar kartu yang masih berada di atas --canvas tetap wajib memakai token teks terang.
+  // Elemen teks luar kartu yang tetap berada langsung di atas --canvas wajib memakai token teks terang.
   const accessPoliciesPage = readSrc("app/(dashboard)/access-policies/page.tsx");
-  assert.match(accessPoliciesPage, /Halaman ini hanya tersedia untuk owner\.[\s\S]*?\btext-canvas-muted\b|text-canvas-muted[^>]*>Halaman ini hanya tersedia untuk owner\./);
-  assert.match(accessPoliciesPage, /text-canvas-muted[^>]*>Memuat policy akses…/);
-  assert.match(accessPoliciesPage, /text-canvas-muted[^>]*>Jika pengguna memiliki lebih dari satu role/);
+  assert.doesNotMatch(accessPoliciesPage, /\btext-canvas-muted\b/);
   assert.match(accessPoliciesPage, /\bbg-card\b[\s\S]*?Muat ulang policy/);
 
   const taskBoard = readSrc("features/tasks/components/TaskChecklistBoard.tsx");

@@ -51,16 +51,24 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
   return (
     <div className="space-y-3">
       {/* Desktop Table View */}
-      <div className="hidden md:block overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Tabel daftar proyek"
+        className="hidden md:block overflow-x-auto rounded-2xl border border-border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <table className="w-full text-left border-collapse text-xs">
+          <caption className="sr-only">
+            Daftar proyek agensi beserta klien, kontak, status, dan nilai kontrak
+          </caption>
           <thead>
-            <tr className="border-b border-border bg-muted/30 text-muted-foreground font-medium">
-              <th className="py-3.5 px-4 font-medium">Nama Proyek</th>
-              <th className="py-3.5 px-4 font-medium">Klien</th>
-              <th className="py-3.5 px-4 font-medium">Kontak</th>
-              <th className="py-3.5 px-4 font-medium">Status</th>
-              <th className="py-3.5 px-4 font-medium">Nilai Kontrak</th>
-              <th className="py-3.5 px-4 text-right font-medium">Aksi</th>
+            <tr className="border-b border-border bg-muted/40 text-muted-foreground font-medium">
+              <th scope="col" className="py-3.5 px-4 font-medium">Nama Proyek</th>
+              <th scope="col" className="py-3.5 px-4 font-medium">Klien</th>
+              <th scope="col" className="py-3.5 px-4 font-medium">Kontak</th>
+              <th scope="col" className="py-3.5 px-4 font-medium">Status</th>
+              <th scope="col" className="py-3.5 px-4 font-medium">Nilai Kontrak</th>
+              <th scope="col" className="py-3.5 px-4 text-right font-medium">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -126,20 +134,21 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
                 </td>
 
                 <td className="py-4 px-4 text-right">
-                  <Link href={`/projects/${project.id}?tab=prd`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full text-xs h-8 px-3.5 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all"
-                    >
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full text-xs min-h-9 px-3.5 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all"
+                  >
+                    <Link href={`/projects/${project.id}?tab=prd`}>
                       Buka Proyek
                       <HugeiconsIcon
                         icon={ArrowRight01Icon}
                         className="size-3.5 ml-1 transition-transform group-hover:translate-x-0.5"
                         aria-hidden="true"
                       />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -150,9 +159,9 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
       {/* Mobile Card Grid View */}
       <div className="grid grid-cols-1 gap-3 md:hidden">
         {projects.map((project) => (
-          <div
+          <article
             key={project.id}
-            className="bg-card border border-border rounded-2xl p-4 shadow-xs space-y-3"
+            className="bg-background border border-border rounded-2xl p-4 space-y-3"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
@@ -160,9 +169,9 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
                   <HugeiconsIcon icon={Folder01Icon} className="size-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-semibold text-sm text-foreground line-clamp-1">
+                  <h3 className="font-semibold text-sm text-foreground line-clamp-1">
                     {project.name}
-                  </h4>
+                  </h3>
                   <p className="text-[11px] text-muted-foreground truncate">
                     {project.clientName}
                   </p>
@@ -184,27 +193,28 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
 
             <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-1 border-t border-border/50">
               <div>
-                <span className="text-[10px] block text-muted-foreground/70">Kontak:</span>
+                <span className="text-[10px] block text-muted-foreground">Kontak:</span>
                 <span className="font-medium text-foreground text-xs">{project.clientContact}</span>
               </div>
               <div>
-                <span className="text-[10px] block text-muted-foreground/70">Nilai Kontrak:</span>
+                <span className="text-[10px] block text-muted-foreground">Nilai Kontrak:</span>
                 <span className="font-semibold text-foreground text-xs">
                   {formatRupiah(project.contractValue)}
                 </span>
               </div>
             </div>
 
-            <Link href={`/projects/${project.id}?tab=prd`} className="block pt-1">
-              <Button
-                variant="outline"
-                className="w-full rounded-full text-xs h-9 justify-center"
-              >
+            <Button
+              asChild
+              variant="outline"
+              className="w-full rounded-full text-xs min-h-11 justify-center bg-card"
+            >
+              <Link href={`/projects/${project.id}?tab=prd`}>
                 Buka Proyek
                 <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 ml-1" aria-hidden="true" />
-              </Button>
-            </Link>
-          </div>
+              </Link>
+            </Button>
+          </article>
         ))}
       </div>
     </div>
