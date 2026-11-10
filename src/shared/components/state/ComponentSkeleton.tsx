@@ -280,6 +280,10 @@ export function TabContentSkeleton({ tab = "prd", className }: TabContentSkeleto
   );
 }
 
+/**
+ * Kerangka pemuatan (*skeleton*) kartu header workspace seragam yang meniru dimensi `PageHeaderCard`
+ * untuk mencegah pergeseran tata letak saat data halaman masih dimuat.
+ */
 export function PageHeaderSkeleton({
   hasAction = false,
   className,
