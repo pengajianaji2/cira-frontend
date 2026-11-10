@@ -2,7 +2,15 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CardSkeleton, LocalizedComponentError } from "@/shared/components";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon, Calendar03Icon } from "@hugeicons/core-free-icons";
+import { Button } from "@/components/ui/button";
+import {
+  CardSkeleton,
+  LocalizedComponentError,
+  PageHeaderCard,
+  PageHeaderSkeleton,
+} from "@/shared/components";
 import {
   getCurrentYearMonthWib,
   getMonthBoundsWib,
@@ -217,8 +225,8 @@ export function OperationalCalendarWorkspace() {
 
   if (isPermissionsLoading) {
     return (
-      <div className="max-w-7xl mx-auto space-y-5">
-        <CardSkeleton lines={3} />
+      <div className="max-w-7xl mx-auto space-y-6">
+        <PageHeaderSkeleton hasAction />
         <CardSkeleton lines={8} hasHeader={false} />
       </div>
     );
@@ -234,7 +242,34 @@ export function OperationalCalendarWorkspace() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-5">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <PageHeaderCard
+        icon={Calendar03Icon}
+        title="Kalender Operasional"
+        description={
+          <>
+            Agregasi real-time Sprint, kesiapan Termin, jatuh tempo Invoice, dan Agenda
+            Manual · Zona waktu{" "}
+            <span className="font-mono font-semibold text-foreground">
+              Asia/Jakarta (WIB)
+            </span>
+          </>
+        }
+        action={
+          canManageEvents ? (
+            <Button
+              type="button"
+              onClick={() => handleOpenCreateModal(undefined)}
+              size="sm"
+              className="rounded-full h-10 md:h-9 px-4 text-xs font-semibold shadow-xs"
+            >
+              <HugeiconsIcon icon={Add01Icon} className="size-4 mr-1.5" aria-hidden="true" />
+              Tambah Agenda Manual
+            </Button>
+          ) : undefined
+        }
+      />
+
       <CalendarHeaderControls
         from={from}
         to={to}
@@ -246,7 +281,6 @@ export function OperationalCalendarWorkspace() {
         selectedProjectStatuses={selectedProjectStatuses}
         includeCancelled={includeCancelled}
         viewMode={viewMode}
-        canManageEvents={canManageEvents}
         projects={projects}
         onPrevMonth={() => handleShiftMonth(-1)}
         onNextMonth={() => handleShiftMonth(1)}
@@ -258,7 +292,6 @@ export function OperationalCalendarWorkspace() {
         onChangeProjectStatuses={setSelectedProjectStatuses}
         onChangeIncludeCancelled={setIncludeCancelled}
         onChangeViewMode={setViewMode}
-        onOpenCreateModal={() => handleOpenCreateModal(undefined)}
       />
 
       {calendarQuery.isLoading ? (

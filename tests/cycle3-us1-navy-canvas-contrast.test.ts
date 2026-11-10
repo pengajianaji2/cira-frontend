@@ -158,22 +158,13 @@ test("AC-3: Breadcrumb, teks muat, paginasi, catatan, dan heading di luar kartu 
   assert.match(projectsPage, /aria-label="Paginasi proyek"[\s\S]*?\btext-canvas-muted\b/);
   assert.match(projectsPage, /Sebelumnya[\s\S]*?\bbg-card\b[\s\S]*?Selanjutnya/);
 
-  const profilePage = readSrc("app/(dashboard)/profile/page.tsx");
-  assert.match(profilePage, /<h1 className="[^"]*\btext-canvas-foreground\b/);
-  assert.match(profilePage, /<p className="[^"]*\btext-canvas-muted\b/);
-
+  // Catatan: heading menu /profile, /access-policies, dan /directory kini memakai kartu putih PageHeaderCard (US-2 AC-4).
+  // Elemen teks luar kartu yang masih berada di atas --canvas tetap wajib memakai token teks terang.
   const accessPoliciesPage = readSrc("app/(dashboard)/access-policies/page.tsx");
   assert.match(accessPoliciesPage, /Halaman ini hanya tersedia untuk owner\.[\s\S]*?\btext-canvas-muted\b|text-canvas-muted[^>]*>Halaman ini hanya tersedia untuk owner\./);
   assert.match(accessPoliciesPage, /text-canvas-muted[^>]*>Memuat policy akses…/);
-  assert.match(accessPoliciesPage, /text-canvas-foreground[^>]*>Policy Akses/);
   assert.match(accessPoliciesPage, /text-canvas-muted[^>]*>Jika pengguna memiliki lebih dari satu role/);
   assert.match(accessPoliciesPage, /\bbg-card\b[\s\S]*?Muat ulang policy/);
-
-  const directoryTable = readSrc("features/directory/components/DirectoryTable.tsx");
-  assert.match(directoryTable, /border-canvas-foreground\/15/);
-  assert.match(directoryTable, /<h1 className="[^"]*\btext-canvas-foreground\b/);
-  assert.match(directoryTable, /className="[^"]*\bbg-card\b[^"]*"[\s\S]*?\{activeCount\} Aktif/);
-  assert.match(directoryTable, /<p className="[^"]*\btext-canvas-muted\b/);
 
   const taskBoard = readSrc("features/tasks/components/TaskChecklistBoard.tsx");
   assert.match(taskBoard, /text-canvas-muted[^>]*>Memuat checklist task\.\.\.</);

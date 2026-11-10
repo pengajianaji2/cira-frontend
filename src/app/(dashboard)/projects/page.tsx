@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon } from "@hugeicons/core-free-icons";
 import { Input } from "@/components/ui/input";
+import { useMyPermissionsQuery } from "@/features/auth";
 import {
   useProjectListingQuery,
   ProjectFilterTabs,
@@ -11,9 +11,12 @@ import {
   CreateProjectDialog,
   FilterStatus,
 } from "@/features/projects";
+import { PageHeaderCard } from "@/shared/components";
 import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
 
 export default function ProjectsPage() {
+  const { data: permissions = [] } = useMyPermissionsQuery();
+  const canCreateProject = permissions.includes("projects.create");
   const { filterStatus, setFilterStatus, searchQuery, setSearchQuery } = useGlobalState();
   const [page, setPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -43,23 +46,18 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Top Header Banner */}
-      <div className="bg-card border border-border rounded-3xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <HugeiconsIcon icon={Folder01Icon} className="size-7 text-primary" />
-            Daftar Pipeline Proyek
-          </h1>
-          <p className="text-xs md:text-sm text-muted-foreground mt-1 max-w-2xl">
-            Kelola tahapan proyek dari negosiasi awal (<span className="text-foreground font-medium">Lead</span>),
-            pengerjaan (<span className="text-foreground font-medium">Active</span>), hingga serah terima selesai.
-          </p>
-        </div>
-
-        <div className="shrink-0">
-          <CreateProjectDialog />
-        </div>
-      </div>
+      <PageHeaderCard
+        icon={Folder01Icon}
+        title="Daftar Pipeline Proyek"
+        description={
+          <>
+            Kelola tahapan proyek dari negosiasi awal (
+            <span className="font-medium text-foreground">Lead</span>), pengerjaan (
+            <span className="font-medium text-foreground">Active</span>), hingga serah terima selesai.
+          </>
+        }
+        action={canCreateProject ? <CreateProjectDialog /> : undefined}
+      />
 
       <div className="max-w-md">
         <label htmlFor="project-search" className="sr-only">

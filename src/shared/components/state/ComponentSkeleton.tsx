@@ -280,6 +280,33 @@ export function TabContentSkeleton({ tab = "prd", className }: TabContentSkeleto
   );
 }
 
+export function PageHeaderSkeleton({
+  hasAction = false,
+  className,
+}: {
+  hasAction?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      data-slot="page-header-skeleton"
+      className={cn(
+        "bg-card border border-border rounded-3xl p-5 md:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4",
+        className,
+      )}
+    >
+      <div className="flex items-start gap-3.5 flex-1">
+        <Skeleton className="size-10 md:size-11 rounded-2xl shrink-0" />
+        <div className="space-y-2 flex-1">
+          <Skeleton className="h-7 w-52 rounded-lg" />
+          <Skeleton className="h-4 w-full max-w-md rounded-md" />
+        </div>
+      </div>
+      {hasAction ? <Skeleton className="h-9 w-40 rounded-full shrink-0" /> : null}
+    </div>
+  );
+}
+
 export function CardSkeleton({
   lines = 3,
   hasHeader = true,
