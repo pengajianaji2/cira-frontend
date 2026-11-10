@@ -58,7 +58,7 @@ function getCategoryConfig(category: ActivityLog["category"]) {
       return {
         label: "Aset",
         icon: Image01Icon,
-        colorClass: "bg-purple-50 text-purple-700 border-purple-200",
+        colorClass: "bg-accent text-accent-foreground border-border",
         badgeVariant: "outline" as const,
       };
     default:

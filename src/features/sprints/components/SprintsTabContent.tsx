@@ -227,7 +227,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
         </div>
 
         {activeSprint ? (
-          <div className="bg-card border-2 border-emerald-500/45 rounded-3xl p-5 shadow-xs space-y-4">
+          <div className="bg-card border-2 border-status-success-border rounded-3xl p-5 shadow-xs space-y-4">
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
               <div className="space-y-2 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">

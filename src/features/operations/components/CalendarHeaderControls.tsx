@@ -49,6 +49,7 @@ const ALL_PROJECT_STATUSES: CalendarProjectStatus[] = [
   "cancelled",
 ];
 
+/** Properti kontrol navigasi rentang waktu, mode tampilan, dan filter untuk `CalendarHeaderControls`. */
 interface CalendarHeaderControlsProps {
   from: string;
   to: string;
@@ -73,6 +74,11 @@ interface CalendarHeaderControlsProps {
   onChangeViewMode: (mode: CalendarViewMode) => void;
 }
 
+/**
+ * Kartu kontrol putih terpisah di bawah `PageHeaderCard` pada halaman Kalender Operasional.
+ * Menampung navigasi bulan/hari ini, pemilih rentang WIB maks. 90 hari, pengalih mode
+ * `Kalender / Daftar Agenda`, serta filter proyek dan sumber acara.
+ */
 export function CalendarHeaderControls({
   from,
   to,
@@ -426,7 +432,7 @@ export function CalendarHeaderControls({
                   autoCorrect="off"
                   autoCapitalize="off"
                   spellCheck={false}
-                  className="h-9 text-xs rounded-xl bg-background"
+                  className="h-11 md:h-9 text-base md:text-xs rounded-xl bg-background"
                 />
 
                 <div className="max-h-48 overflow-y-auto space-y-1 pr-1">

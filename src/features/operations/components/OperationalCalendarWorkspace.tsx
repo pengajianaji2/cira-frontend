@@ -261,7 +261,7 @@ export function OperationalCalendarWorkspace() {
               type="button"
               onClick={() => handleOpenCreateModal(undefined)}
               size="sm"
-              className="rounded-full h-10 md:h-9 px-4 text-xs font-semibold shadow-xs"
+              className="rounded-full h-11 md:h-9 px-4 text-xs font-semibold shadow-xs"
             >
               <HugeiconsIcon icon={Add01Icon} className="size-4 mr-1.5" aria-hidden="true" />
               Tambah Agenda Manual
