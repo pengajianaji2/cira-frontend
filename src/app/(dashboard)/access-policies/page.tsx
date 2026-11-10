@@ -1,7 +1,9 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Shield01Icon } from "@hugeicons/core-free-icons";
 import { apiClient } from "@/shared/lib/api-client";
+import { PageHeaderCard } from "@/shared/components";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,9 +33,17 @@ export default function AccessPoliciesPage() {
     enabled: user?.roles.includes("owner") === true,
   });
 
-  if (!user?.roles.includes("owner")) return <p className="p-8 text-sm text-canvas-muted">Halaman ini hanya tersedia untuk owner.</p>;
-  if (query.isLoading) return <p className="p-8 text-sm text-canvas-muted">Memuat policy akses…</p>;
-  if (query.isError || !query.data) return <div role="alert" className="mx-auto max-w-5xl p-6"><div className="rounded-2xl border border-status-danger-border bg-card p-6 text-sm text-status-danger-text">Policy tidak dapat dimuat. Pastikan migrasi database sudah dijalankan.</div></div>;
+  const headerCard = (
+    <PageHeaderCard
+      icon={Shield01Icon}
+      title="Policy Akses"
+      description="Owner dapat mengatur capability setiap role. Perubahan diterapkan langsung pada API."
+    />
+  );
+
+  if (!user?.roles.includes("owner")) return <div className="mx-auto max-w-5xl space-y-6">{headerCard}<p className="text-sm text-canvas-muted">Halaman ini hanya tersedia untuk owner.</p></div>;
+  if (query.isLoading) return <div className="mx-auto max-w-5xl space-y-6">{headerCard}<p className="text-sm text-canvas-muted">Memuat policy akses…</p></div>;
+  if (query.isError || !query.data) return <div className="mx-auto max-w-5xl space-y-6">{headerCard}<div role="alert" className="rounded-2xl border border-status-danger-border bg-card p-6 text-sm text-status-danger-text">Policy tidak dapat dimuat. Pastikan migrasi database sudah dijalankan.</div></div>;
 
   const updatePermission = (policy: Policy, permission: string, checked: boolean) => {
     const permissions = checked ? [...new Set([...policy.permissions, permission])] : policy.permissions.filter((item) => item !== permission);
@@ -44,8 +54,8 @@ export default function AccessPoliciesPage() {
   };
   const groups = [...new Set(query.data.permissions.map((item) => item.group))];
 
-  return <div className="mx-auto max-w-5xl space-y-6 p-6">
-    <div><h1 className="text-2xl font-bold text-canvas-foreground">Policy Akses</h1><p className="mt-1 text-sm text-canvas-muted">Owner dapat mengatur capability setiap role. Perubahan diterapkan langsung pada API.</p></div>
+  return <div className="mx-auto max-w-5xl space-y-6">
+    {headerCard}
     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Permission pengelolaan policy untuk owner dikunci agar akses administratif tidak hilang dan owner tidak terkunci dari pengaturan akses.</div>
     {query.data.policies.map((policy) => <Card key={policy.role}>
       <CardHeader><CardTitle className="capitalize">{policy.role}</CardTitle></CardHeader>

@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
-import { CardSkeleton } from "@/shared/components";
+import { CardSkeleton, PageHeaderSkeleton } from "@/shared/components";
 import { OperationalCalendarWorkspace } from "@/features/operations";
 
 export const metadata: Metadata = {
@@ -13,8 +13,8 @@ export default function OperationalCalendarPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-7xl mx-auto space-y-5">
-          <CardSkeleton lines={3} />
+        <div className="max-w-7xl mx-auto space-y-6">
+          <PageHeaderSkeleton hasAction />
           <CardSkeleton lines={8} hasHeader={false} />
         </div>
       }

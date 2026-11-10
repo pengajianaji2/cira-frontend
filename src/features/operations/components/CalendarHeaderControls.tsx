@@ -3,12 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Add01Icon,
   AlertCircleIcon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
   Calendar01Icon,
-  Calendar03Icon,
   FilterIcon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
@@ -62,7 +60,6 @@ interface CalendarHeaderControlsProps {
   selectedProjectStatuses: CalendarProjectStatus[];
   includeCancelled: boolean;
   viewMode: CalendarViewMode;
-  canManageEvents: boolean;
   projects: Project[];
   onPrevMonth: () => void;
   onNextMonth: () => void;
@@ -74,7 +71,6 @@ interface CalendarHeaderControlsProps {
   onChangeProjectStatuses: (statuses: CalendarProjectStatus[]) => void;
   onChangeIncludeCancelled: (val: boolean) => void;
   onChangeViewMode: (mode: CalendarViewMode) => void;
-  onOpenCreateModal: () => void;
 }
 
 export function CalendarHeaderControls({
@@ -88,7 +84,6 @@ export function CalendarHeaderControls({
   selectedProjectStatuses,
   includeCancelled,
   viewMode,
-  canManageEvents,
   projects,
   onPrevMonth,
   onNextMonth,
@@ -100,7 +95,6 @@ export function CalendarHeaderControls({
   onChangeProjectStatuses,
   onChangeIncludeCancelled,
   onChangeViewMode,
-  onOpenCreateModal,
 }: CalendarHeaderControlsProps) {
   const [rangeOpen, setRangeOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState(from);
@@ -181,75 +175,9 @@ export function CalendarHeaderControls({
     (includeCancelled ? 1 : 0);
 
   return (
-    <header className="bg-card border border-border rounded-3xl p-4 md:p-6 shadow-xs space-y-4">
-      {/* Baris 1: Judul Halaman + CTA Tambah Agenda */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div className="size-10 rounded-2xl bg-primary/15 text-foreground flex items-center justify-center shrink-0">
-            <HugeiconsIcon icon={Calendar03Icon} className="size-5" aria-hidden="true" />
-          </div>
-          <div>
-            <h1 className="text-lg md:text-2xl font-bold text-foreground tracking-tight">
-              Kalender Operasional
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Agregasi real-time Sprint, kesiapan Termin, jatuh tempo Invoice, dan Agenda
-              Manual · Zona waktu{" "}
-              <span className="font-mono font-semibold text-foreground">
-                Asia/Jakarta (WIB)
-              </span>
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          <div
-            className="hidden md:inline-flex items-center rounded-full border border-border bg-muted/40 p-0.5"
-            role="group"
-            aria-label="Mode tampilan kalender"
-          >
-            <button
-              type="button"
-              onClick={() => onChangeViewMode("grid")}
-              aria-pressed={viewMode === "grid"}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                viewMode === "grid"
-                  ? "bg-card text-foreground shadow-2xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Kalender
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeViewMode("list")}
-              aria-pressed={viewMode === "list"}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                viewMode === "list"
-                  ? "bg-card text-foreground shadow-2xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Daftar Agenda
-            </button>
-          </div>
-
-          {canManageEvents && (
-            <Button
-              type="button"
-              onClick={onOpenCreateModal}
-              size="sm"
-              className="rounded-full h-10 md:h-9 px-4 text-xs font-semibold shadow-xs"
-            >
-              <HugeiconsIcon icon={Add01Icon} className="size-4 mr-1.5" aria-hidden="true" />
-              Tambah Agenda Manual
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Baris 2: Navigasi Waktu (<= 90 Hari) & Filter Proyek */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-2 border-t border-border/70">
+    <section className="bg-card border border-border rounded-3xl p-4 md:p-6 shadow-xs space-y-4">
+      {/* Baris 1: Navigasi Waktu (<= 90 Hari), Pengalih Tampilan, & Filter Proyek */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex items-center gap-1 rounded-full border border-border bg-background p-1">
             <Button
@@ -382,8 +310,39 @@ export function CalendarHeaderControls({
           </Popover>
         </div>
 
-        {/* Filter Proyek (Popover Multi-select) */}
+        {/* Pengalih Mode Tampilan & Filter Proyek */}
         <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="hidden md:inline-flex items-center rounded-full border border-border bg-muted/40 p-0.5"
+            role="group"
+            aria-label="Mode tampilan kalender"
+          >
+            <button
+              type="button"
+              onClick={() => onChangeViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                viewMode === "grid"
+                  ? "bg-card text-foreground shadow-2xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Kalender
+            </button>
+            <button
+              type="button"
+              onClick={() => onChangeViewMode("list")}
+              aria-pressed={viewMode === "list"}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                viewMode === "list"
+                  ? "bg-card text-foreground shadow-2xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Daftar Agenda
+            </button>
+          </div>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -418,7 +377,7 @@ export function CalendarHeaderControls({
                       onChangeProjectIds([]);
                       onChangeIncludeCancelled(false);
                     }}
-                    className="text-[11px] font-medium text-primary hover:underline"
+                    className="text-[11px] font-medium text-accent-foreground hover:underline"
                   >
                     Reset Default
                   </button>
@@ -508,8 +467,8 @@ export function CalendarHeaderControls({
         </div>
       </div>
 
-      {/* Baris 3: Filter Tipe Acara */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Baris 2: Filter Tipe Acara */}
+      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/70">
         <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mr-1">
           Sumber Acara:
         </span>
@@ -545,6 +504,6 @@ export function CalendarHeaderControls({
           );
         })}
       </div>
-    </header>
+    </section>
   );
 }

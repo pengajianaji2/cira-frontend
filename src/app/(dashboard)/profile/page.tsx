@@ -1,6 +1,8 @@
 import React from "react";
 import { Metadata } from "next";
+import { UserIcon } from "@hugeicons/core-free-icons";
 import { ProfileForm, ChangePasswordForm } from "@/features/auth";
+import { PageHeaderCard } from "@/shared/components";
 
 export const metadata: Metadata = {
   title: "Profil Saya - Cira PM",
@@ -10,14 +12,11 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-canvas-foreground">
-          Profil & Keamanan
-        </h1>
-        <p className="text-sm text-canvas-muted mt-1">
-          Kelola informasi identitas, hak akses tim, dan kata sandi akun Anda.
-        </p>
-      </div>
+      <PageHeaderCard
+        icon={UserIcon}
+        title="Profil & Keamanan"
+        description="Kelola informasi identitas, hak akses tim, dan kata sandi akun Anda."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         <ProfileForm />
