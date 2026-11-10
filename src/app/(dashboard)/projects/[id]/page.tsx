@@ -81,7 +81,7 @@ function ProjectDetailContent() {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center gap-3">
         <Spinner className="size-6 text-primary" />
-        <p className="text-xs text-muted-foreground">Memuat data proyek...</p>
+        <p className="text-xs text-canvas-muted">Memuat data proyek...</p>
       </div>
     );
   }
@@ -132,7 +132,7 @@ export default function ProjectDetailPage() {
       fallback={
         <div className="min-h-[400px] flex flex-col items-center justify-center gap-3">
           <Spinner className="size-6 text-primary" />
-          <p className="text-xs text-muted-foreground">Menyiapkan halaman...</p>
+          <p className="text-xs text-canvas-muted">Menyiapkan halaman...</p>
         </div>
       }
     >

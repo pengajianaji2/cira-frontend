@@ -171,7 +171,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
     return (
       <div className="min-h-[350px] flex flex-col items-center justify-center gap-3">
         <Spinner className="size-6 text-primary" />
-        <p className="text-xs text-muted-foreground">Memuat checklist task...</p>
+        <p className="text-xs text-canvas-muted">Memuat checklist task...</p>
       </div>
     );
   }
@@ -180,9 +180,9 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
     return (
       <div
         role="alert"
-        className="bg-card border border-destructive/30 rounded-2xl p-8 text-center space-y-3"
+        className="bg-card border border-status-danger-border rounded-2xl p-8 text-center space-y-3 shadow-xs"
       >
-        <p className="text-sm font-bold text-destructive">
+        <p className="text-sm font-bold text-status-danger-text">
           Gagal memuat daftar task proyek.
         </p>
         <p className="text-xs text-muted-foreground">

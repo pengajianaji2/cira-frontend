@@ -79,8 +79,8 @@ export function AssetDropzone({ projectId }: AssetDropzoneProps) {
         onClick={() => !uploadMutation.isPending && fileInputRef.current?.click()}
         className={`relative border-2 border-dashed rounded-3xl p-8 sm:p-10 text-center transition-all cursor-pointer select-none ${
           isDragOver
-            ? "border-primary bg-primary/10 scale-[1.005]"
-            : "border-border hover:border-primary/50 bg-card/60 hover:bg-card"
+            ? "border-primary bg-accent scale-[1.005]"
+            : "border-border hover:border-primary/60 bg-card shadow-xs"
         } ${uploadMutation.isPending ? "pointer-events-none opacity-80" : ""}`}
       >
         <input

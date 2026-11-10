@@ -128,22 +128,24 @@ export function FinanceTabContent({ project }: FinanceTabContentProps) {
 
       {/* Tabs Tampilan Keuangan */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-muted/60 p-1 rounded-2xl h-10">
-          <TabsTrigger
-            value="terms"
-            className="rounded-xl text-xs font-semibold px-4 h-8 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"
-          >
-            <HugeiconsIcon icon={File01Icon} className="size-3.5" aria-hidden="true" />
-            Termin Kontrak 100% & Invoice ({terms.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="payments"
-            className="rounded-xl text-xs font-semibold px-4 h-8 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"
-          >
-            <HugeiconsIcon icon={Invoice01Icon} className="size-3.5" aria-hidden="true" />
-            Riwayat Pembayaran ({payments.length})
-          </TabsTrigger>
-        </TabsList>
+        <div className="inline-flex rounded-2xl bg-card border border-border p-1 shadow-xs w-fit">
+          <TabsList className="bg-muted/70 p-1 rounded-xl h-9">
+            <TabsTrigger
+              value="terms"
+              className="rounded-lg text-xs font-semibold px-4 h-7 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"
+            >
+              <HugeiconsIcon icon={File01Icon} className="size-3.5" aria-hidden="true" />
+              Termin Kontrak 100% & Invoice ({terms.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="payments"
+              className="rounded-lg text-xs font-semibold px-4 h-7 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"
+            >
+              <HugeiconsIcon icon={Invoice01Icon} className="size-3.5" aria-hidden="true" />
+              Riwayat Pembayaran ({payments.length})
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tab 1: US-3 Termin Berbobot, Pemicu & Invoice Manual */}
         <TabsContent value="terms" className="space-y-4 mt-0">

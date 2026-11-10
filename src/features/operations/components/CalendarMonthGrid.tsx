@@ -102,7 +102,7 @@ export function CalendarMonthGrid({
       {events.length === 0 && viewMode === "grid" && (
         <div
           role="status"
-          className="rounded-2xl border border-border bg-muted/40 px-4 py-3 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-2"
+          className="rounded-2xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-xs flex flex-wrap items-center justify-between gap-2"
         >
           <span>
             Belum ada acara kalender yang cocok dengan filter pada{" "}
@@ -307,8 +307,8 @@ export function CalendarMonthGrid({
               <Card
                 key={dateOnly}
                 className={cn(
-                  "rounded-2xl border p-3.5 md:p-4 space-y-2.5 shadow-2xs",
-                  isToday ? "border-primary/45 bg-primary/4" : "border-border bg-card"
+                  "rounded-2xl border bg-card p-3.5 md:p-4 space-y-2.5 shadow-2xs",
+                  isToday ? "border-primary/60 ring-1 ring-primary/25" : "border-border"
                 )}
               >
                 <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/60">

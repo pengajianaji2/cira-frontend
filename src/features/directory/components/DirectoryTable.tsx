@@ -84,17 +84,17 @@ export function DirectoryTable() {
   return (
     <div className="space-y-4">
       {/* Header direktori */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-neutral-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-canvas-foreground/15">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-neutral-900">
+            <h1 className="text-xl font-bold tracking-tight text-canvas-foreground">
               Direktori Anggota Tim
             </h1>
-            <Badge variant="outline" className="text-[11px] rounded-md font-mono">
+            <Badge variant="outline" className="bg-card text-foreground border-border text-[11px] rounded-md font-mono">
               {activeCount} Aktif{inactiveCount > 0 ? ` • ${inactiveCount} Nonaktif` : ""}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-xs text-canvas-muted mt-0.5">
             Daftar seluruh personil tim, kontak resmi, dan pembagian peran produk.
           </p>
         </div>

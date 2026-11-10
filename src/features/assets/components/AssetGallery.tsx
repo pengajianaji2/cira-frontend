@@ -58,10 +58,10 @@ export function AssetGallery({ project }: AssetGalleryProps) {
       {/* Gallery Header */}
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-bold text-foreground tracking-tight">
+          <h3 className="text-sm font-bold text-canvas-foreground tracking-tight">
             Galeri Aset Proyek
           </h3>
-          <Badge variant="secondary" className="text-xs px-2 py-0 rounded-full">
+          <Badge variant="outline" className="bg-card text-foreground border-border text-xs px-2 py-0 rounded-full">
             {assets.length} file
           </Badge>
         </div>
@@ -71,7 +71,7 @@ export function AssetGallery({ project }: AssetGalleryProps) {
       {isLoading ? (
         <div className="min-h-[240px] flex flex-col items-center justify-center gap-2">
           <Spinner className="size-6 text-primary" />
-          <p className="text-xs text-muted-foreground">Memuat galeri aset...</p>
+          <p className="text-xs text-canvas-muted">Memuat galeri aset...</p>
         </div>
       ) : assets.length === 0 ? (
         <div className="bg-card border border-border rounded-3xl p-10 text-center max-w-md mx-auto my-6">
