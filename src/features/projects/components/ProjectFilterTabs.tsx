@@ -68,7 +68,7 @@ export function ProjectFilterTabs({
             aria-pressed={isActive}
             onClick={() => handleFilterChange(tab.key)}
             className={cn(
-              "min-h-10 sm:min-h-9 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors inline-flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "min-h-11 sm:min-h-9 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors inline-flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isActive
                 ? "bg-primary text-primary-foreground border border-primary shadow-xs font-semibold"
                 : "bg-background text-muted-foreground border border-border hover:bg-muted hover:text-foreground"

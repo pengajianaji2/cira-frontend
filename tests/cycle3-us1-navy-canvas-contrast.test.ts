@@ -93,12 +93,16 @@ test("AC-1: Workspace dashboard memakai kanvas biru navy gelap (--canvas) sement
   assert.match(calendarGridSource, /role="status"[\s\S]*?\bbg-card\b/);
 
   const activityTimelineSource = readSrc("features/activity/components/ActivityTimeline.tsx");
-  assert.doesNotMatch(activityTimelineSource, /\bbg-(?:destructive|blue-500|purple-500)\/\d+\b/);
+  assert.doesNotMatch(
+    activityTimelineSource,
+    /\bbg-(?:destructive|blue-500|purple-500)\/\d+\b|\bbg-purple-50\b|\btext-purple-700\b|\bborder-purple-200\b/,
+  );
+  assert.match(activityTimelineSource, /bg-accent text-accent-foreground border-border/);
   assert.match(activityTimelineSource, /\bbefore:bg-canvas-muted\/40\b/);
 
   const sprintsSource = readSrc("features/sprints/components/SprintsTabContent.tsx");
-  assert.doesNotMatch(sprintsSource, /\bbg-emerald-500\/5\b/);
-  assert.match(sprintsSource, /activeSprint \?[\s\S]*?\bbg-card\b/);
+  assert.doesNotMatch(sprintsSource, /\bbg-emerald-500\/5\b|\bborder-emerald-500\/45\b/);
+  assert.match(sprintsSource, /activeSprint \?[\s\S]*?\bbg-card\b[\s\S]*?\bborder-status-success-border\b/);
 
   const financeTabSource = readSrc("features/finance/components/FinanceTabContent.tsx");
   assert.match(financeTabSource, /<div className="[^"]*\bbg-card\b[^"]*">\s*<TabsList/);

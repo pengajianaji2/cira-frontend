@@ -48,9 +48,11 @@ test("AC-6: Daftar Proyek membungkus pencarian, tab filter status, tabel/kartu p
   assert.match(contentCard, /<nav[\s\S]*?aria-label="Paginasi proyek"[\s\S]*?\btext-muted-foreground\b[\s\S]*?Sebelumnya[\s\S]*?Selanjutnya/);
   assert.doesNotMatch(projectsPage, /\btext-canvas-muted\b|\btext-primary(?!-foreground)\b/);
 
-  // 2) Tab filter status memakai aria-pressed, group, latar netral bg-background untuk tab nonaktif, dan bebas text-primary
+  // 2) Tab filter status memakai aria-pressed, group, target sentuh mobile >= 44px, latar netral bg-background, dan bebas text-primary
   assert.match(filterTabsSource, /role="group"[\s\S]*?aria-label="Filter status proyek"/);
   assert.match(filterTabsSource, /aria-pressed=\{isActive\}/);
+  assert.match(filterTabsSource, /\bmin-h-11 sm:min-h-9\b/);
+  assert.doesNotMatch(filterTabsSource, /\bmin-h-10\b/);
   assert.match(filterTabsSource, /\bbg-primary\b[\s\S]*?\bbg-background\b/);
   assert.doesNotMatch(filterTabsSource, /\btext-primary(?!-foreground)\b/);
 
@@ -94,9 +96,15 @@ test("AC-7: Kalender Operasional memisahkan navigasi waktu, rentang kustom, view
   assert.match(controlsSource, /role="alert"[\s\S]*?\btext-status-danger-text\b/);
   assert.doesNotMatch(controlsSource, /\btext-destructive\b/);
 
+  assert.match(
+    calendarWorkspace,
+    /className="[^"]*\bh-11 md:h-9\b[^"]*"[\s\S]*?Tambah Agenda Manual/,
+  );
+  assert.doesNotMatch(calendarWorkspace, /\bh-10 md:h-9\b/);
+
   // View mode toggle & filter proyek & sumber acara di dalam kartu kontrol putih
   assert.match(controlsSource, /aria-label="Mode tampilan kalender"[\s\S]*?aria-pressed=\{viewMode === "grid"\}[\s\S]*?Kalender[\s\S]*?aria-pressed=\{viewMode === "list"\}[\s\S]*?Daftar Agenda/);
-  assert.match(controlsSource, /Filter Proyek[\s\S]*?Reset Default[\s\S]*?id="cal-project-search"[\s\S]*?autoCorrect="off"/);
+  assert.match(controlsSource, /Filter Proyek[\s\S]*?Reset Default[\s\S]*?id="cal-project-search"[\s\S]*?autoCorrect="off"[\s\S]*?\bh-11 md:h-9\b[\s\S]*?\btext-base md:text-xs\b/);
   assert.match(controlsSource, /role="group"[\s\S]*?aria-label="Filter sumber acara kalender"[\s\S]*?Semua Tipe/);
   assert.doesNotMatch(controlsSource, /\btext-primary(?!-foreground)\b|\btext-canvas-muted\b/);
 });
@@ -122,10 +130,10 @@ test("AC-8: Direktori Tim dan Kelola Akses menempatkan seluruh pencarian/filter,
   );
   assert.match(dirCard, /className="[^"]*\bbg-card\b[^"]*\bborder-border\b[^"]*\brounded-3xl\b[^"]*\bshadow-xs\b/);
 
-  // Pencarian + select dropdown di dalam <search> pada bagian atas kartu konten
+  // Pencarian + select dropdown di dalam <search> pada bagian atas kartu konten (konsisten 16px & >= 44px mobile)
   assert.match(
     dirCard,
-    /<search[\s\S]*?htmlFor="directory-search"[\s\S]*?id="directory-search"[\s\S]*?htmlFor="directory-role-filter"[\s\S]*?id="directory-role-filter"[\s\S]*?htmlFor="directory-status-filter"[\s\S]*?id="directory-status-filter"[\s\S]*?<\/search>/,
+    /<search[\s\S]*?htmlFor="directory-search"[\s\S]*?id="directory-search"[\s\S]*?htmlFor="directory-role-filter"[\s\S]*?id="directory-role-filter"[\s\S]*?\btext-base sm:text-xs\b[\s\S]*?\bmin-h-11 sm:min-h-9\b[\s\S]*?htmlFor="directory-status-filter"[\s\S]*?id="directory-status-filter"[\s\S]*?\btext-base sm:text-xs\b[\s\S]*?\bmin-h-11 sm:min-h-9\b[\s\S]*?<\/search>/,
   );
   // Seluruh state (loading, error, empty, data table) di dalam kartu konten putih dengan token semantik
   assert.match(dirCard, /border-accent-foreground border-t-transparent[\s\S]*?Memuat data direktori tim\.\.\./);

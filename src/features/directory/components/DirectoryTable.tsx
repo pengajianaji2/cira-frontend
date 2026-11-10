@@ -142,7 +142,7 @@ export function DirectoryTable() {
                 aria-label="Filter berdasarkan role"
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="w-full sm:w-auto text-sm sm:text-xs px-3 min-h-11 sm:min-h-9 rounded-xl border border-input-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full sm:w-auto text-base sm:text-xs px-3 min-h-11 sm:min-h-9 rounded-xl border border-input-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="all">Semua Role</option>
                 <option value="owner">Owner</option>
@@ -160,7 +160,7 @@ export function DirectoryTable() {
                 aria-label="Filter berdasarkan status akun"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full sm:w-auto text-sm sm:text-xs px-3 min-h-11 sm:min-h-9 rounded-xl border border-input-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full sm:w-auto text-base sm:text-xs px-3 min-h-11 sm:min-h-9 rounded-xl border border-input-border bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="all">Semua Status</option>
                 <option value="active">Aktif Saja</option>
