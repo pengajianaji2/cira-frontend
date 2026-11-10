@@ -175,7 +175,13 @@ export function CalendarHeaderControls({
     (includeCancelled ? 1 : 0);
 
   return (
-    <section className="bg-card border border-border rounded-3xl p-4 md:p-6 shadow-xs space-y-4">
+    <section
+      className="bg-card border border-border rounded-3xl p-4 md:p-6 shadow-xs space-y-4"
+      aria-labelledby="calendar-controls-heading"
+    >
+      <h2 id="calendar-controls-heading" className="sr-only">
+        Navigasi rentang waktu, pengalih tampilan, dan filter kalender
+      </h2>
       {/* Baris 1: Navigasi Waktu (<= 90 Hari), Pengalih Tampilan, & Filter Proyek */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
@@ -186,7 +192,7 @@ export function CalendarHeaderControls({
               size="icon-sm"
               onClick={onPrevMonth}
               aria-label="Bulan sebelumnya"
-              className="rounded-full size-9"
+              className="rounded-full size-11 md:size-9"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" aria-hidden="true" />
             </Button>
@@ -199,7 +205,7 @@ export function CalendarHeaderControls({
               size="icon-sm"
               onClick={onNextMonth}
               aria-label="Bulan berikutnya"
-              className="rounded-full size-9"
+              className="rounded-full size-11 md:size-9"
             >
               <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" aria-hidden="true" />
             </Button>
@@ -210,7 +216,7 @@ export function CalendarHeaderControls({
             variant="outline"
             size="sm"
             onClick={onToday}
-            className="rounded-full h-9 px-3.5 text-xs font-medium"
+            className="rounded-full h-11 md:h-9 px-3.5 text-xs font-medium"
           >
             Hari Ini
           </Button>
@@ -221,7 +227,7 @@ export function CalendarHeaderControls({
                 type="button"
                 variant={isCustomRange ? "secondary" : "outline"}
                 size="sm"
-                className="rounded-full h-9 px-3.5 text-xs font-mono"
+                className="rounded-full h-11 md:h-9 px-3.5 text-xs font-mono"
               >
                 <HugeiconsIcon
                   icon={Calendar01Icon}
@@ -233,7 +239,10 @@ export function CalendarHeaderControls({
                 </span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-80 rounded-2xl p-4">
+            <PopoverContent
+              align="start"
+              className="w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-4"
+            >
               <form noValidate onSubmit={handleRangeSubmit} className="space-y-3">
                 <div>
                   <h3 className="text-xs font-bold text-foreground">
@@ -280,7 +289,7 @@ export function CalendarHeaderControls({
                 {rangeError && (
                   <p
                     role="alert"
-                    className="text-[11px] text-destructive flex items-start gap-1.5"
+                    className="text-[11px] text-status-danger-text flex items-start gap-1.5"
                   >
                     <HugeiconsIcon
                       icon={AlertCircleIcon}
@@ -313,7 +322,7 @@ export function CalendarHeaderControls({
         {/* Pengalih Mode Tampilan & Filter Proyek */}
         <div className="flex flex-wrap items-center gap-2">
           <div
-            className="hidden md:inline-flex items-center rounded-full border border-border bg-muted/40 p-0.5"
+            className="hidden md:inline-flex items-center gap-0.5 rounded-full border border-border bg-muted/40 p-0.5"
             role="group"
             aria-label="Mode tampilan kalender"
           >
@@ -321,7 +330,7 @@ export function CalendarHeaderControls({
               type="button"
               onClick={() => onChangeViewMode("grid")}
               aria-pressed={viewMode === "grid"}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 viewMode === "grid"
                   ? "bg-card text-foreground shadow-2xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
@@ -333,7 +342,7 @@ export function CalendarHeaderControls({
               type="button"
               onClick={() => onChangeViewMode("list")}
               aria-pressed={viewMode === "list"}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 viewMode === "list"
                   ? "bg-card text-foreground shadow-2xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
@@ -349,7 +358,7 @@ export function CalendarHeaderControls({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="rounded-full h-9 px-3.5 text-xs font-medium"
+                className="rounded-full h-11 md:h-9 px-3.5 text-xs font-medium"
               >
                 <HugeiconsIcon icon={FilterIcon} className="size-3.5 mr-1.5" aria-hidden="true" />
                 <span>Filter Proyek</span>
@@ -366,7 +375,10 @@ export function CalendarHeaderControls({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-80 rounded-2xl p-4 space-y-3">
+            <PopoverContent
+              align="end"
+              className="w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-4 space-y-3"
+            >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-foreground">Status Proyek</span>
@@ -377,7 +389,7 @@ export function CalendarHeaderControls({
                       onChangeProjectIds([]);
                       onChangeIncludeCancelled(false);
                     }}
-                    className="text-[11px] font-medium text-accent-foreground hover:underline"
+                    className="text-[11px] font-medium text-accent-foreground hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     Reset Default
                   </button>
@@ -410,7 +422,11 @@ export function CalendarHeaderControls({
                   value={projectSearch}
                   onChange={(e) => setProjectSearch(e.target.value)}
                   placeholder="Cari nama proyek atau klien..."
-                  className="h-8 text-xs rounded-xl"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  className="h-9 text-xs rounded-xl bg-background"
                 />
 
                 <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
@@ -468,7 +484,11 @@ export function CalendarHeaderControls({
       </div>
 
       {/* Baris 2: Filter Tipe Acara */}
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/70">
+      <div
+        role="group"
+        aria-label="Filter sumber acara kalender"
+        className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/70"
+      >
         <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mr-1">
           Sumber Acara:
         </span>
@@ -476,7 +496,7 @@ export function CalendarHeaderControls({
           type="button"
           onClick={onResetTypes}
           aria-pressed={selectedTypes.length === ALL_SOURCE_TYPES.length}
-          className={`min-h-8 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+          className={`min-h-11 md:min-h-8 px-3 py-1 rounded-full text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
             selectedTypes.length === ALL_SOURCE_TYPES.length
               ? "bg-primary text-primary-foreground border-primary font-semibold"
               : "bg-background text-muted-foreground border-border hover:text-foreground"
@@ -493,7 +513,7 @@ export function CalendarHeaderControls({
               type="button"
               onClick={() => onToggleType(type)}
               aria-pressed={active}
-              className={`min-h-8 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+              className={`min-h-11 md:min-h-8 px-3 py-1 rounded-full text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 active
                   ? "bg-secondary text-secondary-foreground border-secondary font-semibold"
                   : "bg-background text-muted-foreground border-border hover:text-foreground"

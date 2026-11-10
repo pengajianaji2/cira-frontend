@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Folder01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Folder01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { Input } from "@/components/ui/input";
 import { useMyPermissionsQuery } from "@/features/auth";
 import {
@@ -59,72 +60,99 @@ export default function ProjectsPage() {
         action={canCreateProject ? <CreateProjectDialog /> : undefined}
       />
 
-      <div className="max-w-md">
-        <label htmlFor="project-search" className="sr-only">
-          Cari nama proyek atau klien
-        </label>
-        <Input
-          id="project-search"
-          type="search"
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-          placeholder="Cari proyek atau klien…"
-          autoComplete="off"
-          className="bg-card text-foreground"
-        />
-      </div>
+      <section
+        aria-labelledby="projects-content-heading"
+        className="bg-card border border-border rounded-3xl p-4 sm:p-6 shadow-xs space-y-5"
+      >
+        <h2 id="projects-content-heading" className="sr-only">
+          Pencarian, filter status, dan daftar proyek
+        </h2>
 
-      {/* Filter Tabs Bar */}
-      <div className="space-y-4">
-        <ProjectFilterTabs
-          currentFilter={filterStatus as FilterStatus}
-          onFilterChange={(s) => setFilterStatus(s)}
-          projects={projects}
-          counts={counts}
-        />
-
-        {/* Projects List / Table */}
-        {listingQuery.isError ? (
-          <div role="alert" className="rounded-xl border border-status-danger-border bg-card p-5 text-sm text-foreground">
-            <p className="font-medium text-status-danger-text">Daftar proyek belum dapat dimuat.</p>
-            <p className="mt-1 text-muted-foreground">{listingQuery.error.message}</p>
-            <button
-              type="button"
-              onClick={() => void listingQuery.refetch()}
-              className="mt-3 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted"
-            >
-              Coba lagi
-            </button>
+        <search className="space-y-3 border-b border-border/70 pb-4">
+          <div className="relative max-w-md">
+            <label htmlFor="project-search" className="sr-only">
+              Cari nama proyek atau klien
+            </label>
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <HugeiconsIcon icon={Search01Icon} className="size-4" aria-hidden="true" />
+            </span>
+            <Input
+              id="project-search"
+              name="search"
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Cari proyek atau klien…"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              className="bg-background text-foreground border-border pl-9 min-h-11 sm:min-h-10 rounded-xl text-base md:text-sm"
+            />
           </div>
-        ) : (
-          <ProjectTable projects={projects} isLoading={listingQuery.isPending} />
-        )}
-        {listingQuery.data && listingQuery.data.totalPages > 1 && (
-          <nav aria-label="Paginasi proyek" className="flex items-center justify-between gap-3 pt-2">
-            <p className="text-xs text-canvas-muted" aria-live="polite">
-              Halaman {listingQuery.data.page} dari {listingQuery.data.totalPages} · {listingQuery.data.total} proyek
-            </p>
-            <div className="flex gap-2">
+
+          <ProjectFilterTabs
+            currentFilter={filterStatus as FilterStatus}
+            onFilterChange={(s) => setFilterStatus(s)}
+            projects={projects}
+            counts={counts}
+          />
+        </search>
+
+        {/* Projects List / Table & Error State */}
+        <div className="space-y-4">
+          {listingQuery.isError ? (
+            <div
+              role="alert"
+              className="rounded-2xl border border-status-danger-border bg-status-danger-surface p-5 text-sm text-foreground"
+            >
+              <p className="font-semibold text-status-danger-text">
+                Daftar proyek belum dapat dimuat.
+              </p>
+              <p className="mt-1 text-muted-foreground">{listingQuery.error.message}</p>
               <button
                 type="button"
-                disabled={page <= 1 || listingQuery.isFetching}
-                onClick={() => setPage((value) => Math.max(1, value - 1))}
-                className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
+                onClick={() => void listingQuery.refetch()}
+                className="mt-3 inline-flex items-center justify-center rounded-xl border border-border bg-card px-4 min-h-11 sm:min-h-9 text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                Sebelumnya
-              </button>
-              <button
-                type="button"
-                disabled={page >= listingQuery.data.totalPages || listingQuery.isFetching}
-                onClick={() => setPage((value) => value + 1)}
-                className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
-              >
-                Selanjutnya
+                Coba lagi
               </button>
             </div>
-          </nav>
-        )}
-      </div>
+          ) : (
+            <ProjectTable projects={projects} isLoading={listingQuery.isPending} />
+          )}
+
+          {listingQuery.data && listingQuery.data.totalPages > 1 && (
+            <nav
+              aria-label="Paginasi proyek"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-border/70"
+            >
+              <p className="text-xs text-muted-foreground" aria-live="polite">
+                Halaman {listingQuery.data.page} dari {listingQuery.data.totalPages} ·{" "}
+                {listingQuery.data.total} proyek
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={page <= 1 || listingQuery.isFetching}
+                  onClick={() => setPage((value) => Math.max(1, value - 1))}
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 min-h-11 sm:min-h-9 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Sebelumnya
+                </button>
+                <button
+                  type="button"
+                  disabled={page >= listingQuery.data.totalPages || listingQuery.isFetching}
+                  onClick={() => setPage((value) => value + 1)}
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 min-h-11 sm:min-h-9 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Selanjutnya
+                </button>
+              </div>
+            </nav>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
