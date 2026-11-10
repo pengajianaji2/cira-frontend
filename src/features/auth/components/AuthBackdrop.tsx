@@ -16,7 +16,7 @@ export function AuthBackdrop({ children, className }: AuthBackdropProps) {
     <main
       data-slot="auth-backdrop"
       className={cn(
-        "relative min-h-screen min-h-dvh w-full flex items-center justify-center p-4 sm:p-6 bg-background overflow-x-clip overflow-y-auto",
+        "relative min-h-screen min-h-dvh w-full flex items-center justify-center p-4 sm:p-6 bg-canvas overflow-x-clip overflow-y-auto",
         className
       )}
     >
@@ -25,7 +25,7 @@ export function AuthBackdrop({ children, className }: AuthBackdropProps) {
         height={20}
         cr={1.1}
         glow={false}
-        className="text-foreground/15"
+        className="text-canvas-dot"
       />
       <div className="relative z-10 w-full flex items-center justify-center">
         {children}

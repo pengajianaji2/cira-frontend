@@ -50,16 +50,16 @@ export function ProjectDetailHeader({
   return (
     <div className="space-y-4">
       {/* Breadcrumb & Back Link */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 text-xs text-canvas-muted">
         <Link
           href="/projects"
-          className="hover:text-foreground inline-flex items-center gap-1 transition-colors font-medium"
+          className="hover:text-canvas-foreground inline-flex items-center gap-1 transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
         >
           <HugeiconsIcon icon={ArrowLeft02Icon} className="size-3.5" aria-hidden="true" />
           Daftar Proyek
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="text-foreground font-semibold truncate max-w-[240px]">
+        <span className="text-canvas-foreground font-semibold truncate max-w-[240px]">
           {project.name}
         </span>
       </div>
@@ -113,7 +113,7 @@ export function ProjectDetailHeader({
       {/* Navigation Tabs Bar */}
       <nav
         aria-label="Tab Proyek"
-        className="border-b border-border flex items-center gap-2 overflow-x-auto no-scrollbar"
+        className="bg-card border border-border rounded-2xl px-3 shadow-xs flex items-center gap-2 overflow-x-auto no-scrollbar"
       >
         {navTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -121,7 +121,7 @@ export function ProjectDetailHeader({
             return (
               <div
                 key={tab.id}
-                className="py-2.5 px-3.5 text-xs text-muted-foreground/60 flex items-center gap-1.5 cursor-not-allowed select-none whitespace-nowrap"
+                className="py-2.5 px-3.5 text-xs text-muted-foreground opacity-70 flex items-center gap-1.5 cursor-not-allowed select-none whitespace-nowrap"
                 title="Akses modul memerlukan izin peran tambahan"
               >
                 <span>{tab.label}</span>

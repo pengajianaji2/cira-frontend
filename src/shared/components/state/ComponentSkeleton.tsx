@@ -226,7 +226,7 @@ export function TabContentSkeleton({ tab = "prd", className }: TabContentSkeleto
     return (
       <div className={cn("space-y-5", className)}>
         {/* Dropzone skeleton */}
-        <div className="h-36 rounded-3xl border-2 border-dashed border-border bg-card/60 flex flex-col items-center justify-center gap-2 p-6">
+        <div className="h-36 rounded-3xl border-2 border-dashed border-border bg-card shadow-xs flex flex-col items-center justify-center gap-2 p-6">
           <Skeleton className="size-10 rounded-full" />
           <Skeleton className="h-4 w-52 rounded-md" />
           <Skeleton className="h-3 w-36 rounded-md" />

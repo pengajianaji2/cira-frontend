@@ -119,7 +119,7 @@ export function StatusApprovalBanner({
 
   return (
     <>
-      <div className="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-6 shadow-xs space-y-5">
+      <div className="bg-status-warning-surface border border-status-warning-border rounded-3xl p-6 shadow-xs space-y-5">
         {/* Header Banner */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">

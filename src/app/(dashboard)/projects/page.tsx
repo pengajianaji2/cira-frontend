@@ -46,18 +46,13 @@ export default function ProjectsPage() {
       {/* Top Header Banner */}
       <div className="bg-card border border-border rounded-3xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="size-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Pipeline Workspace
-            </span>
-          </div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
             <HugeiconsIcon icon={Folder01Icon} className="size-7 text-primary" />
             Daftar Pipeline Proyek
           </h1>
           <p className="text-xs md:text-sm text-muted-foreground mt-1 max-w-2xl">
-            Kelola tahapan proyek dari negosiasi awal (<span className="text-foreground font-medium">Lead</span>), pengerjaan (<span className="text-foreground font-medium">Active</span>), hingga serah terima selesai.
+            Kelola tahapan proyek dari negosiasi awal (<span className="text-foreground font-medium">Lead</span>),
+            pengerjaan (<span className="text-foreground font-medium">Active</span>), hingga serah terima selesai.
           </p>
         </div>
 
@@ -67,8 +62,18 @@ export default function ProjectsPage() {
       </div>
 
       <div className="max-w-md">
-        <label htmlFor="project-search" className="sr-only">Cari nama proyek atau klien</label>
-        <Input id="project-search" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Cari proyek atau klien…" autoComplete="off" />
+        <label htmlFor="project-search" className="sr-only">
+          Cari nama proyek atau klien
+        </label>
+        <Input
+          id="project-search"
+          type="search"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder="Cari proyek atau klien…"
+          autoComplete="off"
+          className="bg-card text-foreground"
+        />
       </div>
 
       {/* Filter Tabs Bar */}
@@ -82,10 +87,14 @@ export default function ProjectsPage() {
 
         {/* Projects List / Table */}
         {listingQuery.isError ? (
-          <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-sm">
-            <p className="font-medium">Daftar proyek belum dapat dimuat.</p>
+          <div role="alert" className="rounded-xl border border-status-danger-border bg-card p-5 text-sm text-foreground">
+            <p className="font-medium text-status-danger-text">Daftar proyek belum dapat dimuat.</p>
             <p className="mt-1 text-muted-foreground">{listingQuery.error.message}</p>
-            <button type="button" onClick={() => void listingQuery.refetch()} className="mt-3 rounded-lg border px-3 py-2 text-xs font-medium hover:bg-muted">
+            <button
+              type="button"
+              onClick={() => void listingQuery.refetch()}
+              className="mt-3 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted"
+            >
               Coba lagi
             </button>
           </div>
@@ -94,12 +103,26 @@ export default function ProjectsPage() {
         )}
         {listingQuery.data && listingQuery.data.totalPages > 1 && (
           <nav aria-label="Paginasi proyek" className="flex items-center justify-between gap-3 pt-2">
-            <p className="text-xs text-muted-foreground" aria-live="polite">
+            <p className="text-xs text-canvas-muted" aria-live="polite">
               Halaman {listingQuery.data.page} dari {listingQuery.data.totalPages} · {listingQuery.data.total} proyek
             </p>
             <div className="flex gap-2">
-              <button type="button" disabled={page <= 1 || listingQuery.isFetching} onClick={() => setPage((value) => Math.max(1, value - 1))} className="rounded-lg border px-3 py-2 text-xs disabled:opacity-50">Sebelumnya</button>
-              <button type="button" disabled={page >= listingQuery.data.totalPages || listingQuery.isFetching} onClick={() => setPage((value) => value + 1)} className="rounded-lg border px-3 py-2 text-xs disabled:opacity-50">Selanjutnya</button>
+              <button
+                type="button"
+                disabled={page <= 1 || listingQuery.isFetching}
+                onClick={() => setPage((value) => Math.max(1, value - 1))}
+                className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
+              >
+                Sebelumnya
+              </button>
+              <button
+                type="button"
+                disabled={page >= listingQuery.data.totalPages || listingQuery.isFetching}
+                onClick={() => setPage((value) => value + 1)}
+                className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
+              >
+                Selanjutnya
+              </button>
             </div>
           </nav>
         )}

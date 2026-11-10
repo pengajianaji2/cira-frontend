@@ -218,16 +218,16 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
       {/* SEKSI 1: SPRINT AKTIF */}
       <section aria-labelledby="active-sprint-heading" className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 id="active-sprint-heading" className="text-sm font-bold text-foreground">
+          <h3 id="active-sprint-heading" className="text-sm font-bold text-canvas-foreground">
             Sprint Aktif
           </h3>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-canvas-muted">
             Maksimal 1 sprint berjalan bersamaan
           </span>
         </div>
 
         {activeSprint ? (
-          <div className="bg-emerald-500/5 border-2 border-emerald-500/30 rounded-3xl p-5 shadow-xs space-y-4">
+          <div className="bg-card border-2 border-emerald-500/45 rounded-3xl p-5 shadow-xs space-y-4">
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
               <div className="space-y-2 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
@@ -335,15 +335,15 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
       <section aria-labelledby="planning-sprint-heading" className="space-y-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <h3 id="planning-sprint-heading" className="text-sm font-bold text-foreground">
+            <h3 id="planning-sprint-heading" className="text-sm font-bold text-canvas-foreground">
               Sprint Perencanaan
             </h3>
-            <Badge variant="secondary" className="text-[11px] font-mono rounded-full px-2 py-0">
+            <Badge variant="outline" className="bg-card text-foreground border-border text-[11px] font-mono rounded-full px-2 py-0">
               {planningSprints.length}
             </Badge>
           </div>
           {activeSprint && planningSprints.length > 0 && (
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[11px] text-canvas-muted">
               Tutup sprint aktif terlebih dahulu sebelum mengaktifkan sprint baru
             </span>
           )}
@@ -473,10 +473,10 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
       {/* SEKSI 3: SPRINT SELESAI */}
       <section aria-labelledby="completed-sprint-heading" className="space-y-3">
         <div className="flex items-center gap-2">
-          <h3 id="completed-sprint-heading" className="text-sm font-bold text-foreground">
+          <h3 id="completed-sprint-heading" className="text-sm font-bold text-canvas-foreground">
             Sprint Selesai
           </h3>
-          <Badge variant="secondary" className="text-[11px] font-mono rounded-full px-2 py-0">
+          <Badge variant="outline" className="bg-card text-foreground border-border text-[11px] font-mono rounded-full px-2 py-0">
             {completedSprints.length}
           </Badge>
         </div>

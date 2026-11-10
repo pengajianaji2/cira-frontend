@@ -11,10 +11,10 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="text-2xl font-bold tracking-tight text-canvas-foreground">
           Profil & Keamanan
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-canvas-muted mt-1">
           Kelola informasi identitas, hak akses tim, dan kata sandi akun Anda.
         </p>
       </div>

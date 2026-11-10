@@ -31,9 +31,9 @@ export default function AccessPoliciesPage() {
     enabled: user?.roles.includes("owner") === true,
   });
 
-  if (!user?.roles.includes("owner")) return <p className="p-8 text-sm text-muted-foreground">Halaman ini hanya tersedia untuk owner.</p>;
-  if (query.isLoading) return <p className="p-8 text-sm text-muted-foreground">Memuat policy akses…</p>;
-  if (query.isError || !query.data) return <p role="alert" className="p-8 text-sm text-destructive">Policy tidak dapat dimuat. Pastikan migrasi database sudah dijalankan.</p>;
+  if (!user?.roles.includes("owner")) return <p className="p-8 text-sm text-canvas-muted">Halaman ini hanya tersedia untuk owner.</p>;
+  if (query.isLoading) return <p className="p-8 text-sm text-canvas-muted">Memuat policy akses…</p>;
+  if (query.isError || !query.data) return <div role="alert" className="mx-auto max-w-5xl p-6"><div className="rounded-2xl border border-status-danger-border bg-card p-6 text-sm text-status-danger-text">Policy tidak dapat dimuat. Pastikan migrasi database sudah dijalankan.</div></div>;
 
   const updatePermission = (policy: Policy, permission: string, checked: boolean) => {
     const permissions = checked ? [...new Set([...policy.permissions, permission])] : policy.permissions.filter((item) => item !== permission);
@@ -45,7 +45,7 @@ export default function AccessPoliciesPage() {
   const groups = [...new Set(query.data.permissions.map((item) => item.group))];
 
   return <div className="mx-auto max-w-5xl space-y-6 p-6">
-    <div><h1 className="text-2xl font-bold">Policy Akses</h1><p className="mt-1 text-sm text-muted-foreground">Owner dapat mengatur capability setiap role. Perubahan diterapkan langsung pada API.</p></div>
+    <div><h1 className="text-2xl font-bold text-canvas-foreground">Policy Akses</h1><p className="mt-1 text-sm text-canvas-muted">Owner dapat mengatur capability setiap role. Perubahan diterapkan langsung pada API.</p></div>
     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Permission pengelolaan policy untuk owner dikunci agar akses administratif tidak hilang dan owner tidak terkunci dari pengaturan akses.</div>
     {query.data.policies.map((policy) => <Card key={policy.role}>
       <CardHeader><CardTitle className="capitalize">{policy.role}</CardTitle></CardHeader>
@@ -56,8 +56,8 @@ export default function AccessPoliciesPage() {
         })}</div></section>)}
       </CardContent>
     </Card>)}
-    <p className="text-xs text-muted-foreground">Jika pengguna memiliki lebih dari satu role, aksesnya adalah gabungan capability dari role-role tersebut.</p>
+    <p className="text-xs text-canvas-muted">Jika pengguna memiliki lebih dari satu role, aksesnya adalah gabungan capability dari role-role tersebut.</p>
     <Card><CardHeader><CardTitle>Riwayat perubahan policy</CardTitle></CardHeader><CardContent className="space-y-3">{historyQuery.data?.length ? historyQuery.data.map((item) => <div key={item.id} className="border-b pb-3 text-sm last:border-0"><p className="font-medium">{item.role} · {new Date(item.createdAt).toLocaleString("id-ID")}</p><p className="text-xs text-muted-foreground">Diubah oleh {item.actorEmail}</p>{item.addedPermissions.length > 0 && <p className="mt-1 text-xs text-emerald-700">Ditambahkan: {item.addedPermissions.join(", ")}</p>}{item.removedPermissions.length > 0 && <p className="mt-1 text-xs text-amber-700">Dicabut: {item.removedPermissions.join(", ")}</p>}</div>) : <p className="text-sm text-muted-foreground">Belum ada perubahan policy.</p>}</CardContent></Card>
-    <Button variant="outline" onClick={() => void query.refetch()} disabled={mutation.isPending}>Muat ulang policy</Button>
+    <Button variant="outline" className="bg-card text-foreground hover:bg-muted" onClick={() => void query.refetch()} disabled={mutation.isPending}>Muat ulang policy</Button>
   </div>;
 }

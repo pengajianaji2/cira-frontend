@@ -47,7 +47,7 @@ export default function RootLayout({
         jetbrainsMono.variable
       )}
     >
-      <body className={cn("min-h-full flex flex-col bg-background text-foreground font-sans", inter.className)}>
+      <body className={cn("min-h-full flex flex-col bg-canvas text-foreground font-sans", inter.className)}>
         <Providers>{children}</Providers>
       </body>
     </html>
