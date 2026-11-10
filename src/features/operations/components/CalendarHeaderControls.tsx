@@ -295,7 +295,7 @@ export function CalendarHeaderControls({
                 {rangeError && (
                   <p
                     role="alert"
-                    className="text-[11px] text-status-danger-text flex items-start gap-1.5"
+                    className="text-[11px] text-destructive flex items-start gap-1.5"
                   >
                     <HugeiconsIcon
                       icon={AlertCircleIcon}
@@ -395,7 +395,7 @@ export function CalendarHeaderControls({
                       onChangeProjectIds([]);
                       onChangeIncludeCancelled(false);
                     }}
-                    className="text-[11px] font-medium text-accent-foreground hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="text-[11px] font-medium text-primary hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     Reset Default
                   </button>
@@ -432,7 +432,7 @@ export function CalendarHeaderControls({
                   autoCorrect="off"
                   autoCapitalize="off"
                   spellCheck={false}
-                  className="h-11 md:h-9 text-base md:text-xs rounded-xl bg-background"
+                  className="h-11 md:h-9 text-base md:text-xs rounded-xl"
                 />
 
                 <div className="max-h-48 overflow-y-auto space-y-1 pr-1">

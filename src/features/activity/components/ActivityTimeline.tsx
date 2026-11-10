@@ -44,7 +44,7 @@ function getCategoryConfig(category: ActivityLog["category"]) {
       return {
         label: "Proyek",
         icon: Folder01Icon,
-        colorClass: "bg-status-info-surface text-status-info-text border-status-info-border",
+        colorClass: "bg-blue-500/10 text-blue-600 border-blue-500/20",
         badgeVariant: "outline" as const,
       };
     case "task":
@@ -58,7 +58,7 @@ function getCategoryConfig(category: ActivityLog["category"]) {
       return {
         label: "Aset",
         icon: Image01Icon,
-        colorClass: "bg-accent text-accent-foreground border-border",
+        colorClass: "bg-purple-500/10 text-purple-600 border-purple-500/20",
         badgeVariant: "outline" as const,
       };
     default:
@@ -124,7 +124,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
           <p className="text-xs text-muted-foreground">Memuat riwayat aktivitas...</p>
         </div>
       ) : isError ? (
-        <div role="alert" className="bg-status-danger-surface border border-status-danger-border rounded-2xl p-8 text-center text-status-danger-text shadow-xs">
+        <div role="alert" className="bg-destructive/10 border border-destructive/20 rounded-2xl p-8 text-center text-destructive">
           <p className="text-xs font-medium">Gagal memuat log aktivitas.</p>
         </div>
       ) : activities.length === 0 ? (
@@ -140,7 +140,7 @@ export function ActivityTimeline({ projectId }: ActivityTimelineProps) {
           </p>
         </div>
       ) : (
-        <div className="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-[17px] sm:before:left-[21px] before:top-3 before:bottom-3 before:w-0.5 before:bg-canvas-muted/40">
+        <div className="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-[17px] sm:before:left-[21px] before:top-3 before:bottom-3 before:w-0.5 before:bg-border/80">
           {activities.map((item) => {
             const config = getCategoryConfig(item.category);
             const actor = item.user ?? { name: "Pengguna", role: "Anggota" };

@@ -4,12 +4,12 @@ Dashboard web terpadu berbasis **Next.js App Router** untuk tim agensi/studio pe
 
 ---
 
-## 🚀 Fitur Utama (Workspace Kanvas Navy, Kartu Header Seragam & Modul Inti)
+## 🚀 Fitur Utama (Kanvas Terang, Kartu Header Seragam & Modul Inti)
 
 Mengacu pada spesifikasi [`docs/prd.md`](../docs/prd.md), [`docs/design.md`](../docs/design.md), dan [`MASTER.md`](../docs/design-system/cira-pm/MASTER.md):
 
 ### 1. Autentikasi, Profil Pengguna, RBAC Dinamis & Direktori Tim
-- **Autentikasi & Pemulihan Akun (`AuthBackdrop`)**: Halaman login (`/login`), lupa password (`/forgot-password`), atur ulang password token 30 menit (`/reset-password`), dan aktivasi akun undangan 24 jam (`/activate`) memakai latar kanvas luar biru navy gelap (`--canvas`) berpola titik terang lembut aksesibel (`DotPattern` statis dengan `--canvas-dot`) di belakang kartu formulir putih solid (`--card`).
+- **Autentikasi & Pemulihan Akun (`AuthBackdrop`)**: Halaman login (`/login`), lupa password (`/forgot-password`), atur ulang password token 30 menit (`/reset-password`), dan aktivasi akun undangan 24 jam (`/activate`) memakai latar kanvas tema terang (`--background`) berpola titik netral lembut aksesibel (`DotPattern` statis `text-foreground/15`) di belakang kartu formulir putih solid (`--card`).
 - **Pemotongan Foto Profil 1:1 & Avatar Seragam (`AvatarCropDialog`, `UserAvatar`)**: Pengguna dapat memilih foto PNG/JPG/WebP (maksimal 2 MB), memposisikan & memperbesar potongan rasio `1:1` lewat mouse, sentuhan, atau keyboard pada dialog interaktif, serta menampilkan avatar lingkaran seragam dengan fallback inisial otomatis lintas halaman.
 - **Profil Kontak Opsional & Direktori Tim (`/profile`, `/directory`)**: Pembaruan nama, email, WhatsApp (E.164 opsional/nullable), dan username Instagram (opsional/nullable) pada `ProfileForm` langsung menyinkronkan Direktori Tim dan query terkait; halaman `/directory` menyediakan pencarian/filter role, pengiriman undangan, dan pengaturan role/status akun oleh Owner.
 - **Kelola Akses (`/access-policies`)**: Pengaturan capability matrix dinamis per role (`Owner`, `Developer`, `Operasional`) beserta histori audit perubahannya khusus Owner.
@@ -35,11 +35,11 @@ Mengacu pada spesifikasi [`docs/prd.md`](../docs/prd.md), [`docs/design.md`](../
 - **Filter, Drawer & Deep Link (`CalendarHeaderControls`, `CalendarEventDrawer`)**: Filter rentang tanggal (maks 90 hari), sumber event, proyek, status proyek, serta toggle agenda dibatalkan; drawer detail menyediakan tautan navigasi langsung ke modul/proyek sumber.
 - **Agenda Manual & Proteksi RBAC (`OperationalEventModal`, `CancelAgendaDialog`, `CalendarAccessDenied`)**: Pembuatan agenda mendukung mode terjadwal/all-day dengan `projectId` opsional, pembatalan soft-status (`cancelled`), log follow-up manual, dan proteksi akses berbasis `operations.calendar.read`.
 
-### 6. Kanvas Biru Navy Gelap, Floating Sidebar, & Kartu Header / Konten Seragam
-- **Kanvas Luar Biru Navy Gelap (`--canvas`) & Teks Luar Terang**: `DashboardShell` dan `AuthBackdrop` menggunakan kanvas luar biru navy gelap (`--canvas`) dengan teks pendamping luar kartu `--canvas-foreground` / `--canvas-muted` (`>= 11.85:1`). Sidebar desktop membulat sticky (`--sidebar`), laci navigasi seluler, tombol menu melayang seluler (`size-12`), dan seluruh kartu (`--card`) tetap putih/terang agar tampak kontras dan mengambang, tanpa *theme switcher* maupun utilitas `.dark` / `dark:`.
-- **Kartu Header Workspace Seragam (`PageHeaderCard` & `PageHeaderSkeleton`)**: Komponen bersama terisolasi di [`src/shared/components/PageHeaderCard.tsx`](src/shared/components/PageHeaderCard.tsx) menampilkan ikon, judul, badge ringkas opsional, deskripsi, dan tombol aksi utama pada kelima menu utama (`/projects`, `/operations/calendar`, `/directory`, `/profile`, `/access-policies`) tanpa mencampurkan input pencarian maupun kontrol filter ke dalam header.
-- **Kartu Konten & Kontrol Mengambang (`bg-card`)**: Pencarian proyek, tab filter status, tabel/kartu proyek, serta paginasi (`/projects`), kontrol navigasi/rentang/filter kalender (`CalendarHeaderControls`), filter & tabel anggota (`/directory`), serta pemberitahuan, matrix role, riwayat, dan tombol *"Muat ulang policy"* (`/access-policies`) seluruhnya berada di dalam kartu putih bertoken semantik dengan target sentuh seluler `>= 44px`.
-- **Token Warna Semantik Terkunci (`globals.css`)**: Pemetaan komponen terdokumentasi di `globals.css` dan [`docs/styling-tokens.md`](docs/styling-tokens.md) memakai satu tema tunggal dengan token `--canvas-*` dan `--status-{success,warning,info,danger}-*`.
+### 6. Pemulihan Kanvas Terang, Floating Sidebar, & Kartu Header / Konten Seragam
+- **Kanvas Terang (`--background`) & Palet Komponen Pra-Siklus-3**: `DashboardShell` dan `AuthBackdrop` kembali memakai kanvas tema terang tunggal (`--background` `#fbfcf8`) tanpa token `--canvas*` biru navy gelap maupun utilitas `.dark` / `dark:`, sementara sidebar desktop membulat sticky (`--sidebar`), laci navigasi seluler, tombol menu melayang seluler (`variant="secondary"`, `size-12`), dan seluruh kartu (`--card`) mempertahankan palet terang semula (`f8e5d05`).
+- **Kartu Header Workspace Seragam (`PageHeaderCard` & `PageHeaderSkeleton`)**: Komponen bersama terisolasi di [`src/shared/components/PageHeaderCard.tsx`](src/shared/components/PageHeaderCard.tsx) menampilkan ikon (`bg-primary/15 text-foreground`), judul, badge ringkas opsional, deskripsi, dan tombol aksi utama pada kelima menu utama (`/projects`, `/operations/calendar`, `/directory`, `/profile`, `/access-policies`) tanpa mencampurkan input pencarian maupun kontrol filter ke dalam header.
+- **Kartu Konten & Kontrol Terpisah (`bg-card`)**: Pencarian proyek, tab filter status, tabel/kartu proyek, serta paginasi (`/projects`), kontrol navigasi/rentang/filter kalender (`CalendarHeaderControls`), filter & tabel anggota (`/directory`), serta pemberitahuan, matrix role, riwayat, dan tombol *"Muat ulang policy"* (`/access-policies`) tetap dibungkus dalam kartu putih bertoken semantik dengan target sentuh seluler `>= 44px`.
+- **Token Warna Semantik Terkunci (`globals.css`)**: Pemetaan komponen terdokumentasi di `globals.css` dan [`docs/styling-tokens.md`](docs/styling-tokens.md) memakai satu tema terang tunggal dengan token `--background`, `--card`, dan `--status-{success,warning,info,danger}-*`.
 
 ---
 
@@ -95,9 +95,9 @@ frontend/
 │       ├── store/                            # workspace.store.ts
 │       └── types/                            # api.types.ts, auth.types.ts
 └── tests/                                    # Automated unit & contract tests (7 file, 21 tests)
-    ├── cycle3-us1-navy-canvas-contrast.test.ts    # 3 tests — Kanvas luar biru navy gelap, AuthBackdrop dot-pattern & kontras teks luar kartu
+    ├── cycle3-us1-navy-canvas-contrast.test.ts    # 3 tests — Pemulihan kanvas terang (--background), AuthBackdrop dot-pattern & palet f8e5d05
     ├── cycle3-us2-shared-page-header-card.test.ts # 2 tests — Shared PageHeaderCard terisolasi di 5 menu utama bebas kontrol filter/cari
-    ├── cycle3-us3-content-card-controls.test.ts   # 3 tests — Pembungkusan kontrol pencarian/filter/paginasi/policy dalam kartu putih & target sentuh >= 44px
+    ├── cycle3-us3-content-card-controls.test.ts   # 3 tests — Pembungkusan kontrol pencarian/filter/paginasi/policy dalam bg-card, target >= 44px & warna f8e5d05
     ├── us1-avatar-crop.test.ts               # 3 tests — Validasi file avatar, kalkulasi frame 1:1 & ekspor kanvas
     ├── us2-profile-contacts.test.ts          # 3 tests — Skema profil & normalisasi WA/IG opsional ke null
     ├── us3-dashboard-shell.test.ts           # 4 tests — Shell tanpa topbar, floating sticky sidebar, filter navigasi & aksesibilitas footer

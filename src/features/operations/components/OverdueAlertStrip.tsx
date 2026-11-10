@@ -39,11 +39,11 @@ export function OverdueAlertStrip({
   return (
     <section
       aria-label="Peringatan Invoice Terlambat"
-      className="rounded-2xl border border-status-danger-border bg-status-danger-surface p-4 space-y-3 shadow-xs"
+      className="rounded-2xl border border-destructive/35 bg-destructive/8 p-4 space-y-3"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
-          <div className="size-8 rounded-xl bg-card border border-status-danger-border text-status-danger-text flex items-center justify-center shrink-0">
+          <div className="size-8 rounded-xl bg-destructive/15 text-destructive flex items-center justify-center shrink-0">
             <HugeiconsIcon icon={AlertCircleIcon} className="size-4.5" aria-hidden="true" />
           </div>
           <div>
@@ -58,7 +58,7 @@ export function OverdueAlertStrip({
                 [Terlambat / Overdue]
               </Badge>
             </div>
-            <p className="text-[11px] text-status-danger-text">
+            <p className="text-[11px] text-muted-foreground">
               Invoice belum berstatus lunas meskipun melewati tanggal jatuh tempo (Asia/Jakarta).
             </p>
           </div>

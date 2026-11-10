@@ -87,7 +87,7 @@ export default function ProjectsPage() {
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck={false}
-              className="bg-background text-foreground border-border pl-9 min-h-11 sm:min-h-10 rounded-xl text-base md:text-sm"
+              className="pl-9 min-h-11 sm:min-h-10 rounded-xl text-base md:text-sm"
             />
           </div>
 
@@ -104,16 +104,16 @@ export default function ProjectsPage() {
           {listingQuery.isError ? (
             <div
               role="alert"
-              className="rounded-2xl border border-status-danger-border bg-status-danger-surface p-5 text-sm text-foreground"
+              className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5 text-sm"
             >
-              <p className="font-semibold text-status-danger-text">
+              <p className="font-medium">
                 Daftar proyek belum dapat dimuat.
               </p>
               <p className="mt-1 text-muted-foreground">{listingQuery.error.message}</p>
               <button
                 type="button"
                 onClick={() => void listingQuery.refetch()}
-                className="mt-3 inline-flex items-center justify-center rounded-xl border border-border bg-card px-4 min-h-11 sm:min-h-9 text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="mt-3 inline-flex items-center justify-center rounded-xl border px-4 min-h-11 sm:min-h-9 text-xs font-medium hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Coba lagi
               </button>
@@ -136,7 +136,7 @@ export default function ProjectsPage() {
                   type="button"
                   disabled={page <= 1 || listingQuery.isFetching}
                   onClick={() => setPage((value) => Math.max(1, value - 1))}
-                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 min-h-11 sm:min-h-9 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-flex items-center justify-center rounded-xl border px-4 min-h-11 sm:min-h-9 text-xs font-medium hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Sebelumnya
                 </button>
@@ -144,7 +144,7 @@ export default function ProjectsPage() {
                   type="button"
                   disabled={page >= listingQuery.data.totalPages || listingQuery.isFetching}
                   onClick={() => setPage((value) => value + 1)}
-                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 min-h-11 sm:min-h-9 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-flex items-center justify-center rounded-xl border px-4 min-h-11 sm:min-h-9 text-xs font-medium hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Selanjutnya
                 </button>

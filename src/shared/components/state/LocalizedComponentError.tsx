@@ -26,14 +26,14 @@ export function LocalizedComponentError({
   return (
     <div
       className={cn(
-        "rounded-3xl border border-status-danger-border bg-card shadow-xs text-center flex flex-col items-center justify-center p-6 md:p-8",
+        "rounded-3xl border border-destructive/20 bg-destructive/5 text-center flex flex-col items-center justify-center p-6 md:p-8",
         compact && "p-4 rounded-2xl",
         className
       )}
     >
       <div
         className={cn(
-          "rounded-2xl bg-status-danger-surface text-status-danger-text flex items-center justify-center mb-3",
+          "rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-3",
           compact ? "size-9" : "size-12"
         )}
       >
@@ -68,7 +68,7 @@ export function LocalizedComponentError({
           onClick={onRetry}
           disabled={isRetrying}
           className={cn(
-            "mt-4 rounded-full border-status-danger-border hover:bg-status-danger-surface hover:text-status-danger-text text-foreground transition-all",
+            "mt-4 rounded-full border-destructive/30 hover:bg-destructive/10 text-foreground transition-all",
             compact && "mt-2.5 text-xs"
           )}
         >

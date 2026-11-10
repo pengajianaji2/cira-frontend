@@ -55,14 +55,14 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
         tabIndex={0}
         role="region"
         aria-label="Tabel daftar proyek"
-        className="hidden md:block overflow-x-auto rounded-2xl border border-border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="hidden md:block overflow-x-auto rounded-2xl border border-border bg-card shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <table className="w-full text-left border-collapse text-xs">
           <caption className="sr-only">
             Daftar proyek agensi beserta klien, kontak, status, dan nilai kontrak
           </caption>
           <thead>
-            <tr className="border-b border-border bg-muted/40 text-muted-foreground font-medium">
+            <tr className="border-b border-border bg-muted/30 text-muted-foreground font-medium">
               <th scope="col" className="py-3.5 px-4 font-medium">Nama Proyek</th>
               <th scope="col" className="py-3.5 px-4 font-medium">Klien</th>
               <th scope="col" className="py-3.5 px-4 font-medium">Kontak</th>
@@ -161,7 +161,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
         {projects.map((project) => (
           <article
             key={project.id}
-            className="bg-background border border-border rounded-2xl p-4 space-y-3"
+            className="bg-card border border-border rounded-2xl p-4 shadow-xs space-y-3"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
@@ -193,11 +193,11 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
 
             <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-1 border-t border-border/50">
               <div>
-                <span className="text-[10px] block text-muted-foreground">Kontak:</span>
+                <span className="text-[10px] block text-muted-foreground/70">Kontak:</span>
                 <span className="font-medium text-foreground text-xs">{project.clientContact}</span>
               </div>
               <div>
-                <span className="text-[10px] block text-muted-foreground">Nilai Kontrak:</span>
+                <span className="text-[10px] block text-muted-foreground/70">Nilai Kontrak:</span>
                 <span className="font-semibold text-foreground text-xs">
                   {formatRupiah(project.contractValue)}
                 </span>
@@ -207,7 +207,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
             <Button
               asChild
               variant="outline"
-              className="w-full rounded-full text-xs min-h-11 justify-center bg-card"
+              className="w-full rounded-full text-xs min-h-11 justify-center"
             >
               <Link href={`/projects/${project.id}?tab=prd`}>
                 Buka Proyek

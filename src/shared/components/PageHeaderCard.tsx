@@ -42,7 +42,7 @@ export function PageHeaderCard({
       )}
     >
       <div className="flex items-start gap-3.5 min-w-0 flex-1">
-        <div className="size-10 md:size-11 rounded-2xl bg-accent border border-border/80 text-accent-foreground flex items-center justify-center shrink-0">
+        <div className="size-10 md:size-11 rounded-2xl bg-primary/15 text-foreground flex items-center justify-center shrink-0">
           <HugeiconsIcon icon={icon} className="size-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">

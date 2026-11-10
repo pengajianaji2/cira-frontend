@@ -123,10 +123,10 @@ export function PaymentMilestoneList({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-canvas-foreground">
+        <h3 className="text-sm font-bold text-foreground">
           Daftar Termin Pembayaran ({payments.length})
         </h3>
-        <span className="text-xs text-canvas-muted">
+        <span className="text-xs text-muted-foreground">
           Diverifikasi oleh Owner / Operasional
         </span>
       </div>

@@ -38,10 +38,10 @@ test("AC-4: PageHeaderCard shared terisolasi dari features, memakai kartu putih 
   // Shared isolation: tidak boleh mengimpor modul dari features/
   assert.doesNotMatch(pageHeaderSource, /@\/features\/|\.\.\/features\//);
 
-  // Kontrak tampilan & aksesibilitas PageHeaderCard
+  // Kontrak tampilan & aksesibilitas PageHeaderCard (ikon memakai warna f8e5d05 bg-primary/15 text-foreground)
   assert.match(pageHeaderSource, /<header[\s\S]*?data-slot="page-header-card"/);
   assert.match(pageHeaderSource, /\bbg-card\b[\s\S]*?\bborder-border\b[\s\S]*?\brounded-3xl\b[\s\S]*?\bshadow-xs\b/);
-  assert.match(pageHeaderSource, /\bbg-accent\b[\s\S]*?\btext-accent-foreground\b/);
+  assert.match(pageHeaderSource, /\bbg-primary\/15\b[\s\S]*?\btext-foreground\b/);
   assert.match(pageHeaderSource, /<HugeiconsIcon\s+icon=\{icon\}[\s\S]*?aria-hidden="true"/);
   assert.match(pageHeaderSource, /<h1[\s\S]*?\btext-foreground\b[\s\S]*?\{title\}/);
   assert.match(pageHeaderSource, /<p[\s\S]*?\btext-muted-foreground\b[\s\S]*?\{description\}/);
@@ -58,7 +58,6 @@ test("AC-4: PageHeaderCard shared terisolasi dari features, memakai kartu putih 
   assert.match(projectsHeader, /icon=\{Folder01Icon\}/);
   assert.match(projectsHeader, /title="Daftar Pipeline Proyek"/);
   assert.match(projectsHeader, /action=\{canCreateProject \? <CreateProjectDialog \/> : undefined\}/);
-  assert.doesNotMatch(projectsPage, /\btext-primary\b/);
 
   // 2) Kalender Operasional (/operations/calendar)
   const calendarPage = readSrc("app/(dashboard)/operations/calendar/page.tsx");
@@ -135,7 +134,7 @@ test("AC-5: PageHeaderCard serta kartu header Daftar Proyek, Kalender Operasiona
   assert.match(calendarControls, /^[\s\S]*<section\s+className="bg-card\b/);
   assert.match(calendarControls, /aria-label="Mode tampilan kalender"[\s\S]*?Kalender[\s\S]*?Daftar Agenda/);
   assert.match(calendarControls, /aria-label="Bulan sebelumnya"[\s\S]*?Hari Ini[\s\S]*?Filter Proyek/);
-  assert.match(calendarControls, /text-accent-foreground\b[^>]*>\s*Reset Default/);
+  assert.match(calendarControls, /text-primary\b[^>]*>\s*Reset Default/);
 
   // Direktori Tim: PageHeaderCard terpisah di atas bar search/filter role/status & tabel
   const directoryTable = readSrc("features/directory/components/DirectoryTable.tsx");

@@ -15,115 +15,108 @@ function readSrc(relPath: string): string {
 }
 
 // ==========================================
-// AC-1: Kanvas Luar Biru Navy Gelap & Sidebar/Kartu Tetap Putih Solid
+// AC-1: Pengembalian Kanvas Terang (--background) & Palet Komponen f8e5d05 (Layout Kartu Tetap)
 // ==========================================
 
-test("AC-1: Workspace dashboard memakai kanvas biru navy gelap (--canvas) sementara sidebar dan seluruh kartu/permukaan tetap putih solid", () => {
+test("AC-1: Workspace dashboard kembali memakai kanvas terang (--background) & palet komponen f8e5d05 sementara layout kartu seragam dipertahankan", () => {
   const globalsCss = readSrc("app/globals.css");
   const layoutSource = readSrc("app/layout.tsx");
   const globalErrorSource = readSrc("app/global-error.tsx");
   const dashboardShellSource = readSrc("layouts/DashboardLayout/DashboardShell.tsx");
 
-  // Token kanvas biru navy gelap & teks luar kartu terdefinisi di @theme inline & :root tanpa dark mode
-  for (const mappedToken of [
-    "--color-canvas: var(--canvas);",
-    "--color-canvas-foreground: var(--canvas-foreground);",
-    "--color-canvas-muted: var(--canvas-muted);",
-    "--color-canvas-dot: var(--canvas-dot);",
+  // Token --canvas* Siklus 3 telah dihapus dan body kembali ke --background tanpa dark mode
+  for (const removedToken of [
+    "--color-canvas:",
+    "--color-canvas-foreground:",
+    "--color-canvas-muted:",
+    "--color-canvas-dot:",
+    "--canvas:",
+    "--canvas-foreground:",
+    "--canvas-muted:",
+    "--canvas-dot:",
   ]) {
     assert.ok(
-      globalsCss.includes(mappedToken),
-      `globals.css wajib memetakan ${mappedToken}`,
+      !globalsCss.includes(removedToken),
+      `globals.css tidak boleh lagi menyimpan ${removedToken}`,
     );
   }
 
-  assert.match(globalsCss, /:root\s*\{[\s\S]*?--canvas:\s*oklch\(/);
-  assert.match(globalsCss, /:root\s*\{[\s\S]*?--canvas-foreground:\s*oklch\(/);
-  assert.match(globalsCss, /:root\s*\{[\s\S]*?--canvas-muted:\s*oklch\(/);
-  assert.match(globalsCss, /:root\s*\{[\s\S]*?--canvas-dot:\s*oklch\(/);
-
-  // Permukaan sidebar, card, dan inner background tetap putih/terang
+  assert.match(globalsCss, /:root\s*\{[\s\S]*?--background:\s*oklch\(/);
   assert.match(globalsCss, /:root\s*\{[\s\S]*?--card:\s*oklch\(1 0 0\);/);
   assert.match(globalsCss, /:root\s*\{[\s\S]*?--sidebar:\s*oklch\(1 0 0\);/);
   assert.match(globalsCss, /:root\s*\{[\s\S]*?color-scheme:\s*light;/);
-  assert.match(globalsCss, /body\s*\{[\s\S]*?@apply\s+bg-canvas\s+text-foreground;/);
+  assert.match(globalsCss, /body\s*\{[\s\S]*?@apply\s+bg-background\s+text-foreground;/);
 
-  // Root layout & global error memakai bg-canvas dan kartu putih
-  assert.match(layoutSource, /<body\s+className=\{cn\([^}]*"[^"]*\bbg-canvas\b[^"]*\btext-foreground\b/);
-  assert.match(globalErrorSource, /<body\s+className="[^"]*\bbg-canvas\b[^"]*">/);
-  assert.match(globalErrorSource, /\bbg-card\b/);
+  // Root layout, global error, & DashboardShell memakai bg-background
+  assert.match(layoutSource, /<body\s+className=\{cn\([^}]*"[^"]*\bbg-background\b[^"]*\btext-foreground\b/);
+  assert.match(globalErrorSource, /<body\s+className="[^"]*\bbg-background\b[^"]*">/);
+  assert.match(globalErrorSource, /\bbg-card\b[\s\S]*?\bbg-black\b[\s\S]*?\btext-white\b/);
 
-  // Seluruh state & kerangka luar DashboardShell memakai bg-canvas; sidebar, drawer, error card, & mobile button tetap putih
   assert.doesNotMatch(
     dashboardShellSource,
-    /\bbg-background\b/,
-    "DashboardShell tidak boleh memakai bg-background pada wrapper luar",
+    /\b(?:bg-canvas|text-canvas-foreground|text-canvas-muted)\b/,
+    "DashboardShell tidak boleh lagi memakai utilitas canvas Siklus 3",
   );
-  const bgCanvasMatches = dashboardShellSource.match(/\bbg-canvas\b/g) ?? [];
+  const bgBackgroundMatches = dashboardShellSource.match(/\bbg-background\b/g) ?? [];
   assert.equal(
-    bgCanvasMatches.length,
+    bgBackgroundMatches.length,
     4,
-    "DashboardShell harus memakai bg-canvas di state loading, 401, error, dan layout utama",
+    "DashboardShell harus memakai bg-background di state loading, 401, error, dan layout utama",
   );
+  assert.match(dashboardShellSource, /<Spinner className="size-6 text-secondary"/);
   assert.match(dashboardShellSource, /<aside[\s\S]*?\bbg-sidebar\b[\s\S]*?\btext-sidebar-foreground\b/);
   assert.match(dashboardShellSource, /<SheetContent[\s\S]*?\bbg-sidebar\b[\s\S]*?\btext-sidebar-foreground\b/);
-  assert.match(dashboardShellSource, /aria-label="Buka menu navigasi"[\s\S]*?\bbg-card\b/);
+  assert.match(dashboardShellSource, /variant="secondary"[\s\S]*?aria-label="Buka menu navigasi"[\s\S]*?\bring-border\/60\b/);
 
-  // Permukaan yang berada di atas bg-canvas wajib solid (bebas dari latar semi-transparan tipis)
+  // Palet komponen kembali ke f8e5d05 sementara pembungkus kartu layout tetap utuh
   const emptyStateSource = readSrc("shared/components/state/EmptyState.tsx");
-  assert.doesNotMatch(emptyStateSource, /\bbg-card\/\d+\b/);
-  assert.match(emptyStateSource, /variant === "dashed"[\s\S]*?\bbg-card\b/);
+  assert.match(emptyStateSource, /variant === "dashed"[\s\S]*?\bbg-card\/60\b/);
 
   const localizedErrorSource = readSrc("shared/components/state/LocalizedComponentError.tsx");
-  assert.doesNotMatch(localizedErrorSource, /\bbg-destructive\/\d+\b/);
-  assert.match(localizedErrorSource, /\bbg-card\b/);
+  assert.match(localizedErrorSource, /\bborder-destructive\/20 bg-destructive\/5\b/);
+  assert.match(localizedErrorSource, /\bbg-destructive\/10 text-destructive\b/);
 
   const skeletonSource = readSrc("shared/components/state/ComponentSkeleton.tsx");
-  assert.doesNotMatch(skeletonSource, /\bbg-card\/\d+\b/);
+  assert.match(skeletonSource, /\bbg-card\/60\b/);
 
   const approvalBannerSource = readSrc("features/projects/components/StatusApprovalBanner.tsx");
-  assert.match(approvalBannerSource, /\bbg-status-warning-surface\b[\s\S]*?\bborder-status-warning-border\b/);
+  assert.match(approvalBannerSource, /\bbg-amber-500\/10 border border-amber-500\/30\b/);
 
   const overdueStripSource = readSrc("features/operations/components/OverdueAlertStrip.tsx");
-  assert.doesNotMatch(overdueStripSource, /\bbg-destructive\/\d+\b/);
-  assert.match(overdueStripSource, /\bbg-status-danger-surface\b[\s\S]*?\bborder-status-danger-border\b/);
+  assert.match(overdueStripSource, /\bborder-destructive\/35 bg-destructive\/8\b/);
+  assert.match(overdueStripSource, /\bbg-destructive\/15 text-destructive\b/);
 
   const calendarGridSource = readSrc("features/operations/components/CalendarMonthGrid.tsx");
-  assert.doesNotMatch(calendarGridSource, /bg-primary\/4\b/);
-  assert.match(calendarGridSource, /role="status"[\s\S]*?\bbg-card\b/);
+  assert.match(calendarGridSource, /role="status"[\s\S]*?\bbg-muted\/40\b/);
+  assert.match(calendarGridSource, /isToday \? "border-primary\/45 bg-primary\/4" : "border-border bg-card"/);
 
   const activityTimelineSource = readSrc("features/activity/components/ActivityTimeline.tsx");
-  assert.doesNotMatch(
-    activityTimelineSource,
-    /\bbg-(?:destructive|blue-500|purple-500)\/\d+\b|\bbg-purple-50\b|\btext-purple-700\b|\bborder-purple-200\b/,
-  );
-  assert.match(activityTimelineSource, /bg-accent text-accent-foreground border-border/);
-  assert.match(activityTimelineSource, /\bbefore:bg-canvas-muted\/40\b/);
+  assert.match(activityTimelineSource, /\bbg-blue-500\/10 text-blue-600 border-blue-500\/20\b/);
+  assert.match(activityTimelineSource, /\bbg-purple-500\/10 text-purple-600 border-purple-500\/20\b/);
+  assert.match(activityTimelineSource, /bg-destructive\/10 border border-destructive\/20 rounded-2xl p-8 text-center text-destructive/);
+  assert.match(activityTimelineSource, /\bbefore:bg-border\/80\b/);
 
   const sprintsSource = readSrc("features/sprints/components/SprintsTabContent.tsx");
-  assert.doesNotMatch(sprintsSource, /\bbg-emerald-500\/5\b|\bborder-emerald-500\/45\b/);
-  assert.match(sprintsSource, /activeSprint \?[\s\S]*?\bbg-card\b[\s\S]*?\bborder-status-success-border\b/);
+  assert.match(sprintsSource, /activeSprint \?[\s\S]*?\bbg-emerald-500\/5 border-2 border-emerald-500\/30\b/);
 
   const financeTabSource = readSrc("features/finance/components/FinanceTabContent.tsx");
-  assert.match(financeTabSource, /<div className="[^"]*\bbg-card\b[^"]*">\s*<TabsList/);
+  assert.match(financeTabSource, /<div className="[^"]*\bbg-card\b[^"]*">\s*<TabsList className="bg-muted\/60/);
 
   const assetDropzoneSource = readSrc("features/assets/components/AssetDropzone.tsx");
-  assert.doesNotMatch(assetDropzoneSource, /\bbg-card\/60\b/);
-  assert.match(assetDropzoneSource, /\bbg-card\b/);
+  assert.match(assetDropzoneSource, /\bbg-primary\/10\b[\s\S]*?\bbg-card\/60 hover:bg-card\b/);
 
   const projectHeaderSource = readSrc("features/projects/components/ProjectDetailHeader.tsx");
   assert.match(projectHeaderSource, /<nav[\s\S]*?aria-label="Tab Proyek"[\s\S]*?\bbg-card\b/);
 
   const projectFilterTabsSource = readSrc("features/projects/components/ProjectFilterTabs.tsx");
-  assert.doesNotMatch(projectFilterTabsSource, /\bbg-muted\/50\b/);
-  assert.match(projectFilterTabsSource, /\bbg-primary\b[\s\S]*?\bbg-card\b/);
+  assert.match(projectFilterTabsSource, /\bbg-foreground text-background\b[\s\S]*?\bbg-muted\/50 text-muted-foreground\b/);
 });
 
 // ==========================================
-// AC-2: Latar Biru Navy Gelap + DotPattern pada Keempat Halaman Auth
+// AC-2: Latar Terang (--background) + DotPattern pada Keempat Halaman Auth
 // ==========================================
 
-test("AC-2: Keempat halaman autentikasi (/login, /forgot-password, /reset-password, /activate) memakai AuthBackdrop biru navy gelap dengan DotPattern di belakang kartu putih", () => {
+test("AC-2: Keempat halaman autentikasi (/login, /forgot-password, /reset-password, /activate) kembali memakai AuthBackdrop terang dengan DotPattern", () => {
   const authBackdropSource = readSrc("features/auth/components/AuthBackdrop.tsx");
   const loginFormSource = readSrc("features/auth/components/LoginForm.tsx");
   const forgotPageSource = readSrc("app/(auth)/forgot-password/page.tsx");
@@ -131,9 +124,9 @@ test("AC-2: Keempat halaman autentikasi (/login, /forgot-password, /reset-passwo
   const activatePageSource = readSrc("app/(auth)/activate/page.tsx");
   const activateFormSource = readSrc("features/auth/components/ActivateForm.tsx");
 
-  assert.doesNotMatch(authBackdropSource, /\bbg-background\b/);
-  assert.match(authBackdropSource, /data-slot="auth-backdrop"[\s\S]*?\bbg-canvas\b/);
-  assert.match(authBackdropSource, /<DotPattern[\s\S]*?glow=\{false\}[\s\S]*?className="[^"]*\btext-canvas-dot\b[^"]*"/);
+  assert.doesNotMatch(authBackdropSource, /\b(?:bg-canvas|text-canvas-dot)\b/);
+  assert.match(authBackdropSource, /data-slot="auth-backdrop"[\s\S]*?\bbg-background\b/);
+  assert.match(authBackdropSource, /<DotPattern[\s\S]*?glow=\{false\}[\s\S]*?className="text-foreground\/15"/);
 
   // Keempat halaman auth tetap memakai AuthBackdrop dan kartu putih solid (bg-card)
   assert.match(loginFormSource, /<AuthBackdrop[\s\S]*?\bbg-card\b/);
@@ -144,46 +137,44 @@ test("AC-2: Keempat halaman autentikasi (/login, /forgot-password, /reset-passwo
 });
 
 // ==========================================
-// AC-3: Keterbacaan Teks & Kontrol di Luar Kartu pada Kanvas Navy Gelap
+// AC-3: Teks Luar Kartu Kembali Menggunakan Token Teks Tema Terang (--foreground / --muted-foreground)
 // ==========================================
 
-test("AC-3: Breadcrumb, teks muat, paginasi, catatan, dan heading di luar kartu memakai token teks terang di atas biru navy gelap", () => {
+test("AC-3: Breadcrumb, teks muat, paginasi, catatan, dan heading kembali memakai token teks terang standar sementara pembungkus kartu dipertahankan", () => {
   const projectDetailHeader = readSrc("features/projects/components/ProjectDetailHeader.tsx");
-  assert.match(projectDetailHeader, /\btext-canvas-muted\b[\s\S]*?Daftar Proyek/);
-  assert.match(projectDetailHeader, /\bhover:text-canvas-foreground\b/);
-  assert.match(projectDetailHeader, /\btext-canvas-foreground\b[\s\S]*?\{project\.name\}/);
+  assert.doesNotMatch(projectDetailHeader, /\btext-canvas-(?:muted|foreground)\b/);
+  assert.match(projectDetailHeader, /\btext-muted-foreground\b[\s\S]*?Daftar Proyek/);
+  assert.match(projectDetailHeader, /\bhover:text-foreground\b/);
+  assert.match(projectDetailHeader, /\btext-foreground\b[\s\S]*?\{project\.name\}/);
 
   const projectDetailPage = readSrc("app/(dashboard)/projects/[id]/page.tsx");
-  assert.match(projectDetailPage, /\btext-canvas-muted\b[^>]*>Memuat data proyek\.\.\.</);
-  assert.match(projectDetailPage, /\btext-canvas-muted\b[^>]*>Menyiapkan halaman\.\.\.</);
+  assert.match(projectDetailPage, /\btext-muted-foreground\b[^>]*>Memuat data proyek\.\.\.</);
+  assert.match(projectDetailPage, /\btext-muted-foreground\b[^>]*>Menyiapkan halaman\.\.\.</);
 
-  // Daftar Proyek (/projects) dan Kelola Akses (/access-policies) kini membungkus pencarian,
-  // paginasi, status/notice, catatan multi-role, dan tombol muat ulang di dalam kartu konten putih (US-3 AC-6 & AC-8).
   const projectsPage = readSrc("app/(dashboard)/projects/page.tsx");
   assert.match(projectsPage, /<section[\s\S]*?\bbg-card\b[\s\S]*?id="project-search"[\s\S]*?aria-label="Paginasi proyek"/);
   assert.match(projectsPage, /aria-label="Paginasi proyek"[\s\S]*?\btext-muted-foreground\b/);
   assert.match(projectsPage, /Sebelumnya[\s\S]*?Selanjutnya/);
-  assert.doesNotMatch(projectsPage, /\btext-canvas-muted\b/);
 
-  // Elemen teks luar kartu yang tetap berada langsung di atas --canvas wajib memakai token teks terang.
   const accessPoliciesPage = readSrc("app/(dashboard)/access-policies/page.tsx");
-  assert.doesNotMatch(accessPoliciesPage, /\btext-canvas-muted\b/);
+  assert.doesNotMatch(accessPoliciesPage, /\btext-canvas-(?:muted|foreground)\b/);
   assert.match(accessPoliciesPage, /\bbg-card\b[\s\S]*?Muat ulang policy/);
 
   const taskBoard = readSrc("features/tasks/components/TaskChecklistBoard.tsx");
-  assert.match(taskBoard, /text-canvas-muted[^>]*>Memuat checklist task\.\.\.</);
+  assert.match(taskBoard, /text-muted-foreground[^>]*>Memuat checklist task\.\.\.</);
+  assert.match(taskBoard, /border-destructive\/30[\s\S]*?text-destructive/);
 
   const sprintsContent = readSrc("features/sprints/components/SprintsTabContent.tsx");
-  assert.match(sprintsContent, /id="active-sprint-heading" className="[^"]*\btext-canvas-foreground\b/);
-  assert.match(sprintsContent, /id="planning-sprint-heading" className="[^"]*\btext-canvas-foreground\b/);
-  assert.match(sprintsContent, /id="completed-sprint-heading" className="[^"]*\btext-canvas-foreground\b/);
-  assert.match(sprintsContent, /text-canvas-muted[^>]*>\s*Maksimal 1 sprint berjalan bersamaan/);
+  assert.match(sprintsContent, /id="active-sprint-heading" className="[^"]*\btext-foreground\b/);
+  assert.match(sprintsContent, /id="planning-sprint-heading" className="[^"]*\btext-foreground\b/);
+  assert.match(sprintsContent, /id="completed-sprint-heading" className="[^"]*\btext-foreground\b/);
+  assert.match(sprintsContent, /text-muted-foreground[^>]*>\s*Maksimal 1 sprint berjalan bersamaan/);
 
   const paymentMilestoneList = readSrc("features/finance/components/PaymentMilestoneList.tsx");
-  assert.match(paymentMilestoneList, /\btext-canvas-foreground\b[^>]*>\s*Daftar Termin Pembayaran/);
-  assert.match(paymentMilestoneList, /\btext-canvas-muted\b[^>]*>\s*Diverifikasi oleh Owner \/ Operasional/);
+  assert.match(paymentMilestoneList, /\btext-foreground\b[^>]*>\s*Daftar Termin Pembayaran/);
+  assert.match(paymentMilestoneList, /\btext-muted-foreground\b[^>]*>\s*Diverifikasi oleh Owner \/ Operasional/);
 
   const assetGallery = readSrc("features/assets/components/AssetGallery.tsx");
-  assert.match(assetGallery, /\btext-canvas-foreground\b[^>]*>\s*Galeri Aset Proyek/);
-  assert.match(assetGallery, /\btext-canvas-muted\b[^>]*>Memuat galeri aset\.\.\.</);
+  assert.match(assetGallery, /\btext-foreground\b[^>]*>\s*Galeri Aset Proyek/);
+  assert.match(assetGallery, /\btext-muted-foreground\b[^>]*>Memuat galeri aset\.\.\.</);
 });

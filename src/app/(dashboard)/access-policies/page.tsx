@@ -65,7 +65,7 @@ export default function AccessPoliciesPage() {
           <CardContent className="px-6">
             <div role="status" className="flex items-center gap-2.5 text-sm text-muted-foreground">
               <div
-                className="size-4 animate-spin rounded-full border-2 border-accent-foreground border-t-transparent shrink-0"
+                className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent shrink-0"
                 aria-hidden="true"
               />
               <span>Memuat policy akses…</span>
@@ -82,16 +82,16 @@ export default function AccessPoliciesPage() {
         {headerCard}
         <div
           role="alert"
-          className="rounded-3xl border border-status-danger-border bg-card p-6 text-sm shadow-xs space-y-3"
+          className="rounded-3xl border border-destructive/30 bg-card p-6 text-sm shadow-xs space-y-3"
         >
-          <p className="font-medium text-status-danger-text">
+          <p className="font-medium text-destructive">
             Policy tidak dapat dimuat. Pastikan migrasi database sudah dijalankan.
           </p>
           <Button
             type="button"
             variant="outline"
             onClick={() => void query.refetch()}
-            className="min-h-11 sm:min-h-9 rounded-xl bg-background text-foreground hover:bg-muted"
+            className="min-h-11 sm:min-h-9 rounded-xl"
           >
             Muat ulang policy
           </Button>
@@ -118,7 +118,7 @@ export default function AccessPoliciesPage() {
 
       <Card className="rounded-3xl border border-border bg-card shadow-xs ring-0 py-4 sm:py-5">
         <CardContent className="px-4 sm:px-6">
-          <div className="rounded-2xl border border-status-warning-border bg-status-warning-surface p-4 text-sm text-status-warning-text flex items-start gap-3">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 flex items-start gap-3">
             <HugeiconsIcon
               icon={AlertCircleIcon}
               className="size-5 shrink-0 mt-0.5"
@@ -155,7 +155,7 @@ export default function AccessPoliciesPage() {
                   >
                     {group}
                   </h3>
-                  <div className="divide-y divide-border rounded-xl border border-border bg-background/40">
+                  <div className="divide-y rounded-lg border">
                     {query.data!.permissions
                       .filter((item) => item.group === group)
                       .map((item) => {
@@ -165,7 +165,7 @@ export default function AccessPoliciesPage() {
                           <label
                             key={item.key}
                             htmlFor={checkboxId}
-                            className="flex items-center justify-between gap-4 px-3.5 py-3 min-h-11 text-sm text-foreground cursor-pointer hover:bg-muted/40 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                            className="flex items-center justify-between gap-4 px-3.5 py-3 min-h-11 text-sm cursor-pointer hover:bg-muted/40 transition-colors first:rounded-t-lg last:rounded-b-lg"
                           >
                             <span>{item.label}</span>
                             <input
@@ -177,7 +177,7 @@ export default function AccessPoliciesPage() {
                               onChange={(event) =>
                                 updatePermission(policy, item.key, event.target.checked)
                               }
-                              className="size-4 shrink-0 rounded accent-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+                              className="size-4 shrink-0 rounded accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
                             />
                           </label>
                         );
@@ -199,28 +199,28 @@ export default function AccessPoliciesPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="rounded-2xl border border-border bg-background px-4 py-3 text-xs text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Jika pengguna memiliki lebih dari satu role, aksesnya adalah gabungan capability dari
             role-role tersebut.
           </p>
 
           {historyQuery.data?.length ? (
-            <ul className="divide-y divide-border">
+            <ul className="divide-y">
               {historyQuery.data.map((item) => (
                 <li key={item.id} className="py-3 first:pt-0 last:pb-0 text-sm">
-                  <p className="font-medium text-foreground capitalize">
+                  <p className="font-medium capitalize">
                     {item.role} · {new Date(item.createdAt).toLocaleString("id-ID")}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Diubah oleh {item.actorEmail}
                   </p>
                   {item.addedPermissions.length > 0 && (
-                    <p className="mt-1 text-xs text-status-success-text">
+                    <p className="mt-1 text-xs text-emerald-700">
                       Ditambahkan: {item.addedPermissions.join(", ")}
                     </p>
                   )}
                   {item.removedPermissions.length > 0 && (
-                    <p className="mt-1 text-xs text-status-warning-text">
+                    <p className="mt-1 text-xs text-amber-700">
                       Dicabut: {item.removedPermissions.join(", ")}
                     </p>
                   )}
@@ -235,7 +235,7 @@ export default function AccessPoliciesPage() {
           <Button
             type="button"
             variant="outline"
-            className="min-h-11 sm:min-h-9 rounded-xl bg-background text-foreground hover:bg-muted"
+            className="min-h-11 sm:min-h-9 rounded-xl"
             onClick={() => void query.refetch()}
             disabled={mutation.isPending}
           >

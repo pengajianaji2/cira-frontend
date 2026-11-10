@@ -129,7 +129,7 @@ export function FinanceTabContent({ project }: FinanceTabContentProps) {
       {/* Tabs Tampilan Keuangan */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <div className="inline-flex rounded-2xl bg-card border border-border p-1 shadow-xs w-fit">
-          <TabsList className="bg-muted/70 p-1 rounded-xl h-9">
+          <TabsList className="bg-muted/60 p-1 rounded-xl h-9">
             <TabsTrigger
               value="terms"
               className="rounded-lg text-xs font-semibold px-4 h-7 data-[state=active]:bg-card data-[state=active]:shadow-xs flex items-center gap-1.5"

@@ -59,8 +59,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   if (currentUserQuery.isPending || (!currentUserQuery.data && !currentUserQuery.isError)) {
     return (
-      <div className="min-h-screen min-h-dvh w-full flex items-center justify-center bg-canvas text-canvas-foreground">
-        <Spinner className="size-6 text-primary" aria-label="Memuat workspace" />
+      <div className="min-h-screen min-h-dvh w-full flex items-center justify-center bg-background">
+        <Spinner className="size-6 text-secondary" aria-label="Memuat workspace" />
       </div>
     );
   }
@@ -69,7 +69,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
     currentUserQuery.isError &&
     (currentUserQuery.error as Error & { status?: number }).status === 401
   ) {
-    return <div className="min-h-screen min-h-dvh w-full bg-canvas" aria-busy="true" />;
+    return <div className="min-h-screen min-h-dvh w-full bg-background" aria-busy="true" />;
   }
 
   if (
@@ -77,10 +77,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
     (currentUserQuery.error as Error & { status?: number }).status !== 401
   ) {
     return (
-      <div className="min-h-screen min-h-dvh grid place-items-center bg-canvas p-6 text-center">
+      <div className="min-h-screen min-h-dvh grid place-items-center bg-background p-6 text-center">
         <div
           role="alert"
-          className="space-y-4 max-w-sm rounded-2xl border border-border bg-card p-6 shadow-lg"
+          className="space-y-4 max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xs"
         >
           <p className="text-sm text-foreground">
             Sesi belum dapat diverifikasi karena koneksi bermasalah.
@@ -194,7 +194,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   );
 
   return (
-    <div className="min-h-screen min-h-dvh bg-canvas overflow-x-clip md:flex md:items-start md:gap-4 md:p-4">
+    <div className="min-h-screen min-h-dvh bg-background overflow-x-clip md:flex md:items-start md:gap-4 md:p-4">
       <a
         href="#workspace-main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-card focus:px-4 focus:py-2.5 focus:text-xs focus:font-semibold focus:text-foreground focus:border focus:border-border focus:shadow-md"
@@ -251,10 +251,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <SheetTrigger asChild>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="icon-lg"
               aria-label="Buka menu navigasi"
-              className="size-12 min-h-11 min-w-11 rounded-full bg-card text-foreground border-border shadow-xl hover:bg-muted"
+              className="size-12 min-h-11 min-w-11 rounded-full shadow-lg ring-1 ring-border/60"
             >
               <HugeiconsIcon icon={Menu01Icon} className="size-5" aria-hidden="true" />
             </Button>

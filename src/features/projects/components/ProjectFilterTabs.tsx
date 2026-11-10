@@ -68,10 +68,10 @@ export function ProjectFilterTabs({
             aria-pressed={isActive}
             onClick={() => handleFilterChange(tab.key)}
             className={cn(
-              "min-h-11 sm:min-h-9 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors inline-flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "min-h-11 sm:min-h-9 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all inline-flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isActive
-                ? "bg-primary text-primary-foreground border border-primary shadow-xs font-semibold"
-                : "bg-background text-muted-foreground border border-border hover:bg-muted hover:text-foreground"
+                ? "bg-foreground text-background shadow-xs font-semibold"
+                : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <span>{tab.label}</span>
@@ -79,8 +79,8 @@ export function ProjectFilterTabs({
               className={cn(
                 "size-5 rounded-full text-[10px] flex items-center justify-center font-bold",
                 isActive
-                  ? "bg-foreground/10 text-primary-foreground"
-                  : "bg-card text-foreground/80 border border-border"
+                  ? "bg-background/20 text-background"
+                  : "bg-background text-muted-foreground border border-border/50"
               )}
             >
               {tab.count}

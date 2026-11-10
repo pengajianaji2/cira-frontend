@@ -60,12 +60,6 @@
   --color-notice-dp-text: var(--notice-dp-text);
   --color-notice-dp-border: var(--notice-dp-border);
 
-  /* ===== Kanvas Luar Biru Navy Gelap & Teks Luar Kartu (DashboardShell & AuthBackdrop) ===== */
-  --color-canvas: var(--canvas);
-  --color-canvas-foreground: var(--canvas-foreground);
-  --color-canvas-muted: var(--canvas-muted);
-  --color-canvas-dot: var(--canvas-dot);
-
   /* ===== Kanvas Tema Terang Tunggal, Tipografi, Radius, & Elevasi Bayangan ===== */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -142,12 +136,6 @@
 /* ===== Tema Terang Tunggal (Locked Light Mode — Non-Dark) ===== */
 :root {
   color-scheme: light;
-
-  /* ===== Komponen: Kanvas Luar Biru Navy Gelap & Pola Titik (DashboardShell & AuthBackdrop) ===== */
-  --canvas: oklch(0.215 0.048 258);
-  --canvas-foreground: oklch(0.984 0.003 248);
-  --canvas-muted: oklch(0.869 0.015 255);
-  --canvas-dot: oklch(0.92 0.012 250 / 0.22);
 
   /* ===== Token Inti Permukaan, Teks, Aksi, & Halaman Auth/DotPattern ===== */
   --background: oklch(0.9892 0.0054 117.9205);
@@ -271,7 +259,7 @@
 @layer base {
   body {
     letter-spacing: var(--tracking-normal);
-    @apply bg-canvas text-foreground;
+    @apply bg-background text-foreground;
   }
   * {
     @apply border-border outline-ring/50;

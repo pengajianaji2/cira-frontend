@@ -37,7 +37,7 @@ export function EmptyState({
     <div
       className={cn(
         "flex flex-col items-center justify-center text-center transition-all",
-        variant === "dashed" && "border-2 border-dashed border-border rounded-3xl bg-card shadow-xs",
+        variant === "dashed" && "border-2 border-dashed border-border rounded-3xl bg-card/60",
         variant === "card" && "border border-border rounded-3xl bg-card shadow-xs",
         variant === "minimal" && "bg-transparent",
         compact ? "p-6" : "p-10 md:p-14",
