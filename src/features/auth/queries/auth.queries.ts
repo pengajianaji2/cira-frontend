@@ -16,6 +16,11 @@ export const AUTH_QUERY_KEY = ["auth", "currentUser"];
 export const INVITE_INFO_QUERY_KEY = ["auth", "inviteInfo"];
 export const MY_PERMISSIONS_QUERY_KEY = ["auth", "permissions"];
 
+export function safeNextPath(value?: string | null): string | null {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\") || /[\u0000-\u001f]/.test(value)) return null;
+  try { const url = new URL(value, "https://cira.local"); return url.origin === "https://cira.local" ? `${url.pathname}${url.search}${url.hash}` : null; } catch { return null; }
+}
+
 export function useMyPermissionsQuery() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return useQuery({
@@ -55,12 +60,12 @@ export function useLoginMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: LoginInput) => authApi.login(payload),
-    onSuccess: (response) => {
+    mutationFn: ({ ...payload }: LoginInput & { next?: string }) => authApi.login({ email: payload.email, password: payload.password, rememberMe: payload.rememberMe }),
+    onSuccess: (response, variables) => {
       setAuth(response.data.user);
       queryClient.setQueryData(AUTH_QUERY_KEY, response.data.user);
       toast.success(response.message || "Selamat datang kembali!");
-      router.push("/projects");
+      router.push(safeNextPath(variables.next) || "/projects");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Email atau password salah.");

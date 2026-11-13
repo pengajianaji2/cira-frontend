@@ -1,4 +1,5 @@
 "use client";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
 
 import React, { useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -117,11 +118,7 @@ export function PaymentProofDialog({
           {payment.proofUrl ? (
             <div className="relative border border-border rounded-2xl overflow-hidden bg-muted/30 flex items-center justify-center p-3 max-h-[380px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={payment.proofUrl}
-                alt={payment.proofFileName || "Bukti Transfer"}
-                className="max-h-[350px] w-auto object-contain rounded-xl shadow-xs"
-              />
+              {payment.proofMimeType === "application/pdf" ? <iframe title={payment.proofFileName || "Bukti Transfer"} src={resolvePrivateFileUrl(payment.proofUrl)} className="h-[350px] w-full rounded-xl" /> : <img src={resolvePrivateFileUrl(payment.proofUrl)} alt={payment.proofFileName || "Bukti Transfer"} crossOrigin="use-credentials" className="max-h-[350px] w-auto object-contain rounded-xl shadow-xs" />}
             </div>
           ) : (
             <div className="border border-dashed border-border rounded-2xl p-8 text-center bg-muted/20 space-y-3">

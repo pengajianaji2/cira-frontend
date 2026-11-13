@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authApi, AuthBackdrop } from "@/features/auth";
+import { authApi } from "@/features/auth/api/auth.api";
+import { AuthBackdrop } from "@/features/auth/components/AuthBackdrop";
 
 export default function ResetPasswordPage() {
   const router = useRouter();

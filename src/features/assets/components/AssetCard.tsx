@@ -1,4 +1,5 @@
 "use client";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
 
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -23,7 +24,7 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
     const link = document.createElement("a");
-    link.href = asset.dataUrl;
+    link.href = resolvePrivateFileUrl(asset.dataUrl) || "";
     link.download = asset.name;
     document.body.appendChild(link);
     link.click();
@@ -39,8 +40,9 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={asset.dataUrl}
+          src={resolvePrivateFileUrl(asset.dataUrl)}
           alt={asset.name}
+          crossOrigin="use-credentials"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 

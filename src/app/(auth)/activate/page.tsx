@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
-import { ActivateForm, AuthBackdrop } from "@/features/auth";
+import { ActivateForm } from "@/features/auth/components/ActivateForm";
+import { AuthBackdrop } from "@/features/auth/components/AuthBackdrop";
 
 export const metadata: Metadata = {
   title: "Aktivasi Akun Tim - Cira PM",

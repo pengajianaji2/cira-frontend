@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 function getApiOrigin(): string {
   try {
@@ -8,7 +8,7 @@ function getApiOrigin(): string {
   }
 }
 
-export function proxy(request: NextRequest) {
+export function proxy() {
   if (process.env.NODE_ENV !== "production") return NextResponse.next();
 
   const apiOrigin = getApiOrigin();
@@ -23,9 +23,10 @@ export function proxy(request: NextRequest) {
     "style-src 'self'",
     "style-src-elem 'self' 'unsafe-inline'",
     "style-src-attr 'unsafe-inline'",
-    "img-src 'self' blob: data: https://res.cloudinary.com",
+    `img-src 'self' blob: data: ${apiOrigin}`,
     "font-src 'self' data:",
-    `connect-src 'self' ${apiOrigin} https://api.cloudinary.com`,
+    `connect-src 'self' ${apiOrigin}`,
+    `frame-src 'self' ${apiOrigin}`,
     "worker-src 'self' blob:",
     "media-src 'self' blob:",
     "object-src 'none'",

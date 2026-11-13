@@ -1,4 +1,4 @@
-import imageCompression from "browser-image-compression";
+import { uploadPrivateFile } from "@/shared/lib/private-file-upload";
 import { apiClient } from "@/shared/lib/api-client";
 import { ApiResponse } from "@/shared/types/api.types";
 import {
@@ -82,36 +82,10 @@ export const financeApi = {
     return response.data;
   },
 
-  /** Mengompresi gambar BAST (jika bertipe image) menjadi Data URL lalu menandai termin siap ditagih. */
-  async uploadBastFile(
-    termId: string,
-    file: File
-  ): Promise<ApiResponse<PaymentTerm>> {
-    let processedFile: File = file;
-    if (file.type.startsWith("image/")) {
-      try {
-        const options = {
-          maxSizeMB: 1.5,
-          maxWidthOrHeight: 1800,
-          useWebWorker: true,
-        };
-        processedFile = await imageCompression(file, options);
-      } catch (err) {
-        console.warn("Gagal kompresi berkas gambar BAST, memakai file asli:", err);
-      }
-    }
-
-    const dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
-      reader.readAsDataURL(processedFile);
-    });
-
-    return this.markTermReadyWithBast(termId, {
-      bastUrl: dataUrl,
-      bastFileName: file.name,
-    });
+  /** Unggah BAST secara privat, lalu tandai termin siap ditagih. */
+  async uploadBastFile(termId: string, projectId: string, file: File): Promise<ApiResponse<PaymentTerm>> {
+    await uploadPrivateFile(file, { category: "BAST", termId, projectId });
+    return this.markTermReadyWithBast(termId, {});
   },
 
   /**
@@ -190,47 +164,9 @@ export const financeApi = {
     return response.data;
   },
 
-  async uploadProof(
-    paymentId: string,
-    file: File
-  ): Promise<ApiResponse<{ proofUrl: string; proofFileName: string }>> {
-    let processedFile: File = file;
-    if (file.type.startsWith("image/")) {
-      try {
-        const options = {
-          maxSizeMB: 1.0,
-          maxWidthOrHeight: 1600,
-          useWebWorker: true,
-        };
-        processedFile = await imageCompression(file, options);
-      } catch (err) {
-        console.warn("Gagal kompresi bukti transfer, memakai file asli:", err);
-      }
-    }
-
-    const dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
-      reader.readAsDataURL(processedFile);
-    });
-
-    const response = await apiClient.patch<ApiResponse<Payment>>(
-      `/payments/${paymentId}`,
-      {
-        proofUrl: dataUrl,
-        proofFileName: file.name,
-      }
-    );
-
-    return {
-      success: true,
-      message: response.data.message || "Bukti transfer berhasil diunggah",
-      data: {
-        proofUrl: dataUrl,
-        proofFileName: file.name,
-      },
-    };
+  async uploadProof(paymentId: string, file: File): Promise<ApiResponse<{ proofUrl: string; proofFileName: string }>> {
+    const uploaded = await uploadPrivateFile(file, { category: "PROOF", paymentId });
+    return { success: true, message: "Bukti transfer berhasil diunggah", data: { proofUrl: uploaded.url, proofFileName: file.name } };
   },
 
   async deletePayment(paymentId: string): Promise<ApiResponse<{ id: string }>> {

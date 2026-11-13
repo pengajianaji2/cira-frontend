@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { CountryPhoneInput } from "@/shared/components/CountryPhoneInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -10,7 +11,6 @@ import {
   InstagramIcon,
   Mail01Icon,
   UserIcon,
-  WhatsappIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +56,7 @@ export function ProfileForm() {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     setError,
@@ -263,33 +264,14 @@ export function ProfileForm() {
               >
                 Nomor WhatsApp
               </label>
-              <div className="relative">
-                <Input
-                  id="profile-whatsapp-input"
-                  type="tel"
-                  inputMode="tel"
-                  placeholder="+6281234567890"
-                  aria-invalid={Boolean(errors.whatsapp)}
-                  aria-describedby={
-                    errors.whatsapp
-                      ? "profile-whatsapp-error profile-whatsapp-help"
-                      : "profile-whatsapp-help"
-                  }
-                  className="rounded-xl pl-4 pr-10 h-11 font-mono"
-                  disabled={updateMutation.isPending}
-                  {...register("whatsapp")}
-                />
-                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                  <HugeiconsIcon icon={WhatsappIcon} className="size-4" aria-hidden="true" />
-                </div>
-              </div>
+              <Controller control={control} name="whatsapp" render={({ field }) => <CountryPhoneInput id="profile-whatsapp-input" value={field.value} onChange={field.onChange} disabled={updateMutation.isPending} ariaInvalid={Boolean(errors.whatsapp)} className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-background px-4 font-mono text-sm" />} />
               {errors.whatsapp && (
                 <p id="profile-whatsapp-error" role="alert" className="text-xs font-medium text-status-danger-text">
                   {errors.whatsapp.message}
                 </p>
               )}
               <p id="profile-whatsapp-help" className="text-xs text-muted-foreground">
-                Format internasional dengan kode negara, misal +6281234567890.
+                Pilih negara, lalu masukkan nomor nasional. Nomor akan disimpan dalam format internasional (E.164).
               </p>
             </div>
 

@@ -53,7 +53,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       currentUserQuery.error &&
       (currentUserQuery.error as Error & { status?: number }).status === 401
     ) {
-      router.replace("/login");
+      router.replace(`/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
     }
   }, [currentUserQuery.error, router]);
 

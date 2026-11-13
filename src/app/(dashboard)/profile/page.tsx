@@ -1,7 +1,8 @@
 import React from "react";
 import { Metadata } from "next";
 import { UserIcon } from "@hugeicons/core-free-icons";
-import { ProfileForm, ChangePasswordForm } from "@/features/auth";
+import { ProfileForm } from "@/features/auth/components/ProfileForm";
+import { ChangePasswordForm } from "@/features/auth/components/ChangePasswordForm";
 import { PageHeaderCard } from "@/shared/components";
 
 export const metadata: Metadata = {

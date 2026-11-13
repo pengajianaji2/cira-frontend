@@ -33,13 +33,14 @@ function formatRupiah(amount?: number): string {
 
 export function ProjectDetailHeader({
   project,
-  activeTab = "prd",
+  activeTab = "docs",
 }: ProjectDetailHeaderProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
   const canManageRoster = permissions.includes("roster.manage");
+  const canReadFinance = permissions.includes("finance.read");
 
   const navTabs: { id: string; label: string; available: boolean; badge?: string }[] = [
-    { id: "prd", label: "PRD & Spesifikasi", available: true },
+    { id: "docs", label: "Dokumen & Repo", available: true },
     { id: "tasks", label: "Task Board", available: true },
     { id: "sprints", label: "Sprint & Progres", available: true },
     { id: "finance", label: "Keuangan & Termin", available: permissions.includes("finance.read") },
@@ -85,11 +86,11 @@ export function ProjectDetailHeader({
                   <HugeiconsIcon icon={Call02Icon} className="size-3.5" aria-hidden="true" />
                   {project.clientContact}
                 </span>
-                <span aria-hidden="true">•</span>
+                {canReadFinance && <><span aria-hidden="true">•</span>
                 <span className="flex items-center gap-1 font-semibold text-foreground">
                   <HugeiconsIcon icon={Coins01Icon} className="size-3.5 text-primary" aria-hidden="true" />
                   {formatRupiah(project.contractValue)}
-                </span>
+                </span></>}
               </div>
             </div>
           </div>

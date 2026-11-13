@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/shared/components/MoneyInput";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useUpdateContractValueMutation } from "../queries/finance.queries";
@@ -75,15 +75,7 @@ export function UpdateContractValueDialog({
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
                 Rp
               </span>
-              <Input
-                id="contract-value-input"
-                type="number"
-                value={valStr}
-                onChange={(e) => setValStr(e.target.value)}
-                placeholder="45000000"
-                className="h-9 text-xs pl-9 rounded-xl font-semibold"
-                required
-              />
+              <MoneyInput id="contract-value-input" value={valStr} onChange={setValStr} placeholder="45000000" className="h-9 text-xs pl-9 rounded-xl font-semibold" required />
             </div>
           </div>
 

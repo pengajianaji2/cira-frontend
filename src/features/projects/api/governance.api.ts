@@ -5,20 +5,18 @@ import {
   CreateRepoLinkInput,
   CreateStatusRequestInput,
   OwnerFinalDecisionInput,
-  PrdVersion,
   ProjectRepoType,
   ProjectRepositoryLink,
   ProjectRosterMember,
   ProjectStatusRequest,
   RepositoriesData,
-  SavePrdVersionInput,
   SubmitVoteInput,
   UpdateRepoLinkInput,
 } from "../types/governance.types";
 
 /**
  * Client API tata kelola proyek (`/api/v1/projects/:projectId/*`):
- * manajemen roster voting, pengajuan/vote/arbitrase status, tautan repositori, dan arsip versi PRD GZIP.
+ * manajemen roster voting, pengajuan/vote/arbitrase status, tautan repositori, dan riwayat PDF PRD.
  */
 export const governanceApi = {
   // ==========================================
@@ -162,44 +160,4 @@ export const governanceApi = {
     return response.data;
   },
 
-  // ==========================================
-  // PRD VERSIONING API (GZIP)
-  // ==========================================
-  async getPrdVersions(projectId: string): Promise<ApiResponse<PrdVersion[]>> {
-    const response = await apiClient.get<ApiResponse<PrdVersion[]>>(
-      `/projects/${projectId}/prd/versions`
-    );
-    return response.data;
-  },
-
-  async getPrdVersionById(
-    projectId: string,
-    versionId: string
-  ): Promise<ApiResponse<PrdVersion>> {
-    const response = await apiClient.get<ApiResponse<PrdVersion>>(
-      `/projects/${projectId}/prd/versions/${versionId}`
-    );
-    return response.data;
-  },
-
-  async savePrdVersion(
-    projectId: string,
-    input: SavePrdVersionInput
-  ): Promise<ApiResponse<PrdVersion>> {
-    const response = await apiClient.post<ApiResponse<PrdVersion>>(
-      `/projects/${projectId}/prd/versions`,
-      input
-    );
-    return response.data;
-  },
-
-  async restorePrdVersion(
-    projectId: string,
-    versionId: string
-  ): Promise<ApiResponse<PrdVersion>> {
-    const response = await apiClient.post<ApiResponse<PrdVersion>>(
-      `/projects/${projectId}/prd/versions/${versionId}/restore`
-    );
-    return response.data;
-  },
 };

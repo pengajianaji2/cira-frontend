@@ -7,7 +7,6 @@ import {
   CreateStatusRequestInput,
   OwnerFinalDecisionInput,
   ProjectRepoType,
-  SavePrdVersionInput,
   SubmitVoteInput,
   UpdateRepoLinkInput,
 } from "../types/governance.types";
@@ -293,70 +292,6 @@ export function useUpdateRepoTypeMutation(projectId: string) {
     },
     onError: (error: Error) => {
       toast.error("Gagal mengubah tipe repositori", {
-        description: error.message || "Terjadi kesalahan pada sistem.",
-      });
-    },
-  });
-}
-
-// ==========================================
-// PRD VERSIONING HOOKS
-// ==========================================
-export function usePrdVersionsQuery(projectId: string) {
-  return useQuery({
-    queryKey: GOVERNANCE_KEYS.prdVersions(projectId),
-    queryFn: async () => {
-      const response = await governanceApi.getPrdVersions(projectId);
-      return response.data;
-    },
-    enabled: Boolean(projectId),
-  });
-}
-
-export function useSavePrdVersionMutation(projectId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: SavePrdVersionInput) => {
-      const response = await governanceApi.savePrdVersion(projectId, payload);
-      return response.data;
-    },
-    onSuccess: (version) => {
-      queryClient.invalidateQueries({ queryKey: GOVERNANCE_KEYS.prdVersions(projectId) });
-      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.detail(projectId) });
-      if (version.isNewVersion) {
-        toast.success(`Versi PRD #${version.versionNumber} Disimpan`, {
-          description: "Snapshot terkompresi GZIP berhasil dicatat ke arsip.",
-        });
-      } else {
-        toast.info("Konten Tidak Berubah", {
-          description: "Teks PRD identik dengan versi terakhir. Tidak membuat versi baru.",
-        });
-      }
-    },
-    onError: (error: Error) => {
-      toast.error("Gagal menyimpan versi PRD", {
-        description: error.message || "Terjadi kesalahan pada sistem.",
-      });
-    },
-  });
-}
-
-export function useRestorePrdVersionMutation(projectId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (versionId: string) => {
-      const response = await governanceApi.restorePrdVersion(projectId, versionId);
-      return response.data;
-    },
-    onSuccess: (restored) => {
-      queryClient.invalidateQueries({ queryKey: GOVERNANCE_KEYS.prdVersions(projectId) });
-      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.detail(projectId) });
-      toast.success(`PRD Dipulihkan ke Versi #${restored.versionNumber}`, {
-        description: "Versi dipulihkan di urutan teratas tanpa menimpa histori lama.",
-      });
-    },
-    onError: (error: Error) => {
-      toast.error("Gagal memulihkan versi PRD", {
         description: error.message || "Terjadi kesalahan pada sistem.",
       });
     },

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/shared/components/MoneyInput";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -157,15 +158,7 @@ export function CreatePaymentDialog({
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
                   Rp
                 </span>
-                <Input
-                  id="payment-amount"
-                  type="number"
-                  placeholder="22500000"
-                  value={amountStr}
-                  onChange={(e) => setAmountStr(e.target.value)}
-                  className="h-9 text-xs pl-9 rounded-xl font-medium"
-                  required
-                />
+                <MoneyInput id="payment-amount" placeholder="22500000" value={amountStr} onChange={setAmountStr} className="h-9 text-xs pl-9 rounded-xl font-medium" required />
               </div>
             </div>
 

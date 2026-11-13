@@ -1,4 +1,5 @@
 "use client";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
 
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -31,7 +32,7 @@ export function AssetPreviewModal({
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = asset.dataUrl;
+    link.href = resolvePrivateFileUrl(asset.dataUrl) || "";
     link.download = asset.name;
     document.body.appendChild(link);
     link.click();
@@ -80,8 +81,9 @@ export function AssetPreviewModal({
         <div className="bg-muted/30 p-4 sm:p-8 flex items-center justify-center max-h-[70vh] overflow-auto">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={asset.dataUrl}
+            src={resolvePrivateFileUrl(asset.dataUrl)}
             alt={asset.name}
+            crossOrigin="use-credentials"
             className="max-h-[60vh] max-w-full object-contain rounded-xl shadow-md border border-border/40"
           />
         </div>

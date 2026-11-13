@@ -4,14 +4,11 @@ import React, { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { Input } from "@/components/ui/input";
-import { useMyPermissionsQuery } from "@/features/auth";
-import {
-  useProjectListingQuery,
-  ProjectFilterTabs,
-  ProjectTable,
-  CreateProjectDialog,
-  FilterStatus,
-} from "@/features/projects";
+import { useMyPermissionsQuery } from "@/features/auth/queries/auth.queries";
+import { useProjectListingQuery } from "@/features/projects/queries/projects.queries";
+import { ProjectFilterTabs, FilterStatus } from "@/features/projects/components/ProjectFilterTabs";
+import { ProjectTable } from "@/features/projects/components/ProjectTable";
+import { CreateProjectDialog } from "@/features/projects/components/CreateProjectDialog";
 import { PageHeaderCard } from "@/shared/components";
 import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
 

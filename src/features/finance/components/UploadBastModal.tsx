@@ -121,8 +121,8 @@ export function UploadBastModal({
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Ukuran berkas melebihi batas maksimum 10MB.");
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error("Ukuran berkas melebihi batas maksimum 25MB.");
       return;
     }
 
@@ -293,7 +293,7 @@ export function UploadBastModal({
                     Seret berkas BAST ke area ini
                   </p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">
-                    Mendukung PDF, PNG, JPG hingga 10MB
+                    Mendukung PDF, PNG, JPG hingga 25MB
                   </p>
                 </div>
                 <Button

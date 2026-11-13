@@ -6,7 +6,6 @@ import {
   ProjectStatus,
   CreateProjectInput,
   UpdateProjectInput,
-  DEFAULT_PRD_TEMPLATE,
 } from "../types/projects.types";
 
 /**
@@ -40,11 +39,7 @@ export const projectsApi = {
    * Mendaftarkan proyek baru ke sistem dengan status awal 'lead' dan template PRD bawaan.
    */
   async createProject(input: CreateProjectInput): Promise<ApiResponse<Project>> {
-    const payload = {
-      ...input,
-      prdContent: DEFAULT_PRD_TEMPLATE(input.name, input.clientName),
-    };
-    const response = await apiClient.post<ApiResponse<Project>>("/projects", payload);
+    const response = await apiClient.post<ApiResponse<Project>>("/projects", input);
     return response.data;
   },
 
@@ -60,16 +55,6 @@ export const projectsApi = {
       input
     );
     return response.data;
-  },
-
-  /**
-   * Menyimpan pembaruan dokumen PRD markdown proyek.
-   */
-  async updateProjectPrd(
-    id: string,
-    prdContent: string
-  ): Promise<ApiResponse<Project>> {
-    return this.updateProject(id, { prdContent });
   },
 
 };

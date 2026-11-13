@@ -78,24 +78,6 @@ export interface RepositoriesData {
   repositories: ProjectRepositoryLink[];
 }
 
-export interface PrdVersion {
-  id: string;
-  projectId: string;
-  versionNumber: number;
-  charCount: number;
-  description?: string | null;
-  createdAt: string;
-  createdById?: string | null;
-  createdBy?: {
-    id: string;
-    name: string;
-    email: string;
-    roles?: string[];
-  } | null;
-  content?: string;
-  isNewVersion?: boolean;
-}
-
 export interface CreateStatusRequestInput {
   targetStatus: string;
   reason: string;
@@ -124,9 +106,4 @@ export interface UpdateRepoLinkInput {
 export interface AddRosterMemberInput {
   userId: string;
   roleInProject?: string;
-}
-
-export interface SavePrdVersionInput {
-  content: string;
-  description?: string;
 }

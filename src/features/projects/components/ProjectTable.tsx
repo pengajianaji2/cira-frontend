@@ -84,7 +84,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
                     </div>
                     <div className="min-w-0">
                       <Link
-                        href={`/projects/${project.id}?tab=prd`}
+                        href={`/projects/${project.id}?tab=docs`}
                         className="hover:underline font-semibold text-foreground block truncate"
                       >
                         {project.name}
@@ -140,7 +140,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
                     size="sm"
                     className="rounded-full text-xs min-h-9 px-3.5 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all"
                   >
-                    <Link href={`/projects/${project.id}?tab=prd`}>
+                    <Link href={`/projects/${project.id}?tab=docs`}>
                       Buka Proyek
                       <HugeiconsIcon
                         icon={ArrowRight01Icon}
@@ -209,7 +209,7 @@ export function ProjectTable({ projects, isLoading }: ProjectTableProps) {
               variant="outline"
               className="w-full rounded-full text-xs min-h-11 justify-center"
             >
-              <Link href={`/projects/${project.id}?tab=prd`}>
+              <Link href={`/projects/${project.id}?tab=docs`}>
                 Buka Proyek
                 <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 ml-1" aria-hidden="true" />
               </Link>

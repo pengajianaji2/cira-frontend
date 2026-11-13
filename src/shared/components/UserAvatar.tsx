@@ -3,6 +3,7 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
 
 /** Ukuran preset standar untuk komponen `UserAvatar`. */
 export type UserAvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
@@ -56,7 +57,7 @@ export function UserAvatar({
   fallbackClassName,
 }: UserAvatarProps) {
   const displayName = name?.trim() || "";
-  const resolvedSrc = avatarUrl?.trim() ? avatarUrl.trim() : undefined;
+  const resolvedSrc = resolvePrivateFileUrl(avatarUrl);
   const resolvedAlt = decorative
     ? ""
     : alt ?? (displayName ? `Foto profil ${displayName}` : "Foto profil");
@@ -73,6 +74,7 @@ export function UserAvatar({
       <AvatarImage
         src={resolvedSrc}
         alt={resolvedAlt}
+        crossOrigin="use-credentials"
         className="aspect-square size-full rounded-full object-cover"
       />
       <AvatarFallback

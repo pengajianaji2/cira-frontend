@@ -67,29 +67,6 @@ export function useCreateProjectMutation() {
   });
 }
 
-export function useUpdateProjectPrdMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, prdContent }: { id: string; prdContent: string }) => {
-      const response = await projectsApi.updateProjectPrd(id, prdContent);
-      return response.data;
-    },
-    onSuccess: (updated) => {
-      queryClient.setQueryData(PROJECT_KEYS.detail(updated.id), updated);
-      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
-      toast.success("Perubahan PRD Disimpan", {
-        description: "Dokumen spesifikasi proyek berhasil diperbarui.",
-      });
-    },
-    onError: (error: Error) => {
-      toast.error("Gagal menyimpan PRD", {
-        description: error.message || "Gagal menyimpan perubahan dokumen.",
-      });
-    },
-  });
-}
-
 export function useUpdateProjectMutation() {
   const queryClient = useQueryClient();
 

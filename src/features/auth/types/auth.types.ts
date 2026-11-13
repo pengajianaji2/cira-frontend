@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 export type * from "@/shared/types/auth.types";
 
 export const WHATSAPP_INTERNATIONAL_REGEX = /^\+?[1-9]\d{6,14}$/;
@@ -26,8 +27,8 @@ export const profileSchema = z.object({
     .optional()
     .refine((value) => {
       const trimmed = value?.trim() ?? "";
-      return trimmed === "" || WHATSAPP_INTERNATIONAL_REGEX.test(trimmed);
-    }, "Nomor WhatsApp harus format internasional valid (misal: +6281234567890)"),
+      return trimmed === "" || Boolean(parsePhoneNumberFromString(trimmed)?.isValid());
+    }, "Nomor WhatsApp harus valid dengan kode negara yang dipilih."),
   instagram: z
     .string()
     .optional()

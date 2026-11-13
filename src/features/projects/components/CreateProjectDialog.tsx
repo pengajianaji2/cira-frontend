@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { CountryPhoneInput } from "@/shared/components/CountryPhoneInput";
+import { MoneyInput } from "@/shared/components/MoneyInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
   Folder01Icon,
   UserIcon,
-  Call02Icon,
   Coins01Icon,
 } from "@hugeicons/core-free-icons";
 import {
@@ -46,6 +47,7 @@ export function CreateProjectDialog({
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
@@ -149,18 +151,7 @@ export function CreateProjectDialog({
             <Label htmlFor="clientContact" className="text-xs font-medium">
               Nomor Kontak / WhatsApp Klien <span className="text-destructive">*</span>
             </Label>
-            <div className="relative">
-              <Input
-                id="clientContact"
-                placeholder="misal: 0812-3456-7890"
-                className="rounded-full pl-3 pr-9 h-10 text-xs"
-                {...register("clientContact")}
-              />
-              <HugeiconsIcon
-                icon={Call02Icon}
-                className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-              />
-            </div>
+            <Controller control={control} name="clientContact" render={({ field }) => <CountryPhoneInput id="clientContact" value={field.value} onChange={field.onChange} disabled={createMutation.isPending} className="h-10 min-w-0 flex-1 rounded-full border border-input bg-background px-3 text-xs" />} />
             {errors.clientContact && (
               <p className="text-[11px] text-destructive">
                 {errors.clientContact.message}
@@ -174,15 +165,7 @@ export function CreateProjectDialog({
               Estimasi Nilai Kontrak (Rp, Opsional)
             </Label>
             <div className="relative">
-              <Input
-                id="contractValue"
-                type="number"
-                placeholder="misal: 45000000"
-                className="rounded-full pl-3 pr-9 h-10 text-xs"
-                {...register("contractValue", {
-                  setValueAs: (v) => (v === "" || isNaN(Number(v)) ? undefined : Number(v)),
-                })}
-              />
+              <Controller control={control} name="contractValue" render={({ field }) => <MoneyInput id="contractValue" value={field.value} onChange={(digits) => field.onChange(digits ? Number(digits) : undefined)} placeholder="misal: 45000000" className="rounded-full pl-3 pr-9 h-10 text-xs" />} />
               <HugeiconsIcon
                 icon={Coins01Icon}
                 className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"

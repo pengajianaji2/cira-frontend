@@ -21,6 +21,7 @@ export interface Payment {
   notes?: string;
   proofUrl?: string;
   proofFileName?: string;
+  proofMimeType?: string | null;
   proofUploadedAt?: string;
   verifiedAt?: string;
   verifiedBy?: PaymentVerifier;
@@ -45,6 +46,7 @@ export interface PaymentTerm {
   readyAt?: string | null;
   bastUrl?: string | null;
   bastFileName?: string | null;
+  bastMimeType?: string | null;
   bastUploadedAt?: string | null;
   invoiceNumber?: string | null;
   invoiceIssuedAt?: string | null;
@@ -65,10 +67,7 @@ export const createPaymentSchema = z.object({
   notes: z.string().optional(),
 });
 
-export type CreatePaymentInput = z.infer<typeof createPaymentSchema> & {
-  proofUrl?: string;
-  proofFileName?: string;
-};
+export type CreatePaymentInput = z.infer<typeof createPaymentSchema>;
 
 export interface UpdatePaymentInput {
   title?: string;
@@ -76,8 +75,6 @@ export interface UpdatePaymentInput {
   status?: PaymentStatus;
   dueDate?: string;
   notes?: string;
-  proofUrl?: string;
-  proofFileName?: string;
 }
 
 // US-3: Input DTOs untuk Kontrak, Pemicu Termin & Penerbitan Invoice
@@ -106,8 +103,6 @@ export interface CreateContractInput {
 }
 
 export interface UploadBastInput {
-  bastUrl?: string;
-  bastFileName?: string;
   notes?: string;
 }
 
@@ -115,7 +110,6 @@ export interface IssueInvoiceInput {
   invoiceNumber?: string;
   invoiceDueDate: string;
   notes?: string;
-  invoicePdfUrl?: string;
 }
 
 export interface FinanceSummary {

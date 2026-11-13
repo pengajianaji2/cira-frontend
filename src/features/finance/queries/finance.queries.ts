@@ -149,12 +149,13 @@ export function useUploadBastFileMutation() {
   return useMutation({
     mutationFn: ({
       termId,
+      projectId,
       file,
     }: {
       termId: string;
       projectId: string;
       file: File;
-    }) => financeApi.uploadBastFile(termId, file),
+    }) => financeApi.uploadBastFile(termId, projectId, file),
     onSuccess: (_, variables) => {
       toast.success("Berkas BAST berhasil diunggah. Termin berstatus Siap Ditagih!");
       queryClient.invalidateQueries({ queryKey: termsKeys.list(variables.projectId) });

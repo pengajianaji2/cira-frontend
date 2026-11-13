@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { authApi, AuthBackdrop } from "@/features/auth";
+import { authApi } from "@/features/auth/api/auth.api";
+import { AuthBackdrop } from "@/features/auth/components/AuthBackdrop";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

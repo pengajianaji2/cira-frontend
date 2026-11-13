@@ -12,11 +12,10 @@ export * from "./components/CreateProjectDialog";
 export * from "./components/ProjectFilterTabs";
 export * from "./components/ProjectTable";
 export * from "./components/ProjectDetailHeader";
-export * from "./components/PrdEditorSplitPane";
-export * from "./components/PrdExportButton";
-export * from "./components/PrdPdfDocument";
 export * from "./components/StatusApprovalBanner";
 export * from "./components/RequestStatusDialog";
 export * from "./components/ProjectRosterModal";
 export * from "./components/ProjectRepositoriesCard";
-export * from "./components/PrdVersionDrawer";
+
+export * from "./components/ProjectDocumentsTab";
+export * from "./components/ProjectDeletionDialog";

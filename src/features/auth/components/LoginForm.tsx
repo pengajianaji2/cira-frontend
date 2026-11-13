@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { safeNextPath } from "../queries/auth.queries";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -54,7 +55,7 @@ export function LoginForm() {
   });
 
   const onSubmit = (data: LoginInput) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate({ ...data, next: safeNextPath(typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("next")) ?? undefined });
   };
 
   return (

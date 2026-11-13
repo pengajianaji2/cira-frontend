@@ -1,4 +1,5 @@
 "use client";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
 
 import React, { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -759,17 +760,18 @@ export function PaymentTermsTable({
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-auto bg-muted/20 rounded-2xl p-2 border border-border flex items-center justify-center min-h-[300px]">
-            {previewBastUrl?.startsWith("data:application/pdf") ? (
+            {(previewBastUrl?.startsWith("data:application/pdf") || previewBastName?.toLowerCase().endsWith(".pdf")) ? (
               <iframe
                 title={`Pratinjau BAST ${previewBastName}`}
-                src={previewBastUrl}
+                src={resolvePrivateFileUrl(previewBastUrl)}
                 className="w-full h-[500px] rounded-xl border-none"
               />
             ) : previewBastUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={previewBastUrl}
+                src={resolvePrivateFileUrl(previewBastUrl)}
                 alt={`Dokumen BAST ${previewBastName}`}
+                crossOrigin="use-credentials"
                 className="max-h-[500px] max-w-full rounded-xl object-contain shadow-xs"
               />
             ) : null}

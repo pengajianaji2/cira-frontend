@@ -1,4 +1,5 @@
 import { apiClient } from "@/shared/lib/api-client";
+import { uploadPrivateFile } from "@/shared/lib/private-file-upload";
 import { ApiResponse } from "@/shared/types/api.types";
 import { User } from "@/shared/types/auth.types";
 import {
@@ -105,7 +106,10 @@ export const authApi = {
    * Mengunggah foto profil hasil potongan 1:1 dalam format base64 data URL ke backend.
    */
   async uploadAvatar(dataUrl: string): Promise<ApiResponse<{ user: User }>> {
-    const response = await apiClient.post<ApiResponse<{ user: User }>>("/auth/avatar", { dataUrl });
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], `avatar.${blob.type.split("/")[1] || "jpg"}`, { type: blob.type });
+    const uploaded = await uploadPrivateFile(file, { category: "AVATAR" });
+    const response = await apiClient.post<ApiResponse<{ user: User }>>("/auth/avatar", { uploadSessionId: uploaded.sessionId });
     return response.data;
   },
 

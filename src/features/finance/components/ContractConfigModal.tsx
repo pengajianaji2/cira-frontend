@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/shared/components/MoneyInput";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -419,21 +420,12 @@ export function ContractConfigModal({
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
                     Rp
                   </span>
-                  <Input
-                    id="contract-value-input"
-                    name="contractValue"
-                    type="number"
-                    min={1}
-                    step={1000}
-                    required
-                    disabled={hasLockedTerms}
-                    value={contractValueInput}
-                    aria-invalid={showContractErr ? "true" : undefined}
+                  <MoneyInput
+                    id="contract-value-input" name="contractValue" required disabled={hasLockedTerms}
+                    value={contractValueInput} aria-invalid={showContractErr ? "true" : undefined}
                     aria-describedby={showContractErr ? "contract-value-error" : "contract-value-hint"}
-                    onBlur={() => markTouched("contractValue")}
-                    onChange={(e) => setContractValueInput(e.target.value)}
-                    placeholder="Contoh: 50000000"
-                    className="pl-10 text-sm font-mono font-semibold rounded-xl h-10"
+                    onBlur={() => markTouched("contractValue")} onChange={setContractValueInput}
+                    placeholder="Contoh: 50000000" className="pl-10 text-sm font-mono font-semibold rounded-xl h-10"
                   />
                 </div>
                 {showContractErr && contractErr ? (

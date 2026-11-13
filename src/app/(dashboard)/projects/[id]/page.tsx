@@ -8,53 +8,51 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon, ArrowLeft02Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  useProjectQuery,
-  ProjectDetailHeader,
-  StatusApprovalBanner,
-  ProjectRepositoriesCard,
-} from "@/features/projects";
+import { useProjectQuery } from "@/features/projects/queries/projects.queries";
+import { ProjectDetailHeader } from "@/features/projects/components/ProjectDetailHeader";
+import { StatusApprovalBanner } from "@/features/projects/components/StatusApprovalBanner";
+import { ProjectDeletionDialog } from "@/features/projects/components/ProjectDeletionDialog";
 import { TabContentSkeleton } from "@/shared/components/state/ComponentSkeleton";
 import { useGlobalState } from "@/shared/components/state/GlobalStateProvider";
 
 // Code-split chunks using next/dynamic for all tabs
-const PrdEditorSplitPane = dynamic(
-  () => import("@/features/projects").then((mod) => mod.PrdEditorSplitPane),
+const ProjectDocumentsTab = dynamic(
+  () => import("@/features/projects/components/ProjectDocumentsTab").then((mod) => mod.ProjectDocumentsTab),
   {
     loading: () => <TabContentSkeleton tab="prd" />,
   }
 );
 
 const TaskChecklistBoard = dynamic(
-  () => import("@/features/tasks").then((mod) => mod.TaskChecklistBoard),
+  () => import("@/features/tasks/components/TaskChecklistBoard").then((mod) => mod.TaskChecklistBoard),
   {
     loading: () => <TabContentSkeleton tab="tasks" />,
   }
 );
 
 const SprintsTabContent = dynamic(
-  () => import("@/features/sprints").then((mod) => mod.SprintsTabContent),
+  () => import("@/features/sprints/components/SprintsTabContent").then((mod) => mod.SprintsTabContent),
   {
     loading: () => <TabContentSkeleton tab="sprints" />,
   }
 );
 
 const FinanceTabContent = dynamic(
-  () => import("@/features/finance").then((mod) => mod.FinanceTabContent),
+  () => import("@/features/finance/components/FinanceTabContent").then((mod) => mod.FinanceTabContent),
   {
     loading: () => <TabContentSkeleton tab="finance" />,
   }
 );
 
 const AssetGallery = dynamic(
-  () => import("@/features/assets").then((mod) => mod.AssetGallery),
+  () => import("@/features/assets/components/AssetGallery").then((mod) => mod.AssetGallery),
   {
     loading: () => <TabContentSkeleton tab="assets" />,
   }
 );
 
 const ActivityTabContent = dynamic(
-  () => import("@/features/activity").then((mod) => mod.ActivityTabContent),
+  () => import("@/features/activity/components/ActivityTabContent").then((mod) => mod.ActivityTabContent),
   {
     loading: () => <TabContentSkeleton tab="activity" />,
   }
@@ -64,7 +62,7 @@ function ProjectDetailContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const id = params?.id as string;
-  const tab = searchParams?.get("tab") || "prd";
+  const tab = searchParams?.get("tab") || "docs";
 
   const { markTabLoaded, setActiveTab } = useGlobalState();
   const { data: project, isLoading, isError, error } = useProjectQuery(id);
@@ -109,14 +107,12 @@ function ProjectDetailContent() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <ProjectDetailHeader project={project} activeTab={tab} />
+      <div className="flex justify-end"><ProjectDeletionDialog project={project} /></div>
 
       {/* Banner Persetujuan Status (US-2: Tampil dinamis jika ada permohonan status pending) */}
       <StatusApprovalBanner projectId={project.id} currentStatus={project.status} />
 
-      {/* Tautan Repositori Berlabel & Switcher Monorepo (US-2) */}
-      <ProjectRepositoriesCard projectId={project.id} />
-
-      {tab === "prd" && <PrdEditorSplitPane project={project} />}
+      {tab === "docs" && <ProjectDocumentsTab projectId={project.id} />}
       {tab === "tasks" && <TaskChecklistBoard project={project} />}
       {tab === "sprints" && <SprintsTabContent project={project} />}
       {tab === "finance" && <FinanceTabContent project={project} />}
