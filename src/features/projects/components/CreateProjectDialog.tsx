@@ -109,12 +109,12 @@ export function CreateProjectDialog({
               <Input
                 id="name"
                 placeholder="misal: Sistem Point of Sale Multi-Cabang"
-                className="rounded-full pl-3 pr-9 h-10 text-xs"
+                className="rounded-xl pl-3.5 pr-10 h-10 text-base md:text-sm"
                 {...register("name")}
               />
               <HugeiconsIcon
                 icon={Folder01Icon}
-                className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="size-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
               />
             </div>
             {errors.name && (
@@ -131,12 +131,12 @@ export function CreateProjectDialog({
               <Input
                 id="clientName"
                 placeholder="misal: PT Berkah Ritel Sejahtera"
-                className="rounded-full pl-3 pr-9 h-10 text-xs"
+                className="rounded-xl pl-3.5 pr-10 h-10 text-base md:text-sm"
                 {...register("clientName")}
               />
               <HugeiconsIcon
                 icon={UserIcon}
-                className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="size-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
               />
             </div>
             {errors.clientName && (
@@ -151,7 +151,19 @@ export function CreateProjectDialog({
             <Label htmlFor="clientContact" className="text-xs font-medium">
               Nomor Kontak / WhatsApp Klien <span className="text-destructive">*</span>
             </Label>
-            <Controller control={control} name="clientContact" render={({ field }) => <CountryPhoneInput id="clientContact" value={field.value} onChange={field.onChange} disabled={createMutation.isPending} className="h-10 min-w-0 flex-1 rounded-full border border-input bg-background px-3 text-xs" />} />
+            <Controller
+              control={control}
+              name="clientContact"
+              render={({ field }) => (
+                <CountryPhoneInput
+                  id="clientContact"
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={createMutation.isPending}
+                  className="rounded-xl"
+                />
+              )}
+            />
             {errors.clientContact && (
               <p className="text-[11px] text-destructive">
                 {errors.clientContact.message}
@@ -160,37 +172,53 @@ export function CreateProjectDialog({
           </div>
 
           {/* Nilai Kontrak */}
-          {permissions.includes("projects.contract.update") && <div className="space-y-1.5">
-            <Label htmlFor="contractValue" className="text-xs font-medium">
-              Estimasi Nilai Kontrak (Rp, Opsional)
-            </Label>
-            <div className="relative">
-              <Controller control={control} name="contractValue" render={({ field }) => <MoneyInput id="contractValue" value={field.value} onChange={(digits) => field.onChange(digits ? Number(digits) : undefined)} placeholder="misal: 45000000" className="rounded-full pl-3 pr-9 h-10 text-xs" />} />
-              <HugeiconsIcon
-                icon={Coins01Icon}
-                className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-              />
+          {permissions.includes("projects.contract.update") && (
+            <div className="space-y-1.5">
+              <Label htmlFor="contractValue" className="text-xs font-medium">
+                Estimasi Nilai Kontrak (Rp, Opsional)
+              </Label>
+              <div className="relative">
+                <Controller
+                  control={control}
+                  name="contractValue"
+                  render={({ field }) => (
+                    <MoneyInput
+                      id="contractValue"
+                      value={field.value}
+                      onChange={(digits) =>
+                        field.onChange(digits ? Number(digits) : undefined)
+                      }
+                      placeholder="misal: 45000000"
+                      className="rounded-xl pl-3.5 pr-10 h-10 text-base md:text-sm font-medium"
+                    />
+                  )}
+                />
+                <HugeiconsIcon
+                  icon={Coins01Icon}
+                  className="size-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                />
+              </div>
+              {errors.contractValue && (
+                <p className="text-[11px] text-destructive">
+                  {errors.contractValue.message}
+                </p>
+              )}
             </div>
-            {errors.contractValue && (
-              <p className="text-[11px] text-destructive">
-                {errors.contractValue.message}
-              </p>
-            )}
-          </div>}
+          )}
 
           <DialogFooter className="pt-2 gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-full text-xs h-10 px-4"
+              className="rounded-xl text-xs h-10 px-4"
               disabled={createMutation.isPending}
             >
               Batal
             </Button>
             <Button
               type="submit"
-              className="rounded-full text-xs h-10 px-5 font-medium"
+              className="rounded-xl text-xs h-10 px-5 font-semibold"
               disabled={createMutation.isPending}
             >
               {createMutation.isPending ? (

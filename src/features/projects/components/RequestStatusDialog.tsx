@@ -78,7 +78,7 @@ export function RequestStatusDialog({
           <Button
             size="sm"
             variant="outline"
-            className="rounded-full text-xs h-8 px-3 border-primary/30 text-primary hover:bg-primary/10"
+            className="rounded-full text-xs h-8 px-3 border-border text-foreground hover:bg-muted font-medium"
           >
             <HugeiconsIcon icon={MailSend01Icon} className="size-3.5 mr-1.5" />
             Ajukan Perubahan Status

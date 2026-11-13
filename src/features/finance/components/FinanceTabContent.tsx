@@ -18,12 +18,23 @@ import {
   useProjectTermsQuery,
   useFinanceSummaryQuery,
 } from "../queries/finance.queries";
+import dynamic from "next/dynamic";
 import { FinanceOverviewCards } from "./FinanceOverviewCards";
 import { PaymentMilestoneList } from "./PaymentMilestoneList";
-import { CreatePaymentDialog } from "./CreatePaymentDialog";
-import { UpdateContractValueDialog } from "./UpdateContractValueDialog";
 import { PaymentTermsTable } from "./PaymentTermsTable";
-import { ContractConfigModal } from "./ContractConfigModal";
+
+const CreatePaymentDialog = dynamic(
+  () => import("./CreatePaymentDialog").then((mod) => mod.CreatePaymentDialog),
+  { ssr: false }
+);
+const UpdateContractValueDialog = dynamic(
+  () => import("./UpdateContractValueDialog").then((mod) => mod.UpdateContractValueDialog),
+  { ssr: false }
+);
+const ContractConfigModal = dynamic(
+  () => import("./ContractConfigModal").then((mod) => mod.ContractConfigModal),
+  { ssr: false }
+);
 
 interface FinanceTabContentProps {
   project: Project;

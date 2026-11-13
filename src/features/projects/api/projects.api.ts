@@ -6,6 +6,8 @@ import {
   ProjectStatus,
   CreateProjectInput,
   UpdateProjectInput,
+  ProjectDeletionResult,
+  PrdVersionDocument,
 } from "../types/projects.types";
 
 /**
@@ -57,4 +59,41 @@ export const projectsApi = {
     return response.data;
   },
 
+  /**
+   * Menghapus proyek secara permanen dengan otentikasi password Owner.
+   */
+  async deleteProject(id: string, password: string): Promise<ApiResponse<ProjectDeletionResult>> {
+    const response = await apiClient.delete<ApiResponse<ProjectDeletionResult>>(`/projects/${id}`, {
+      data: { password },
+    });
+    return response.data;
+  },
+
+  /**
+   * Melanjutkan sisa cleanup penghapusan file proyek yang tertunda.
+   */
+  async retryProjectDeletion(id: string, password: string): Promise<ApiResponse<ProjectDeletionResult>> {
+    const response = await apiClient.post<ApiResponse<ProjectDeletionResult>>(`/projects/${id}/deletion/retry`, {
+      password,
+    });
+    return response.data;
+  },
+
+  /**
+   * Mengambil daftar riwayat versi dokumen PRD privat.
+   */
+  async getPrdVersions(projectId: string): Promise<ApiResponse<PrdVersionDocument[]>> {
+    const response = await apiClient.get<ApiResponse<PrdVersionDocument[]>>(`/projects/${projectId}/prd/versions`);
+    return response.data;
+  },
+
+  /**
+   * Mendaftarkan upload session PDF PRD baru sebagai versi PRD.
+   */
+  async createPrdVersion(projectId: string, uploadSessionId: string): Promise<ApiResponse<PrdVersionDocument>> {
+    const response = await apiClient.post<ApiResponse<PrdVersionDocument>>(`/projects/${projectId}/prd/versions`, {
+      uploadSessionId,
+    });
+    return response.data;
+  },
 };

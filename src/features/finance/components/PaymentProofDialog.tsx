@@ -24,19 +24,12 @@ import {
   useVerifyPaymentMutation,
   useUploadProofMutation,
 } from "../queries/finance.queries";
+import { formatRupiah } from "../utils/finance.formatters";
 
 interface PaymentProofDialogProps {
   payment: Payment | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function formatRupiah(amount: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(amount);
 }
 
 export function PaymentProofDialog({

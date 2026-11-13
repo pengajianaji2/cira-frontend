@@ -18,11 +18,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { UserAvatar } from "@/shared/components";
+import dynamic from "next/dynamic";
 import { profileSchema, ProfileInput } from "../types/auth.types";
 import { useAuthStore } from "../store/auth.store";
 import { useUpdateProfileMutation, useUploadAvatarMutation } from "../queries/auth.queries";
 import { validateAvatarFile } from "../utils/avatar-crop";
-import { AvatarCropDialog } from "./AvatarCropDialog";
+
+const AvatarCropDialog = dynamic(
+  () => import("./AvatarCropDialog").then((mod) => mod.AvatarCropDialog),
+  { ssr: false }
+);
 
 export function ProfileForm() {
   const { user } = useAuthStore();

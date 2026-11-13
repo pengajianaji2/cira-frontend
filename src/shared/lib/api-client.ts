@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
-if (process.env.NODE_ENV === "production") {
+if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   let productionApiUrl: URL;
   try {
     if (!configuredApiUrl) throw new Error("missing");

@@ -78,20 +78,20 @@ export function LoginForm() {
           </div>
 
           {/* Formulir Email & Password */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
             {/* Input Email */}
-            <div className="space-y-1">
-              <label htmlFor="login-email" className="sr-only">
-                Email
+            <div className="space-y-1.5">
+              <label htmlFor="login-email" className="text-xs font-medium text-foreground block">
+                Alamat Email Tim
               </label>
               <div className="relative">
                 <input
                   id="login-email"
                   type="email"
                   autoComplete="email"
-                  placeholder="Email"
+                  placeholder="nama@cira.id"
                   disabled={loginMutation.isPending || isSubmitting}
-                  className="w-full h-11 rounded-full border border-input-border bg-card px-4 pr-10 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
+                  className="w-full h-11 rounded-xl border border-input-border bg-card px-4 pr-10 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
                   {...register("email")}
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
@@ -99,31 +99,31 @@ export function LoginForm() {
                 </div>
               </div>
               {errors.email && (
-                <p role="alert" className="text-xs text-status-danger-text pl-3">
+                <p role="alert" className="text-xs text-status-danger-text pl-1">
                   {errors.email.message}
                 </p>
               )}
             </div>
 
             {/* Input Password */}
-            <div className="space-y-1">
-              <label htmlFor="login-password" className="sr-only">
-                Password
+            <div className="space-y-1.5">
+              <label htmlFor="login-password" className="text-xs font-medium text-foreground block">
+                Kata Sandi
               </label>
               <div className="relative">
                 <input
                   id="login-password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
-                  placeholder="Password"
+                  placeholder="Masukkan kata sandi"
                   disabled={loginMutation.isPending || isSubmitting}
-                  className="w-full h-11 rounded-full border border-input-border bg-card px-4 pr-12 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
+                  className="w-full h-11 rounded-xl border border-input-border bg-card px-4 pr-12 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/50 transition-colors"
                   {...register("password")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-0.5 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+                  className="absolute right-0.5 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
                   aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                 >
                   <HugeiconsIcon
@@ -134,7 +134,7 @@ export function LoginForm() {
                 </button>
               </div>
               {errors.password && (
-                <p role="alert" className="text-xs text-status-danger-text pl-3">
+                <p role="alert" className="text-xs text-status-danger-text pl-1">
                   {errors.password.message}
                 </p>
               )}

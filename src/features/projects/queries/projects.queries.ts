@@ -87,3 +87,62 @@ export function useUpdateProjectMutation() {
     },
   });
 }
+
+export function useDeleteProjectMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, password }: { id: string; password: string }) => {
+      const response = await projectsApi.deleteProject(id, password);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+    },
+  });
+}
+
+export function useRetryProjectDeletionMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, password }: { id: string; password: string }) => {
+      const response = await projectsApi.retryProjectDeletion(id, password);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.lists() });
+    },
+  });
+}
+
+export function usePrdVersionsQuery(projectId: string) {
+  return useQuery({
+    queryKey: [...PROJECT_KEYS.detail(projectId), "prd-versions"],
+    queryFn: async () => {
+      const response = await projectsApi.getPrdVersions(projectId);
+      return response.data;
+    },
+    enabled: Boolean(projectId),
+  });
+}
+
+export function useCreatePrdVersionMutation(projectId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (uploadSessionId: string) => {
+      const response = await projectsApi.createPrdVersion(projectId, uploadSessionId);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...PROJECT_KEYS.detail(projectId), "prd-versions"],
+      });
+      toast.success("Versi PRD disimpan secara privat.");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Gagal menyimpan versi PRD.");
+    },
+  });
+}

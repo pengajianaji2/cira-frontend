@@ -73,3 +73,19 @@ export interface UpdateProjectInput {
   progress?: number;
   repoType?: ProjectRepoType;
 }
+
+export interface ProjectDeletionResult {
+  state: string;
+  remaining: number;
+  counts: Record<string, number> | null;
+}
+
+export interface PrdVersionDocument {
+  id: string;
+  versionNumber: number;
+  description?: string | null;
+  createdAt: string;
+  fileName: string;
+  sizeBytes: number;
+  url: string;
+}
