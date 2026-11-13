@@ -331,7 +331,7 @@ export function OperationalEventModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-3xl p-6 max-h-[90dvh] overflow-y-auto">
+      <DialogContent className="max-w-lg rounded-3xl p-6 max-h-[90dvh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <DialogHeader className="space-y-1">
           <div className="flex items-center gap-2.5">
             <div className="size-9 rounded-2xl bg-primary/15 text-foreground flex items-center justify-center shrink-0">

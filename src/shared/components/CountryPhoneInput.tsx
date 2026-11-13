@@ -95,14 +95,14 @@ export function CountryPhoneInput({
   };
 
   return (
-    <div className="space-y-1.5 w-full">
-      <div className="flex items-center gap-2">
+    <div className="space-y-1.5 w-full min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
         <select
           aria-label="Pilih negara dan kode telepon"
           value={country}
           disabled={disabled}
           onChange={(e) => handleCountryChange(e.target.value as CountryCode)}
-          className="h-10 max-w-[45%] rounded-xl border border-input bg-card px-2.5 text-base md:text-sm text-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 transition-colors"
+          className="h-10 w-[130px] shrink-0 rounded-xl border border-input bg-card px-2.5 text-base md:text-sm text-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 transition-colors"
         >
           {countries.map((c) => (
             <option key={c.code} value={c.code}>

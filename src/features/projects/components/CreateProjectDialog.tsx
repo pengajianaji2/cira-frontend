@@ -85,7 +85,7 @@ export function CreateProjectDialog({
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[500px] rounded-2xl p-6">
+      <DialogContent className="sm:max-w-[500px] rounded-2xl p-6 overflow-hidden">
         <DialogHeader>
           <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
             <HugeiconsIcon icon={Folder01Icon} className="size-5" />
@@ -99,7 +99,7 @@ export function CreateProjectDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 w-full min-w-0">
           {/* Nama Proyek */}
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-xs font-medium">
