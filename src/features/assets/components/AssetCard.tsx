@@ -1,6 +1,4 @@
 "use client";
-import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
-
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -12,6 +10,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
+import { useFileDownload } from "@/shared/hooks/useFileDownload";
 import { DesignAsset, formatBytes } from "../types/assets.types";
 
 interface AssetCardProps {
@@ -21,14 +22,13 @@ interface AssetCardProps {
 }
 
 export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
+  const { download, isDownloading } = useFileDownload({
+    downloadErrorMessage: "Gagal mengunduh aset.",
+  });
+
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const link = document.createElement("a");
-    link.href = resolvePrivateFileUrl(asset.dataUrl) || "";
-    link.download = asset.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    void download(asset.dataUrl, asset.name, asset.id);
   };
 
   return (
@@ -117,11 +117,16 @@ export function AssetCard({ asset, onPreview, onDelete }: AssetCardProps) {
               variant="ghost"
               size="icon-xs"
               onClick={handleDownload}
+              disabled={isDownloading}
               className="text-muted-foreground hover:text-foreground rounded-lg cursor-pointer"
               aria-label={`Unduh aset "${asset.name}"`}
-              title="Unduh aset"
+              title={isDownloading ? "Sedang mengunduh..." : "Unduh aset"}
             >
-              <HugeiconsIcon icon={Download04Icon} className="size-3.5" aria-hidden="true" />
+              {isDownloading ? (
+                <Spinner className="size-3.5" />
+              ) : (
+                <HugeiconsIcon icon={Download04Icon} className="size-3.5" aria-hidden="true" />
+              )}
             </Button>
             <Button
               type="button"

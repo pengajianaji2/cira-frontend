@@ -14,10 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { useMyPermissionsQuery } from "@/features/auth";
-import {
-  uploadPrivateFile,
-  resolvePrivateFileUrl,
-} from "@/shared/lib/private-file-upload";
+import { uploadPrivateFile } from "@/shared/lib/private-file-upload";
+import { useFileDownload } from "@/shared/hooks/useFileDownload";
 import {
   usePrdVersionsQuery,
   useCreatePrdVersionMutation,
@@ -31,6 +29,16 @@ interface ProjectDocumentsTabProps {
 export function ProjectDocumentsTab({ projectId }: ProjectDocumentsTabProps) {
   const [busy, setBusy] = useState(false);
   const [description, setDescription] = useState("");
+
+  const {
+    download,
+    view,
+    downloadingId,
+    viewingId,
+  } = useFileDownload({
+    downloadErrorMessage: "Gagal mengunduh berkas PRD.",
+    viewErrorMessage: "Gagal membuka berkas PRD.",
+  });
 
   const { data: permissions = [] } = useMyPermissionsQuery();
   const canWritePrd = permissions.includes("prd.write");
@@ -194,33 +202,44 @@ export function ProjectDocumentsTab({ projectId }: ProjectDocumentsTabProps) {
 
                   <div className="flex items-center gap-2.5 shrink-0 pt-1 sm:pt-0">
                     <Button
-                      asChild
+                      type="button"
                       variant="outline"
                       size="sm"
-                      className="rounded-xl text-xs h-9 px-3 gap-1.5 text-foreground hover:text-accent-foreground"
+                      onClick={() => void view(version.url, version.id)}
+                      disabled={viewingId === version.id}
+                      className="rounded-xl text-xs h-9 px-3 gap-1.5 text-foreground hover:text-accent-foreground cursor-pointer"
                     >
-                      <a
-                        href={resolvePrivateFileUrl(version.url)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <HugeiconsIcon icon={ViewIcon} className="size-3.5" aria-hidden="true" />
-                        Lihat PDF
-                      </a>
+                      {viewingId === version.id ? (
+                        <>
+                          <Spinner className="size-3.5 mr-1" />
+                          Membuka...
+                        </>
+                      ) : (
+                        <>
+                          <HugeiconsIcon icon={ViewIcon} className="size-3.5" aria-hidden="true" />
+                          Lihat PDF
+                        </>
+                      )}
                     </Button>
                     <Button
-                      asChild
+                      type="button"
                       variant="outline"
                       size="sm"
-                      className="rounded-xl text-xs h-9 px-3 gap-1.5 text-foreground hover:text-accent-foreground"
+                      onClick={() => void download(version.url, version.fileName, version.id)}
+                      disabled={downloadingId === version.id}
+                      className="rounded-xl text-xs h-9 px-3 gap-1.5 text-foreground hover:text-accent-foreground cursor-pointer"
                     >
-                      <a
-                        href={`${resolvePrivateFileUrl(version.url)}?mode=download`}
-                        download={version.fileName}
-                      >
-                        <HugeiconsIcon icon={Download04Icon} className="size-3.5" aria-hidden="true" />
-                        Unduh
-                      </a>
+                      {downloadingId === version.id ? (
+                        <>
+                          <Spinner className="size-3.5 mr-1" />
+                          Mengunduh...
+                        </>
+                      ) : (
+                        <>
+                          <HugeiconsIcon icon={Download04Icon} className="size-3.5" aria-hidden="true" />
+                          Unduh
+                        </>
+                      )}
                     </Button>
                   </div>
                 </li>

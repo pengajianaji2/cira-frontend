@@ -61,3 +61,6 @@ export function resolvePrivateFileUrl(url?: string | null) {
   const configured = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
   return `${configured.replace(/\/$/, "")}/${url.replace(/^\/?api\/v1\//, "").replace(/^\//, "")}`;
 }
+
+// Re-export file download/preview utilities for backward compatibility
+export { downloadPrivateFile, openPrivateFileInNewTab } from "./file-downloader";

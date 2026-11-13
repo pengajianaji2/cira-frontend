@@ -1,6 +1,4 @@
 "use client";
-import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
-
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -14,7 +12,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
+import { resolvePrivateFileUrl } from "@/shared/lib/private-file-upload";
+import { useFileDownload } from "@/shared/hooks/useFileDownload";
 import { DesignAsset, formatBytes } from "../types/assets.types";
 
 interface AssetPreviewModalProps {
@@ -28,15 +29,14 @@ export function AssetPreviewModal({
   isOpen,
   onClose,
 }: AssetPreviewModalProps) {
+  const { download, isDownloading } = useFileDownload({
+    downloadErrorMessage: "Gagal mengunduh aset.",
+  });
+
   if (!asset) return null;
 
   const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = resolvePrivateFileUrl(asset.dataUrl) || "";
-    link.download = asset.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    void download(asset.dataUrl, asset.name, asset.id);
   };
 
   return (
@@ -70,10 +70,20 @@ export function AssetPreviewModal({
             variant="outline"
             size="sm"
             onClick={handleDownload}
+            disabled={isDownloading}
             className="rounded-full text-xs h-8 px-3 shrink-0"
           >
-            <HugeiconsIcon icon={Download04Icon} className="size-3.5 mr-1.5" />
-            Unduh
+            {isDownloading ? (
+              <>
+                <Spinner className="size-3.5 mr-1.5" />
+                Mengunduh...
+              </>
+            ) : (
+              <>
+                <HugeiconsIcon icon={Download04Icon} className="size-3.5 mr-1.5" />
+                Unduh
+              </>
+            )}
           </Button>
         </DialogHeader>
 
