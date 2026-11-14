@@ -3,8 +3,6 @@ import { z } from "zod";
 export type TaskStatus = "todo" | "done";
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
-export const FIBONACCI_TASK_POINTS = [1, 2, 3, 5, 8, 13] as const;
-
 export interface TaskAssignee {
   id?: string;
   name: string;
@@ -21,8 +19,7 @@ export interface Task {
   description?: string;
   status: TaskStatus;
   priority: TaskPriority;
-  storyPoints?: number | null;
-  sprintId?: string | null;
+  sprintId: string;
   assigneeId?: string | null;
   assigneeName?: string | null;
   assigneeRole?: string | null;
@@ -49,15 +46,7 @@ export const createTaskSchema = z.object({
   description: z.string().optional(),
   status: z.enum(["todo", "done"]),
   priority: z.enum(["low", "medium", "high", "urgent"]),
-  storyPoints: z
-    .number()
-    .int("Story points harus berupa bilangan bulat")
-    .refine(
-      (val) => (FIBONACCI_TASK_POINTS as readonly number[]).includes(val),
-      "Story points harus deret Fibonacci: 1, 2, 3, 5, 8, 13"
-    )
-    .optional(),
-  sprintId: z.string().nullable().optional(),
+  sprintId: z.string().min(1, "Sprint wajib dipilih"),
   assigneeId: z.string().optional(),
   assigneeName: z.string().optional(),
 });
@@ -69,8 +58,7 @@ export interface UpdateTaskInput {
   description?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
-  storyPoints?: number | null;
-  sprintId?: string | null;
+  sprintId?: string;
   assigneeId?: string | null;
   assigneeName?: string | null;
   order?: number;
@@ -78,5 +66,5 @@ export interface UpdateTaskInput {
 }
 
 export interface MoveTaskToSprintInput {
-  targetSprintId: string | null;
+  targetSprintId: string;
 }

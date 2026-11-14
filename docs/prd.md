@@ -10,7 +10,7 @@
 Frontend `pm-web` membutuhkan pembaruan antarmuka dan penanganan data untuk mendukung:
 1. **RBAC & Undangan Anggota**: Halaman aktivasi akun via token 24 jam dengan input kontak wajib (WhatsApp internasional & Instagram handle), halaman direktori tim dengan filter role/status, modal undangan anggota khusus Owner, serta client-side role guarding.
 2. **Persetujuan Status Proyek & Versioning PRD**: Banner/modal pengajuan dan voting status proyek per roster (dengan tombol final decision Owner), pengelolaan tautan repositori berlabel (Monorepo / Terpisah), drawer riwayat versi PRD terkompresi GZIP dengan kemampuan restore instan.
-3. **Sprint Kanban, Story Points, & Progres Proyek**: Visualisasi progress bar kumulatif terbobot di atas board, selector sprint aktif/backlog, badge story points Fibonacci (`1, 2, 3, 5, 8, 13`), validasi single assignee, serta dialog konfirmasi penyelesaian sprint (wajib seluruh task Done).
+3. **Sprint, Todo, & Progres Proyek**: Satu tab Sprint untuk siklus sprint dan checklist Todo. Semua Todo harus berada dalam Sprint; Sprint baru dapat dibuat manual atau dari template paste dan Todo dapat diberi PIC dari roster.
 4. **Keuangan Bertingkat & Invoice PDF**: Tabel daftar termin berbobot total tepat 100%, modal trigger penyelesaian & unggah dokumen BAST, dan generator/preview invoice resmi PDF menggunakan `@react-pdf/renderer` dengan nomor otomatis `INV-YYYY-NNN/Tn`.
 
 ---
@@ -37,10 +37,13 @@ Frontend `pm-web` membutuhkan pembaruan antarmuka dan penanganan data untuk mend
 - **AC-F2-3 (Drawer Riwayat Versi PRD)**: Given pengguna berada di tab PRD `/projects/[id]?tab=prd`, When mengklik tombol *"Riwayat Versi"*, Then drawer sisi kanan menampilkan kronologi versi PRD; saat tombol *"Restore"* pada salah satu versi diklik, isi versi lama dipulihkan ke editor dan disimpan sebagai versi terbaru.
 - **AC-F2-4 (Pengelolaan Repositori)**: Given tab repositori pada detail proyek, When Owner atau Developer menambah link repositori berlabel (misal Frontend, Backend), Then tautan tersimpan dan ditampilkan sebagai kartu repositori interaktif.
 
-### US-3: Sprint Lifecycle, Task Story Points Fibonacci, & Progres Kumulatif
-- **AC-F3-1 (Progress Meter Kumulatif)**: Given halaman Kanban `/projects/[id]?tab=tasks`, When dimuat, Then menampilkan progress bar persentase kumulatif yang dihitung dari total story points sprint selesai terhadap total story points scope disetujui.
-- **AC-F3-2 (Input Story Points Fibonacci & Assignee)**: Given modal pembuatan/pengeditan task, When memilih story points, Then sistem hanya menyajikan pilihan deret Fibonacci (`1, 2, 3, 5, 8, 13`) dan mewajibkan pemilihan tepat 1 assignee sebelum task dapat dimasukkan ke sprint aktif.
-- **AC-F3-3 (Validasi Selesaikan Sprint)**: Given sprint yang memiliki task berstatus `Todo` atau `In Progress`, When pengguna mengklik tombol *"Selesaikan Sprint"*, Then sistem menampilkan dialog peringatan bahwa sprint belum dapat diselesaikan sebelum semua task berstatus `Done`.
+### US-3: Sprint Lifecycle, Todo, & Progres
+- **AC-F3-1 (Progress Meter)**: Tab Sprint menampilkan progres proyek berdasarkan `task selesai / seluruh task`; setiap task berbobot sama.
+- **AC-F3-2 (Todo di Sprint)**: Seluruh Todo dapat dikelola dalam tab Sprint; Todo wajib terhubung ke Sprint dan URL lama `?tab=tasks` diarahkan ke tab Sprint.
+- **AC-F3-3 (Buat Sprint Manual atau Template)**: Form Sprint menyediakan input manual dan Quick-Paste. Template divalidasi dan Todo ditampilkan sebagai preview sebelum disimpan.
+- **AC-F3-4 (Simpan Atomik)**: Sprint dan Todo hasil template dibuat dalam satu operasi backend transaksional.
+- **AC-F3-5 (Penutupan Sprint)**: Todo yang tersisa harus dialihkan ke Sprint planning lain sebelum Sprint ditutup.
+- **AC-F3-6 (PIC Todo)**: Setiap Todo dapat memiliki maksimal satu PIC dari roster proyek. PIC opsional selama planning maupun Sprint aktif dan dapat diubah melalui dialog edit Sprint.
 
 ### US-4: Kontrak, Termin 100%, Trigger BAST, & Invoice PDF
 - **AC-F4-1 (Validasi Persentase Termin 100%)**: Given modal pengaturan termin pembayaran proyek, When pengguna memasukkan persentase per termin, Then form secara realtime menghitung total persentase dan memvalidasi bahwa totalnya tepat `100.00%` sebelum tombol simpan dapat ditekan.

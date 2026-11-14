@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon, ArrowLeft02Icon } from "@hugeicons/core-free-icons";
@@ -20,13 +20,6 @@ const ProjectDocumentsTab = dynamic(
   () => import("@/features/projects/components/ProjectDocumentsTab").then((mod) => mod.ProjectDocumentsTab),
   {
     loading: () => <TabContentSkeleton tab="prd" />,
-  }
-);
-
-const TaskChecklistBoard = dynamic(
-  () => import("@/features/tasks/components/TaskChecklistBoard").then((mod) => mod.TaskChecklistBoard),
-  {
-    loading: () => <TabContentSkeleton tab="tasks" />,
   }
 );
 
@@ -61,8 +54,13 @@ const ActivityTabContent = dynamic(
 function ProjectDetailContent() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const id = params?.id as string;
   const tab = searchParams?.get("tab") || "docs";
+
+  useEffect(() => {
+    if (tab === "tasks") router.replace(`/projects/${id}?tab=sprints`);
+  }, [id, router, tab]);
 
   const { markTabLoaded, setActiveTab } = useGlobalState();
   const { data: project, isLoading, isError, error } = useProjectQuery(id);
@@ -113,8 +111,7 @@ function ProjectDetailContent() {
       <StatusApprovalBanner projectId={project.id} currentStatus={project.status} />
 
       {tab === "docs" && <ProjectDocumentsTab projectId={project.id} />}
-      {tab === "tasks" && <TaskChecklistBoard project={project} />}
-      {tab === "sprints" && <SprintsTabContent project={project} />}
+      {(tab === "sprints" || tab === "tasks") && <SprintsTabContent project={project} />}
       {tab === "finance" && <FinanceTabContent project={project} />}
       {tab === "assets" && <AssetGallery project={project} />}
       {tab === "activity" && <ActivityTabContent project={project} />}

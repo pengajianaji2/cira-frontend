@@ -96,7 +96,7 @@ export function TabContentSkeleton({ tab = "prd", className }: TabContentSkeleto
           </div>
         </div>
 
-        {/* Seksi 2: Backlog Proyek Checklist skeleton */}
+        {/* Daftar Todo per Sprint skeleton */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-border/60">
             <Skeleton className="size-4 rounded-md" />

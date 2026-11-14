@@ -1,6 +1,6 @@
 # Cira Project Management — Frontend Web (`cira-pm-frontend`)
 
-Dashboard web terpadu berbasis **Next.js App Router** untuk tim agensi/studio pengembang mengelola proyek klien, checklist task & backlog, daur hidup sprint, tata kelola persetujuan status proyek & versi PRD, kontrak termin berbobot 100% & pencatatan invoice, kalender operasional teragregasi berzona waktu `Asia/Jakarta` (WIB), serta profil & direktori anggota tim.
+Dashboard web terpadu berbasis **Next.js App Router** untuk tim agensi/studio pengembang mengelola proyek klien, Todo di dalam Sprint, tata kelola persetujuan status proyek & versi PRD, kontrak termin berbobot 100% & pencatatan invoice, kalender operasional teragregasi berzona waktu `Asia/Jakarta` (WIB), serta profil & direktori anggota tim.
 
 ---
 
@@ -14,15 +14,16 @@ Mengacu pada spesifikasi [`docs/prd.md`](../docs/prd.md), [`docs/design.md`](../
 - **Profil Kontak Opsional & Direktori Tim (`/profile`, `/directory`)**: Pembaruan nama, email, WhatsApp (E.164 opsional/nullable), dan username Instagram (opsional/nullable) pada `ProfileForm` langsung menyinkronkan Direktori Tim dan query terkait; halaman `/directory` menyediakan pencarian/filter role, pengiriman undangan, dan pengaturan role/status akun oleh Owner.
 - **Kelola Akses (`/access-policies`)**: Pengaturan capability matrix dinamis per role (`Owner`, `Developer`, `Operasional`) beserta histori audit perubahannya khusus Owner.
 
-### 2. Task Checklist TODO/DONE & Manajemen Backlog (`/projects/[id]?tab=tasks`)
+### 2. Todo per Sprint (`/projects/[id]?tab=sprints`)
 - **Checklist Status Tunggal**: Setiap task hanya menggunakan dua status (`todo` dan `done`) dengan antarmuka daftar checklist (tanpa drag-and-drop Kanban), sekaligus banner pengingat status verifikasi DP proyek (`DpWarningBanner`).
-- **Default Backlog**: Task baru otomatis masuk ke Backlog proyek (`sprintId = null`) bila pengguna tidak memilih sprint secara eksplisit.
-- **Konfirmasi Pindah ke Sprint Aktif**: Memindahkan task dari Backlog/sprint lain ke Sprint yang sedang berstatus `active` wajib melewati dialog konfirmasi (`MoveToActiveSprintDialog`).
+- **Semua Todo di Sprint**: Todo wajib dibuat di Sprint planning atau aktif. Todo lama tanpa Sprint dipindahkan oleh migrasi ke Sprint planning.
+- **Satu PIC per Todo**: PIC dipilih dari roster proyek. Template copas menyediakan PIC default untuk semua Todo dan pilihan PIC berbeda untuk tiap Todo.
+- **PIC Opsional**: Setiap Todo dapat memiliki satu PIC dari roster. PIC dapat diatur saat membuat atau mengedit Sprint, tetapi tidak wajib untuk mengaktifkannya.
 
 ### 3. Tata Kelola Proyek, Sprint Lifecycle & Progres Kumulatif (`/projects`, `/projects/[id]`)
 - **Tata Kelola Proyek & PRD Versioning (`?tab=prd`)**: Pengajuan & voting konsensus 100% perubahan status proyek (`lead` / `active` / `completed` / `cancelled`) beserta arbitrase final Owner (`StatusApprovalBanner`), manajemen roster voting, tautan repositori berlabel (`monorepo` / `separate`), editor PRD, arsip versi GZIP + *restore* versi, dan ekspor PDF PRD.
 - **Daur Hidup Sprint (`?tab=sprints`)**: Pengelolaan sprint berurutan (`planning` ➔ `active` ➔ `completed`) dengan aturan maksimal satu sprint aktif per proyek.
-- **Penutupan Sprint Atomik (`CloseSprintModal`)**: Menutup sprint aktif yang masih memiliki task `todo` mewajibkan pengguna menentukan tujuan pemindahan setiap task (ke Backlog `sprintId = null` atau sprint non-completed lain dalam proyek yang sama).
+- **Penutupan Sprint Atomik (`CloseSprintModal`)**: Menutup Sprint aktif yang masih memiliki Todo mewajibkan pengguna memilih Sprint planning lain sebagai tujuan setiap Todo yang belum selesai.
 - **Progres Kumulatif Proyek (`CumulativeProgressBar`)**: Dihitung secara matematis berdasarkan rasio jumlah sprint selesai terhadap total seluruh sprint proyek ($\frac{\text{completedSprintCount}}{\text{totalSprintCount}} \times 100\%$, dibulatkan 1 desimal; bernilai $0\%$ bila total sprint 0).
 
 ### 4. Kontrak Termin 100%, Pemicu Termin & Penerbitan Invoice Manual (`/projects/[id]?tab=finance`)
@@ -80,7 +81,7 @@ frontend/
 │   │   ├── auth/                             # LoginForm, ActivateForm, AuthBackdrop, AvatarCropDialog, avatar-crop.ts, ProfileForm, auth store/queries
 │   │   ├── directory/                        # Tabel direktori tim, undangan anggota & ubah role/status
 │   │   ├── projects/                         # Pipeline proyek, voting roster, repo links & editor/arsip PRD GZIP
-│   │   ├── tasks/                            # Task checklist TODO/DONE, Backlog & dialog pindah ke sprint aktif
+│   │   ├── tasks/                            # Todo checklist TODO/DONE dalam Sprint
 │   │   ├── sprints/                          # Daur hidup sprint, tutup atomik & progres rasio sprint
 │   │   ├── finance/                          # Kontrak termin 100%, pemicu tunggal, BAST, invoice PDF & pelunasan
 │   │   ├── operations/                       # Kalender operasional WIB, filter 90 hari, agenda manual & reminder log

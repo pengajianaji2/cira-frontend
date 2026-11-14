@@ -64,14 +64,14 @@
 
 ---
 
-## 5. Detail Proyek: Tab Sprint, Task Points, & Progres Kumulatif (`/projects/[id]?tab=tasks`)
+## 5. Detail Proyek: Tab Sprint, Todo, & Progres (`/projects/[id]?tab=sprints`)
 - **Jejak**: US-3, AC-F3-1, AC-F3-2, AC-F3-3
-- **Tujuan Halaman**: Mengelola sprint (tanpa tumpang tindih), Kanban board task dengan points Fibonacci (`1, 2, 3, 5, 8, 13`) dan single assignee, serta visualisasi progres kumulatif proyek terbobot.
+- **Tujuan Halaman**: Mengelola Sprint dan Todo di dalamnya; progres memakai jumlah Todo selesai dibanding seluruh Todo.
 - **Layout**:
-  - Top Meter: Progress Bar Kumulatif Proyek, persentase kemajuan $\left(\frac{\text{Poin Selesai}}{\text{Total Scope}} \times 100\%\right)$, ringkasan poin selesai vs total.
-  - Sprint Header: Dropdown sprint aktif/backlog, tanggal mulai/selesai, tombol *"Mulai Sprint"*, tombol *"Selesaikan Sprint"*, tombol *"Buat Sprint Baru"*.
-  - Kanban Board: 3 kolom status (`Todo`, `In Progress`, `Done`) drag-and-drop.
-  - Kartu Task: Judul, badge story points (lingkaran angka), avatar assignee tunggal, label prioritas.
+  - Top Meter: Progress Bar Kumulatif Proyek berdasarkan Todo selesai / seluruh Todo.
+  - Sprint Header: Dropdown Sprint, tanggal mulai/selesai, tombol *"Mulai Sprint"*, tombol *"Selesaikan Sprint"*, tombol *"Buat Sprint Baru"*.
+  - Todo per Sprint: checklist status `Todo`/`Done`, pencarian, pembuatan, dan pengelolaan Todo.
+  - Kartu Todo: Judul, PIC opsional dari roster proyek, dan label prioritas.
   - Dialog Selesaikan Sprint: Validasi otomatis seluruh task berstatus `Done`.
 - **Device Priority & Style**: Desktop-first / Dense Kanban Board.
 

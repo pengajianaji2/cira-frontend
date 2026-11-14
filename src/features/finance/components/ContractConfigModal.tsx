@@ -389,7 +389,7 @@ export function ContractConfigModal({
           </div>
         </DialogHeader>
 
-        <form ref={formRef} noValidate onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+        <form ref={formRef} noValidate onSubmit={handleSubmit} className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-4 sm:p-6 space-y-6">
           {hasLockedTerms && (
             <div
               role="status"

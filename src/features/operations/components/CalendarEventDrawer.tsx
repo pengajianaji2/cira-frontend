@@ -98,9 +98,9 @@ export function CalendarEventDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg overflow-y-auto p-0 flex flex-col"
+        className="w-full h-[100dvh] max-h-[100dvh] sm:max-w-lg overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-0 flex flex-col"
       >
-        <SheetHeader className="p-6 pb-4 border-b border-border space-y-3">
+        <SheetHeader className="p-4 sm:p-6 pb-4 border-b border-border space-y-3">
           <div className="flex flex-wrap items-center gap-2 pr-8">
             <Badge
               variant="outline"
@@ -134,7 +134,7 @@ export function CalendarEventDrawer({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="p-6 space-y-5 flex-1">
+        <div className="p-4 sm:p-6 space-y-5">
           {/* Peringatan Overdue WCAG 1.4.1 */}
           {event.overdue && (
             <div
@@ -371,7 +371,7 @@ export function CalendarEventDrawer({
 
         {/* Footer aksi khusus OperationalEvent */}
         {isManualEvent && canManageEvents && !isCancelled && (
-          <SheetFooter className="p-6 pt-4 border-t border-border flex-row items-center justify-between gap-2 bg-muted/20">
+          <SheetFooter className="p-4 sm:p-6 pt-4 border-t border-border flex-row items-center justify-between gap-2 bg-muted/20">
             <Button
               type="button"
               variant="outline"

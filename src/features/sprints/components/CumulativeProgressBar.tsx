@@ -23,7 +23,7 @@ interface CumulativeProgressBarProps {
 }
 
 /**
- * Bilah indikator progres kumulatif proyek berbasis rasio `completedSprintCount / totalSprintCount * 100%` (AC-2.5)
+ * Bilah indikator progres kumulatif proyek berbasis rasio task selesai terhadap seluruh task.
  * beserta rincian jumlah sprint selesai, aktif, dan perencanaan.
  */
 export function CumulativeProgressBar({
@@ -48,9 +48,6 @@ export function CumulativeProgressBar({
     completedCountProp ?? progressData?.completedSprintCount ?? derivedCompleted;
   const activeCount = activeCountProp ?? derivedActive;
   const planningCount = planningCountProp ?? derivedPlanning;
-  const totalSprintCount =
-    progressData?.totalSprintCount ?? completedCount + activeCount + planningCount;
-
   const progressFillClass =
     progress >= 100 ? "bg-emerald-600" : "bg-primary";
 
@@ -77,7 +74,7 @@ export function CumulativeProgressBar({
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Dihitung berdasarkan rasio sprint selesai terhadap total seluruh sprint (BR-PROJECT-01).
+              Dihitung dari jumlah Todo berstatus selesai dibandingkan seluruh Todo proyek.
             </p>
           </div>
         </div>
@@ -90,7 +87,7 @@ export function CumulativeProgressBar({
             variant="secondary"
             className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-mono"
           >
-            {completedCount} / {totalSprintCount} Sprint
+            {progressData?.completedTasks ?? 0} / {progressData?.totalTasks ?? 0} Todo selesai
           </Badge>
         </div>
       </div>
@@ -98,7 +95,7 @@ export function CumulativeProgressBar({
       {/* Visual Solid Progress Bar */}
       <div
         role="progressbar"
-        aria-label="Progres penyelesaian sprint proyek"
+        aria-label="Progres Todo proyek"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={clampedProgress}
@@ -127,7 +124,7 @@ export function CumulativeProgressBar({
           </span>
         </div>
         <div className="font-mono text-[11px] text-muted-foreground/80">
-          Rumus: (Sprint Selesai / Total Sprint) × 100%
+          Rumus: (Todo Selesai / Total Todo) × 100%
         </div>
       </div>
     </div>

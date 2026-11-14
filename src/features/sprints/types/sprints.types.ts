@@ -2,9 +2,6 @@ import type { Task } from "@/features/tasks";
 
 export type SprintStatus = "planning" | "active" | "completed";
 
-export const FIBONACCI_POINTS = [1, 2, 3, 5, 8, 13] as const;
-export type FibonacciPoint = (typeof FIBONACCI_POINTS)[number];
-
 export interface Sprint {
   id: string;
   projectId: string;
@@ -19,8 +16,6 @@ export interface Sprint {
   tasks?: Task[];
   totalTasks?: number;
   completedTasks?: number;
-  totalPoints?: number;
-  completedPoints?: number;
 }
 
 export interface CreateSprintInput {
@@ -28,6 +23,12 @@ export interface CreateSprintInput {
   goal?: string;
   startDate?: string;
   endDate?: string;
+  tasks?: Array<{
+    title: string;
+    description?: string;
+    priority?: "low" | "medium" | "high" | "urgent";
+    assigneeId?: string | null;
+  }>;
 }
 
 export interface UpdateSprintInput {
@@ -44,7 +45,7 @@ export interface StartSprintInput {
 
 export interface TaskMoveTarget {
   taskId: string;
-  targetSprintId: string | null; // null = Backlog
+  targetSprintId: string;
 }
 
 export interface CloseSprintInput {
@@ -53,8 +54,8 @@ export interface CloseSprintInput {
 
 export interface ProjectCumulativeProgress {
   projectId: string;
-  totalScopePoints: number;
-  completedPoints: number;
+  totalTasks: number;
+  completedTasks: number;
   progress: number; // Persentase matematis 0 - 100
   completedSprintCount?: number;
   totalSprintCount?: number;

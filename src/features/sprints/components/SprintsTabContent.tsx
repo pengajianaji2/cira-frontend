@@ -43,6 +43,7 @@ import { CumulativeProgressBar } from "./CumulativeProgressBar";
 import { CreateSprintModal } from "./CreateSprintModal";
 import { StartSprintModal } from "./StartSprintModal";
 import { CloseSprintModal } from "./CloseSprintModal";
+import { TaskChecklistBoard } from "@/features/tasks/components/TaskChecklistBoard";
 
 interface SprintsTabContentProps {
   project: {
@@ -176,7 +177,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
   }
 
   return (
-    <div className="space-y-6">
+      <div className="space-y-6">
       {/* Header Aksi Tab Sprints */}
       <div className="bg-card border border-border rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
@@ -257,12 +258,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                   </span>
                   <span>•</span>
                   <span className="font-mono text-[11px]">
-                    {getSprintCompletedTaskCount(activeSprint)} /{" "}
-                    {getSprintTaskCount(activeSprint)} task selesai
-                  </span>
-                  <span>•</span>
-                  <span className="font-mono text-[11px]">
-                    {activeSprint.totalPoints ?? 0} Story Points
+                    {getSprintCompletedTaskCount(activeSprint)} / {getSprintTaskCount(activeSprint)} Todo selesai
                   </span>
                 </div>
               </div>
@@ -275,7 +271,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                   size="sm"
                   className="rounded-full text-xs h-9 px-3.5"
                 >
-                  <Link href={`/projects/${project.id}?tab=tasks`}>
+                  <Link href="#sprint-tasks">
                     Lihat Checklist Task
                     <HugeiconsIcon
                       icon={ArrowRight01Icon}
@@ -411,7 +407,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                     <span>•</span>
                     <span className="font-mono">{getSprintTaskCount(sprint)} task</span>
                     <span>•</span>
-                    <span className="font-mono">{sprint.totalPoints ?? 0} SP</span>
+                    <span className="font-mono">{getSprintCompletedTaskCount(sprint)} / {getSprintTaskCount(sprint)} Todo</span>
                   </div>
                 </div>
 
@@ -513,7 +509,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                     </span>
                     <span>•</span>
                     <span className="font-mono">
-                      {getSprintCompletedTaskCount(sprint)} / {getSprintTaskCount(sprint)} task ({sprint.totalPoints ?? 0} SP)
+                      {getSprintCompletedTaskCount(sprint)} / {getSprintTaskCount(sprint)} Todo selesai
                     </span>
                   </div>
                 </div>
@@ -556,6 +552,11 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
             ))}
           </div>
         )}
+      </section>
+
+      <section id="sprint-tasks" aria-labelledby="sprint-tasks-heading" className="space-y-3">
+        <h3 id="sprint-tasks-heading" className="text-sm font-bold text-foreground">Todo per Sprint</h3>
+        <TaskChecklistBoard project={project} />
       </section>
 
       {/* Dialog Buat / Edit Sprint */}
@@ -610,7 +611,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
               {confirmAction?.type === "reopen"
                 ? `Sprint "${confirmAction.sprint.name}" akan dikembalikan ke tahap perencanaan (planning) dan persentase progres proyek akan dihitung ulang secara otomatis.`
-                : `Apakah Anda yakin ingin menghapus sprint "${confirmAction?.sprint.name}"? Task yang tersisa di dalam sprint ini akan dialihkan kembali ke Backlog.`}
+                : `Apakah Anda yakin ingin menghapus sprint "${confirmAction?.sprint.name}"? Sprint hanya dapat dihapus jika tidak memiliki Todo.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">

@@ -6,15 +6,11 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
   Search01Icon,
-  Calendar03Icon,
-  CheckmarkCircle02Icon,
-  Folder01Icon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,18 +22,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useMyPermissionsQuery } from "@/features/auth";
+import { useProjectRosterQuery } from "@/features/projects";
 import { useProjectSprintsQuery } from "@/features/sprints";
 import {
   useTasksQuery,
   useCreateTaskMutation,
   useUpdateTaskStatusMutation,
-  useMoveTaskToSprintMutation,
+  useUpdateTaskMutation,
   useDeleteTaskMutation,
 } from "../queries/tasks.queries";
 import { Task, CreateTaskInput } from "../types/tasks.types";
+import { TODO_BUTTON_INTERACTION_CLASS } from "../taskButtonStyles";
 import { TaskChecklistItem } from "./TaskChecklistItem";
 import { TaskCreateDialog } from "./TaskCreateDialog";
-import { MoveToActiveSprintDialog } from "./MoveToActiveSprintDialog";
 import { DpWarningBanner } from "./DpWarningBanner";
 
 interface TaskChecklistBoardProps {
@@ -49,8 +46,7 @@ interface TaskChecklistBoardProps {
 }
 
 /**
- * Papan checklist task tunggal (`todo` / `done`) dengan pengelompokan Backlog dan Sprint proyek (US-1),
- * pencarian, peringatan DP belum terverifikasi, serta dialog konfirmasi saat memindahkan task ke sprint aktif.
+ * Papan Todo proyek yang selalu mengelompokkan pekerjaan ke Sprint.
  */
 export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
@@ -59,14 +55,11 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
 
   const { data: tasks = [], isLoading, isError, refetch } = useTasksQuery(project.id);
   const { data: sprints = [] } = useProjectSprintsQuery(project.id);
+  const { data: roster = [] } = useProjectRosterQuery(project.id);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createInitialSprintId, setCreateInitialSprintId] = useState<string | null>(null);
-
-  // Dialog konfirmasi pemindahan ke sprint aktif
-  const [taskToMove, setTaskToMove] = useState<Task | null>(null);
-  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
 
   // AlertDialog konfirmasi hapus task
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
@@ -74,7 +67,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
   // Mutations
   const createTaskMutation = useCreateTaskMutation(project.id);
   const updateStatusMutation = useUpdateTaskStatusMutation(project.id);
-  const moveTaskMutation = useMoveTaskToSprintMutation(project.id);
+  const updateTaskMutation = useUpdateTaskMutation(project.id);
   const deleteTaskMutation = useDeleteTaskMutation(project.id);
 
   // Cari sprint aktif
@@ -82,8 +75,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
     return sprints.find((s) => s.status === "active");
   }, [sprints]);
 
-  // Pisahkan task berdasarkan Sprint Aktif dan Backlog
-  const { activeSprintTasks, backlogTasks } = useMemo(() => {
+  const sprintTaskGroups = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     const filtered = tasks.filter((t) => {
       if (!q) return true;
@@ -94,28 +86,11 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
       );
     });
 
-    const active = activeSprint
-      ? filtered.filter((t) => t.sprintId === activeSprint.id)
-      : [];
-    const backlog = filtered.filter((t) => !t.sprintId);
-
-    return {
-      activeSprintTasks: active,
-      backlogTasks: backlog,
-    };
-  }, [tasks, activeSprint, searchQuery]);
-
-  // Statistik Sprint Aktif
-  const sprintStats = useMemo(() => {
-    if (!activeSprintTasks.length) return { total: 0, done: 0, percent: 0 };
-    const done = activeSprintTasks.filter((t) => t.status === "done").length;
-    const total = activeSprintTasks.length;
-    return {
-      total,
-      done,
-      percent: Math.round((done / total) * 100),
-    };
-  }, [activeSprintTasks]);
+    return sprints.map((sprint) => ({
+      sprint,
+      tasks: filtered.filter((task) => task.sprintId === sprint.id),
+    }));
+  }, [tasks, sprints, searchQuery]);
 
   // Handlers
   const handleToggleStatus = (task: Task, nextStatus: "todo" | "done") => {
@@ -125,22 +100,11 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
     });
   };
 
-  const handleRequestMoveToSprint = (task: Task) => {
-    setTaskToMove(task);
-    setIsMoveDialogOpen(true);
-  };
-
-  const handleConfirmMoveToSprint = async (taskId: string, targetSprintId: string) => {
-    await moveTaskMutation.mutateAsync({
+  const handleAssigneeChange = (taskId: string, assigneeId: string | null) => {
+    const assigneeName = roster.find((member) => member.userId === assigneeId)?.user.name ?? null;
+    updateTaskMutation.mutate({
       taskId,
-      targetSprintId,
-    });
-  };
-
-  const handleReturnToBacklog = (taskId: string) => {
-    moveTaskMutation.mutate({
-      taskId,
-      targetSprintId: null,
+      input: { assigneeId, assigneeName },
     });
   };
 
@@ -193,7 +157,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
           variant="outline"
           size="sm"
           onClick={() => refetch()}
-          className="rounded-full text-xs h-9 px-4"
+          className={`rounded-full text-xs h-9 px-4 ${TODO_BUTTON_INTERACTION_CLASS}`}
         >
           Muat Ulang
         </Button>
@@ -228,132 +192,59 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
             <Button
               type="button"
               size="sm"
-              className="rounded-full text-xs h-9 px-4 cursor-pointer"
+              disabled={!sprints.some((sprint) => sprint.status !== "completed")}
+              className={`rounded-full text-xs h-9 px-4 cursor-pointer ${TODO_BUTTON_INTERACTION_CLASS}`}
               onClick={() => {
-                setCreateInitialSprintId(null);
+                setCreateInitialSprintId(activeSprint?.id ?? sprints.find((sprint) => sprint.status === "planning")?.id ?? null);
                 setIsCreateOpen(true);
               }}
             >
               <HugeiconsIcon icon={Add01Icon} className="size-3.5 mr-1.5" aria-hidden="true" />
-              Tambah Task ke Backlog
+              Tambah Todo ke Sprint
             </Button>
           </div>
         )}
       </div>
 
-      {/* SEKSI 1: SPRINT AKTIF */}
-      <div className="bg-card border border-border rounded-2xl p-4 sm:p-5 space-y-4">
-        {activeSprint ? (
-          <>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-                    <span>Sprint Aktif</span>
+      <div className="space-y-3">
+        {sprintTaskGroups.length ? sprintTaskGroups.map(({ sprint, tasks: sprintTasks }) => {
+          const doneCount = sprintTasks.filter((task) => task.status === "done").length;
+          return (
+            <section key={sprint.id} className="bg-card border border-border rounded-2xl p-4 sm:p-5 space-y-3">
+              <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Badge variant={sprint.status === "active" ? "default" : "secondary"} className="text-[10px] shrink-0">
+                    {sprint.status === "active" ? "Aktif" : sprint.status === "completed" ? "Selesai" : "Planning"}
                   </Badge>
-                  <h3 className="text-sm font-bold text-foreground">
-                    {activeSprint.name}
-                  </h3>
+                  <h3 className="text-sm font-bold truncate">{sprint.name}</h3>
                 </div>
-                {activeSprint.goal && (
-                  <p className="text-xs text-muted-foreground line-clamp-1">
-                    Goal: {activeSprint.goal}
-                  </p>
-                )}
+                <span className="text-[11px] text-muted-foreground shrink-0">{doneCount}/{sprintTasks.length} selesai</span>
               </div>
-
-              {/* Progress Bar Task Sprint */}
-              <div className="sm:text-right shrink-0 min-w-[180px]">
-                <div className="flex items-center justify-between sm:justify-end gap-2 text-xs font-medium text-foreground mb-1.5">
-                  <span className="text-muted-foreground text-[11px]">
-                    {sprintStats.done} dari {sprintStats.total} selesai
-                  </span>
-                  <span className="font-bold font-mono">{sprintStats.percent}%</span>
+              {sprintTasks.length ? (
+                <div className="space-y-2">
+                  {sprintTasks.map((task) => (
+                    <TaskChecklistItem
+                      key={task.id}
+                      task={task}
+                      onToggleStatus={canWriteTasks && sprint.status !== "completed" ? handleToggleStatus : undefined}
+                      onDelete={canDeleteTasks ? handleRequestDeleteTask : undefined}
+                      assigneeOptions={roster.map((member) => ({ id: member.userId, name: member.user.name }))}
+                      onAssigneeChange={canWriteTasks && sprint.status !== "completed" ? handleAssigneeChange : undefined}
+                    />
+                  ))}
                 </div>
-                <Progress value={sprintStats.percent} className="h-2 rounded-full" />
-              </div>
-            </div>
-
-            {/* Daftar Task Sprint Aktif */}
-            {activeSprintTasks.length > 0 ? (
-              <div className="space-y-2">
-                {activeSprintTasks.map((task) => (
-                  <TaskChecklistItem
-                    key={task.id}
-                    task={task}
-                    onToggleStatus={canWriteTasks ? handleToggleStatus : undefined}
-                    onDelete={canDeleteTasks ? handleRequestDeleteTask : undefined}
-                    onReturnToBacklog={canWriteTasks ? handleReturnToBacklog : undefined}
-                    hasActiveSprint={Boolean(activeSprint)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="py-8 text-center text-xs text-muted-foreground bg-muted/20 border border-dashed border-border rounded-xl">
-                <p>Belum ada task di sprint aktif ini.</p>
-                <p className="text-[11px] mt-1">
-                  Pindahkan task dari daftar Backlog di bawah untuk mulai mengerjakannya.
-                </p>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="p-6 text-center bg-muted/20 border border-border/60 rounded-xl space-y-2.5">
-            <div className="size-10 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground">
-              <HugeiconsIcon icon={Calendar03Icon} className="size-5" aria-hidden="true" />
-            </div>
-            <h4 className="text-xs font-semibold text-foreground">Tidak Ada Sprint Aktif</h4>
-            <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
-              Saat ini belum ada sprint yang sedang berjalan. Buat atau aktifkan sprint dari tab Sprint &amp; Progres untuk mengalokasikan task.
-            </p>
-            <div>
-              <Button asChild variant="outline" size="sm" className="rounded-full text-xs h-8 px-4">
-                <Link href={`/projects/${project.id}?tab=sprints`}>
-                  Kelola di Tab Sprint &amp; Progres
-                </Link>
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* SEKSI 2: BACKLOG PROYEK */}
-      <div className="bg-card border border-border rounded-2xl p-4 sm:p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-border/60">
-          <div className="flex items-center gap-2">
-            <HugeiconsIcon icon={Folder01Icon} className="size-4 text-muted-foreground" aria-hidden="true" />
-            <h3 className="text-sm font-bold text-foreground">Backlog Proyek</h3>
-            <Badge variant="secondary" className="text-xs font-mono px-2 py-0.5 rounded-full">
-              {backlogTasks.length} task
-            </Badge>
-          </div>
-        </div>
-
-        {backlogTasks.length > 0 ? (
-          <div className="space-y-2">
-            {backlogTasks.map((task) => (
-              <TaskChecklistItem
-                key={task.id}
-                task={task}
-                onToggleStatus={canWriteTasks ? handleToggleStatus : undefined}
-                onDelete={canDeleteTasks ? handleRequestDeleteTask : undefined}
-                onRequestMoveToSprint={canWriteTasks ? handleRequestMoveToSprint : undefined}
-                hasActiveSprint={Boolean(activeSprint)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="py-10 text-center text-xs text-muted-foreground bg-muted/20 border border-dashed border-border rounded-xl">
-            <HugeiconsIcon
-              icon={CheckmarkCircle02Icon}
-              className="size-6 mx-auto mb-2 text-muted-foreground/60"
-              aria-hidden="true"
-            />
-            <p className="font-medium text-foreground">Backlog Kosong</p>
-            <p className="text-[11px] mt-0.5">
-              Semua pekerjaan telah dialokasikan ke sprint atau selesai.
-            </p>
+              ) : (
+                <p className="py-5 text-center text-xs text-muted-foreground">Belum ada Todo di Sprint ini.</p>
+              )}
+            </section>
+          );
+        }) : (
+          <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-8 text-center space-y-3">
+            <p className="text-sm font-semibold">Belum ada Sprint</p>
+            <p className="text-xs text-muted-foreground">Buat Sprint planning terlebih dahulu, lalu tambahkan Todo ke dalamnya.</p>
+            <Button asChild variant="outline" size="sm" className={`rounded-full text-xs ${TODO_BUTTON_INTERACTION_CLASS}`}>
+              <Link href={`/projects/${project.id}?tab=sprints`}>Buka Sprint</Link>
+            </Button>
           </div>
         )}
       </div>
@@ -366,17 +257,6 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
         initialSprintId={createInitialSprintId}
         onSubmit={handleCreateSubmit}
         isPending={createTaskMutation.isPending}
-      />
-
-      {/* Modal Dialog Konfirmasi Masuk Sprint Aktif (BR-TASK-03) */}
-      <MoveToActiveSprintDialog
-        open={isMoveDialogOpen}
-        onOpenChange={setIsMoveDialogOpen}
-        task={taskToMove}
-        activeSprintName={activeSprint?.name}
-        activeSprintId={activeSprint?.id}
-        onConfirm={handleConfirmMoveToSprint}
-        isLoading={moveTaskMutation.isPending}
       />
 
       {/* AlertDialog Konfirmasi Hapus Task */}

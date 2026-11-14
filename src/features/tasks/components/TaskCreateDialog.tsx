@@ -29,7 +29,6 @@ import {
   CreateTaskInput,
   TaskStatus,
   TaskPriority,
-  FIBONACCI_TASK_POINTS,
 } from "../types/tasks.types";
 
 interface TaskCreateDialogProps {
@@ -53,7 +52,6 @@ export function TaskCreateDialog({
 }: TaskCreateDialogProps) {
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
   const [priority, setPriority] = useState<TaskPriority>("medium");
-  const [storyPoints, setStoryPoints] = useState<string>("none");
   const [sprintId, setSprintId] = useState<string>(initialSprintId || "none");
   const [assigneeId, setAssigneeId] = useState<string>("none");
 
@@ -90,15 +88,14 @@ export function TaskCreateDialog({
       });
       setStatus(initialStatus);
       setPriority("medium");
-      setStoryPoints("none");
       setSprintId(initialSprintId || "none");
       setAssigneeId("none");
     }
   }, [isOpen, initialStatus, initialSprintId, reset]);
 
   const onFormSubmit = (data: CreateTaskInput) => {
-    const selectedPoints = storyPoints !== "none" ? Number(storyPoints) : undefined;
-    const selectedSprint = sprintId !== "none" ? sprintId : undefined;
+    if (sprintId === "none") return;
+    const selectedSprint = sprintId;
 
     let finalAssigneeId: string | undefined = undefined;
     let finalAssigneeName = data.assigneeName?.trim() || undefined;
@@ -115,7 +112,6 @@ export function TaskCreateDialog({
       ...data,
       status,
       priority,
-      storyPoints: selectedPoints,
       sprintId: selectedSprint,
       assigneeId: finalAssigneeId,
       assigneeName: finalAssigneeName,
@@ -137,7 +133,7 @@ export function TaskCreateDialog({
             Tambah Task Baru
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Task baru default masuk ke Backlog kecuali sprint dipilih secara eksplisit.
+              Setiap Todo harus masuk ke Sprint. PIC boleh dipilih dari roster, tetapi tidak wajib.
           </DialogDescription>
         </DialogHeader>
 
@@ -189,71 +185,26 @@ export function TaskCreateDialog({
             />
           </div>
 
-          {/* Story Points Fibonacci & Alokasi Sprint */}
+          {/* Alokasi Sprint */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="task-create-points"
-                className="text-xs font-semibold text-foreground block"
-              >
-                Story Points (Fibonacci)
-              </label>
-              <Select
-                value={storyPoints}
-                onValueChange={(val) => {
-                  setStoryPoints(val);
-                  setValue(
-                    "storyPoints",
-                    val !== "none" ? Number(val) : undefined
-                  );
-                }}
-              >
-                <SelectTrigger id="task-create-points" className="w-full rounded-xl text-xs h-10">
-                  <SelectValue placeholder="Pilih Story Points" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  <SelectItem value="none" className="text-xs text-muted-foreground">
-                    Belum Ditentukan
-                  </SelectItem>
-                  {FIBONACCI_TASK_POINTS.map((pt) => (
-                    <SelectItem key={pt} value={String(pt)} className="text-xs font-medium">
-                      {pt} SP{" "}
-                      {pt === 1
-                        ? "(Sangat Kecil)"
-                        : pt === 3
-                        ? "(Sedang)"
-                        : pt === 8
-                        ? "(Besar)"
-                        : pt === 13
-                        ? "(Sangat Kompleks)"
-                        : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="space-y-1.5">
               <label
                 htmlFor="task-create-sprint"
                 className="text-xs font-semibold text-foreground block"
               >
-                Alokasi Sprint
+                Sprint <span className="text-destructive">*</span>
               </label>
               <Select
-                value={sprintId}
+                value={sprintId === "none" ? "" : sprintId}
                 onValueChange={(val) => {
                   setSprintId(val);
-                  setValue("sprintId", val !== "none" ? val : undefined);
+                  setValue("sprintId", val);
                 }}
               >
                 <SelectTrigger id="task-create-sprint" className="w-full rounded-xl text-xs h-10">
                   <SelectValue placeholder="Pilih Sprint" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="none" className="text-xs text-muted-foreground font-medium">
-                    Backlog (Default)
-                  </SelectItem>
                   {assignableSprints.map((s) => (
                     <SelectItem key={s.id} value={s.id} className="text-xs">
                       {s.name} ({s.status === "active" ? "Aktif" : "Perencanaan"})
@@ -261,6 +212,9 @@ export function TaskCreateDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {assignableSprints.length === 0 && (
+                <p className="text-[11px] text-muted-foreground">Buat Sprint planning terlebih dahulu untuk menambahkan Todo.</p>
+              )}
             </div>
           </div>
 
@@ -386,7 +340,7 @@ export function TaskCreateDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || sprintId === "none" || assignableSprints.length === 0}
               className="rounded-full text-xs h-9 px-5 bg-primary text-primary-foreground font-semibold"
             >
               {isPending && <Spinner className="size-3.5 mr-1.5" />}

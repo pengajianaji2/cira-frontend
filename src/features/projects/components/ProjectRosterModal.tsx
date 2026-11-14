@@ -146,7 +146,9 @@ export function ProjectRosterModal({ projectId, trigger }: ProjectRosterModalPro
                 <SelectContent className="rounded-xl">
                   {availableUsers.map((u) => (
                     <SelectItem key={u.id} value={u.id} className="text-xs">
-                      {u.name} ({u.roles[0]})
+                      <span className="block min-w-0 max-w-full truncate" title={`${u.name} (${u.roles[0]})`}>
+                        {u.name} ({u.roles[0]})
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -204,7 +206,7 @@ export function ProjectRosterModal({ projectId, trigger }: ProjectRosterModalPro
                     key={member.id}
                     className="bg-card border border-border rounded-xl p-2.5 flex items-center justify-between gap-3 text-xs"
                   >
-                    <div className="flex items-center gap-2.5 truncate">
+                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
                       <UserAvatar
                         name={member.user.name}
                         avatarUrl={member.user.avatarUrl}
@@ -212,7 +214,7 @@ export function ProjectRosterModal({ projectId, trigger }: ProjectRosterModalPro
                         className="size-7"
                         decorative
                       />
-                      <div className="truncate">
+                      <div className="min-w-0 flex-1 truncate">
                         <div className="font-semibold text-foreground truncate">
                           {member.user.name}
                         </div>

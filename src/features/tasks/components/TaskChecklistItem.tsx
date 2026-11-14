@@ -4,22 +4,21 @@ import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Delete02Icon,
-  ArrowRight01Icon,
-  Undo02Icon,
 } from "@hugeicons/core-free-icons";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/shared/components";
 import { Task, TaskPriority } from "../types/tasks.types";
+import { TODO_BUTTON_INTERACTION_CLASS } from "../taskButtonStyles";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface TaskChecklistItemProps {
   task: Task;
   onToggleStatus?: (task: Task, nextStatus: "todo" | "done") => void;
   onDelete?: (taskId: string) => void;
-  onRequestMoveToSprint?: (task: Task) => void;
-  onReturnToBacklog?: (taskId: string) => void;
-  hasActiveSprint?: boolean;
+  assigneeOptions?: Array<{ id: string; name: string }>;
+  onAssigneeChange?: (taskId: string, assigneeId: string | null) => void;
 }
 
 const PRIORITY_CONFIG: Record<TaskPriority, { label: string; className: string }> = {
@@ -33,13 +32,11 @@ export function TaskChecklistItem({
   task,
   onToggleStatus,
   onDelete,
-  onRequestMoveToSprint,
-  onReturnToBacklog,
-  hasActiveSprint = false,
+  assigneeOptions = [],
+  onAssigneeChange,
 }: TaskChecklistItemProps) {
   const isDone = task.status === "done";
   const priority = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
-  const isBacklog = !task.sprintId;
   const assigneeDisplayName = task.assignee?.name || task.assigneeName;
   const assigneeAvatarUrl = task.assignee?.avatarUrl || task.assignee?.avatar;
 
@@ -49,7 +46,7 @@ export function TaskChecklistItem({
 
   return (
     <div
-      className={`group flex items-center justify-between gap-3 p-3 rounded-xl border transition-all duration-200 ${
+      className={`group flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 p-3 rounded-xl border transition-all duration-200 ${
         isDone
           ? "bg-muted/20 border-border/40 opacity-75"
           : "bg-card border-border hover:border-border/80 hover:shadow-xs"
@@ -83,7 +80,7 @@ export function TaskChecklistItem({
       </div>
 
       {/* Kolom Tengah: Metadata (Priority, Points, Assignee) */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-2 shrink-0 max-w-full">
         <Badge
           variant="outline"
           className={`text-[10px] font-medium h-5 px-1.5 rounded-md ${priority.className}`}
@@ -91,17 +88,22 @@ export function TaskChecklistItem({
           {priority.label}
         </Badge>
 
-        {task.storyPoints !== null && task.storyPoints !== undefined && (
-          <Badge
-            variant="secondary"
-            className="text-[10px] font-mono h-5 px-1.5 rounded-md"
-            title="Story Points"
+        {onAssigneeChange ? (
+          <Select
+            value={task.assigneeId ?? "__none"}
+            onValueChange={(value) => onAssigneeChange(task.id, value === "__none" ? null : value)}
           >
-            {task.storyPoints} SP
-          </Badge>
-        )}
-
-        {assigneeDisplayName && (
+            <SelectTrigger className="h-7 w-[130px] rounded-full text-[10px]">
+              <SelectValue placeholder="Pilih PIC" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none">Tanpa PIC</SelectItem>
+              {assigneeOptions.map((member) => (
+                <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : assigneeDisplayName && (
           <div className="flex items-center gap-1.5 text-[11px] text-foreground bg-muted/60 border border-border/60 rounded-full pl-0.5 pr-2 py-0.5 max-w-[140px] truncate">
             <UserAvatar
               name={assigneeDisplayName}
@@ -115,43 +117,13 @@ export function TaskChecklistItem({
       </div>
 
       {/* Kolom Kanan: Aksi (Pindah Sprint / Hapus) */}
-      <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-        {isBacklog && hasActiveSprint && onRequestMoveToSprint && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 text-[11px] px-2 text-accent-foreground hover:bg-accent rounded-lg cursor-pointer"
-            onClick={() => onRequestMoveToSprint(task)}
-            aria-label={`Pindahkan "${task.title}" ke Sprint Aktif`}
-            title="Pindahkan ke Sprint Aktif"
-          >
-            <span className="hidden sm:inline mr-1">Ke Sprint</span>
-            <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5" aria-hidden="true" />
-          </Button>
-        )}
-
-        {!isBacklog && onReturnToBacklog && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 text-[11px] px-2 text-muted-foreground hover:bg-muted rounded-lg cursor-pointer"
-            onClick={() => onReturnToBacklog(task.id)}
-            aria-label={`Kembalikan "${task.title}" ke Backlog`}
-            title="Kembalikan ke Backlog"
-          >
-            <HugeiconsIcon icon={Undo02Icon} className="size-3.5 mr-1" aria-hidden="true" />
-            <span className="hidden sm:inline">Ke Backlog</span>
-          </Button>
-        )}
-
+      <div className="flex items-center gap-1 shrink-0 ml-auto opacity-80 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
         {onDelete && (
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg cursor-pointer"
+            className={`size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg cursor-pointer ${TODO_BUTTON_INTERACTION_CLASS}`}
             onClick={() => onDelete(task.id)}
             aria-label={`Hapus task "${task.title}"`}
             title="Hapus task"

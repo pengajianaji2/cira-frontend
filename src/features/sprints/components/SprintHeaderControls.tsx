@@ -285,7 +285,7 @@ export function SprintHeaderControls({
             )}
             <span>•</span>
             <span>
-              Total Beban: <strong>{selectedSprint.totalPoints ?? 0} Story Points</strong>
+              Todo selesai: <strong>{selectedSprint.completedTasks ?? 0} / {selectedSprint.totalTasks ?? selectedSprint.tasks?.length ?? 0}</strong>
             </span>
             <span>•</span>
             <span>
@@ -335,7 +335,7 @@ export function SprintHeaderControls({
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
               {confirmAction?.type === "reopen"
                 ? `Sprint "${confirmAction.sprint.name}" akan dikembalikan ke status perencanaan (planning) dan progres proyek akan dihitung ulang.`
-                : `Apakah Anda yakin ingin menghapus sprint "${confirmAction?.sprint.name}"? Task di dalamnya akan dikembalikan ke Backlog proyek.`}
+                : `Apakah Anda yakin ingin menghapus sprint "${confirmAction?.sprint.name}"? Sprint hanya dapat dihapus jika tidak memiliki Todo.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">

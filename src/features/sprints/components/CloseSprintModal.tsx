@@ -65,22 +65,21 @@ export function CloseSprintModal({
 
   const [destinations, setDestinations] = useState<Record<string, string>>({});
 
+  const planningSprints = useMemo(
+    () => allSprints.filter((s) => s.id !== sprint.id && s.status === "planning"),
+    [allSprints, sprint.id]
+  );
+
   useEffect(() => {
     if (!isOpen) return;
     setDestinations((prev) => {
       const next: Record<string, string> = {};
       todoTasks.forEach((task) => {
-        next[task.id] = prev[task.id] || "backlog";
+        next[task.id] = prev[task.id] || planningSprints[0]?.id || "";
       });
       return next;
     });
-  }, [isOpen, sprint.id, todoTasks]);
-
-  // Daftar sprint planning lain yang dapat menerima task sisa (BR-SPRINT-04)
-  const planningSprints = useMemo(
-    () => allSprints.filter((s) => s.id !== sprint.id && s.status === "planning"),
-    [allSprints, sprint.id]
-  );
+  }, [isOpen, sprint.id, todoTasks, planningSprints]);
 
   const handleDestinationChange = (taskId: string, target: string) => {
     setDestinations((prev) => ({
@@ -91,12 +90,12 @@ export function CloseSprintModal({
 
   const handleConfirm = () => {
     const taskMoves: TaskMoveTarget[] = todoTasks.map((t) => {
-      const target = destinations[t.id];
       return {
         taskId: t.id,
-        targetSprintId: target === "backlog" || !target ? null : target,
+        targetSprintId: destinations[t.id],
       };
     });
+    if (taskMoves.some((move) => !move.targetSprintId)) return;
 
     completeMutation.mutate(
       {
@@ -126,7 +125,7 @@ export function CloseSprintModal({
             Tutup Sprint: {resolvedSprint.name}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Sesuai aturan bisnis BR-SPRINT-04, seluruh task TODO yang tersisa wajib dialokasikan tujuannya ke Backlog atau sprint perencanaan lain.
+            Todo yang belum selesai harus dipindahkan ke Sprint planning lain. Pilih Sprint tujuan untuk setiap Todo.
           </DialogDescription>
         </DialogHeader>
 
@@ -198,6 +197,12 @@ export function CloseSprintModal({
                 </div>
               </div>
 
+              {todoTasks.length > 0 && planningSprints.length === 0 && (
+                <p role="alert" className="rounded-xl bg-amber-500/10 p-3 text-xs text-amber-800">
+                  Buat Sprint planning terlebih dahulu agar Todo yang tersisa memiliki tujuan.
+                </p>
+              )}
+
               {/* Tabel Resolusi Task TODO jika ada */}
               {todoTasks.length > 0 ? (
                 <div className="space-y-2.5">
@@ -225,14 +230,12 @@ export function CloseSprintModal({
                             >
                               {task.title}
                             </label>
-                            <span className="text-[10px] text-muted-foreground font-mono">
-                              {task.storyPoints ? `${task.storyPoints} SP` : "Tanpa SP"} · {task.priority}
-                            </span>
+                            <span className="text-[10px] text-muted-foreground font-mono">{task.priority}</span>
                           </div>
 
                           <div className="w-full sm:w-[210px] shrink-0">
                             <Select
-                              value={destinations[task.id] || "backlog"}
+                              value={destinations[task.id] || ""}
                               onValueChange={(val) => handleDestinationChange(task.id, val)}
                             >
                               <SelectTrigger
@@ -243,9 +246,6 @@ export function CloseSprintModal({
                                 <SelectValue placeholder="Pilih tujuan" />
                               </SelectTrigger>
                               <SelectContent className="rounded-xl">
-                                <SelectItem value="backlog" className="text-xs">
-                                  Kembalikan ke Backlog
-                                </SelectItem>
                                 {planningSprints.map((ps) => (
                                   <SelectItem key={ps.id} value={ps.id} className="text-xs">
                                     Sprint Planning: {ps.name}
@@ -292,7 +292,7 @@ export function CloseSprintModal({
             type="button"
             className="rounded-full text-xs h-9 px-5 bg-primary text-primary-foreground font-semibold cursor-pointer"
             onClick={handleConfirm}
-            disabled={isLoadingDetail || isDetailError || completeMutation.isPending}
+            disabled={isLoadingDetail || isDetailError || completeMutation.isPending || (todoTasks.length > 0 && (planningSprints.length === 0 || todoTasks.some((task) => !destinations[task.id])))}
           >
             {completeMutation.isPending && <Spinner className="size-3.5 mr-1.5" />}
             Selesaikan Sprint &amp; Pindahkan Task

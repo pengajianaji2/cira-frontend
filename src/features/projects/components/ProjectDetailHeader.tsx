@@ -41,12 +41,12 @@ export function ProjectDetailHeader({
 
   const navTabs: { id: string; label: string; available: boolean; badge?: string }[] = [
     { id: "docs", label: "Dokumen & Repo", available: true },
-    { id: "tasks", label: "Task Board", available: true },
     { id: "sprints", label: "Sprint & Progres", available: true },
     { id: "finance", label: "Keuangan & Termin", available: permissions.includes("finance.read") },
     { id: "assets", label: "Aset Desain", available: true },
     { id: "activity", label: "Riwayat Aktivitas", available: true },
   ];
+  const selectedTab = activeTab === "tasks" ? "sprints" : activeTab;
 
   return (
     <div className="space-y-4">
@@ -117,7 +117,7 @@ export function ProjectDetailHeader({
         className="bg-card border border-border rounded-2xl px-3 shadow-xs flex items-center gap-2 overflow-x-auto no-scrollbar"
       >
         {navTabs.map((tab) => {
-          const isActive = activeTab === tab.id;
+          const isActive = selectedTab === tab.id;
           if (!tab.available) {
             return (
               <div

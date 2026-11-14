@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { tasksApi } from "../api/tasks.api";
-import { CreateTaskInput, Task, TaskStatus } from "../types/tasks.types";
+import { CreateTaskInput, Task, TaskStatus, UpdateTaskInput } from "../types/tasks.types";
 
 /** Query key factory TanStack Query untuk daftar task dan status DP proyek. */
 export const tasksKeys = {
@@ -21,7 +21,7 @@ function invalidateTaskRelatedQueries(
   queryClient.invalidateQueries({ queryKey: ["activities", "list", projectId] });
 }
 
-/** Hook TanStack Query untuk mengambil daftar seluruh task (Backlog & Sprint) proyek. */
+/** Hook TanStack Query untuk mengambil seluruh Todo dalam Sprint proyek. */
 export function useTasksQuery(projectId: string) {
   return useQuery({
     queryKey: tasksKeys.list(projectId),
@@ -44,7 +44,7 @@ export function useProjectPaymentStatusQuery(projectId: string) {
   });
 }
 
-/** Hook mutasi pembuatan task baru (default Backlog bila `sprintId` dikosongkan). */
+/** Hook mutasi pembuatan Todo di Sprint terpilih. */
 export function useCreateTaskMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -105,7 +105,22 @@ export function useUpdateTaskStatusMutation(projectId: string) {
   });
 }
 
-/** Hook mutasi pemindahan task ke Sprint target atau kembali ke Backlog (`targetSprintId = null`). */
+export function useUpdateTaskMutation(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, input }: { taskId: string; input: UpdateTaskInput }) => {
+      const response = await tasksApi.updateTask(taskId, input);
+      return response.data;
+    },
+    onSuccess: (task) => {
+      toast.success(`Todo "${task.title}" diperbarui`);
+      invalidateTaskRelatedQueries(queryClient, projectId);
+    },
+    onError: (error: Error) => toast.error(error.message || "Gagal memperbarui Todo"),
+  });
+}
+
+/** Hook mutasi pemindahan Todo ke Sprint target. */
 export function useMoveTaskToSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -115,17 +130,13 @@ export function useMoveTaskToSprintMutation(projectId: string) {
       targetSprintId,
     }: {
       taskId: string;
-      targetSprintId: string | null;
+      targetSprintId: string;
     }) => {
       const res = await tasksApi.moveTaskToSprint(taskId, targetSprintId);
       return res.data;
     },
-    onSuccess: (task) => {
-      toast.success(
-        task.sprintId
-          ? "Task berhasil dipindahkan ke Sprint Aktif"
-          : "Task berhasil dikembalikan ke Backlog"
-      );
+    onSuccess: () => {
+      toast.success("Todo berhasil dipindahkan ke Sprint");
       invalidateTaskRelatedQueries(queryClient, projectId);
     },
     onError: (err: Error) => {

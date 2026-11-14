@@ -9,7 +9,7 @@ import {
 } from "../types/tasks.types";
 
 /**
- * Service API Manajemen Tugas (Task Checklist & Backlog)
+ * Service API Manajemen Todo dalam Sprint.
  * Terhubung langsung ke Backend API Cira PM (/api/v1/projects/:id/tasks & /api/v1/tasks/:id)
  */
 export const tasksApi = {
@@ -24,7 +24,7 @@ export const tasksApi = {
   },
 
   /**
-   * Membuat tugas baru (default di Backlog dengan sprintId = null).
+   * Membuat Todo baru di Sprint yang dipilih.
    */
   async createTask(
     projectId: string,
@@ -56,11 +56,11 @@ export const tasksApi = {
   },
 
   /**
-   * Memindahkan task ke sprint aktif atau kembali ke Backlog (targetSprintId = null).
+   * Memindahkan Todo ke Sprint lain.
    */
   async moveTaskToSprint(
     taskId: string,
-    targetSprintId: string | null
+    targetSprintId: string
   ): Promise<ApiResponse<Task>> {
     const response = await apiClient.patch<ApiResponse<Task>>(
       `/tasks/${taskId}/move-sprint`,
@@ -70,7 +70,7 @@ export const tasksApi = {
   },
 
   /**
-   * Memperbarui detail tugas (judul, deskripsi, prioritas, assignee, story points).
+   * Memperbarui detail tugas (judul, deskripsi, prioritas, assignee).
    */
   async updateTask(
     taskId: string,

@@ -85,7 +85,7 @@ export function CreateProjectDialog({
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[500px] rounded-2xl p-6 overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] rounded-2xl p-4 sm:p-6">
         <DialogHeader>
           <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
             <HugeiconsIcon icon={Folder01Icon} className="size-5" />
