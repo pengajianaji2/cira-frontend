@@ -80,8 +80,9 @@ export function SprintHeaderControls({
   const reopenMutation = useReopenSprintMutation(projectId);
   const deleteMutation = useDeleteSprintMutation(projectId);
 
-  const activeSprint = sprints.find((s) => s.status === "active");
-  const selectedSprint = sprints.find((s) => s.id === selectedSprintId) || null;
+  const activeSprints = sprints.filter((s) => s.status === "active");
+  const visibleSprints = sprints.filter((s) => s.status !== "deleted");
+  const selectedSprint = visibleSprints.find((s) => s.id === selectedSprintId) || null;
   const isConfirmPending = reopenMutation.isPending || deleteMutation.isPending;
 
   const handleConfirmDialogAction = (e: React.MouseEvent) => {
@@ -155,7 +156,7 @@ export function SprintHeaderControls({
               <SelectItem value="all" className="text-xs font-medium">
                 Semua Task (Keseluruhan Proyek)
               </SelectItem>
-              {sprints.map((s) => {
+              {visibleSprints.map((s) => {
                 const taskCount = s.totalTasks ?? s.tasks?.length ?? 0;
                 const statusLabel = SPRINT_STATUS_LABELS[s.status] || s.status;
                 return (
@@ -251,7 +252,7 @@ export function SprintHeaderControls({
                 </Button>
               )}
 
-              {canDeleteSprint && selectedSprint.status !== "active" && (
+              {canDeleteSprint && selectedSprint.status === "planning" && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -297,22 +298,24 @@ export function SprintHeaderControls({
             </span>
           </div>
         </div>
-      ) : activeSprint ? (
+      ) : activeSprints.length > 0 ? (
         <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="size-2 rounded-full bg-emerald-500" aria-hidden="true" />
-            <span className="text-muted-foreground">Sprint Berjalan Saat Ini:</span>
-            <strong className="text-foreground">{activeSprint.name}</strong>
+            <span className="text-muted-foreground">Sprint Berjalan ({activeSprints.length}):</span>
+            {activeSprints.map((sprint) => (
+              <Button
+                key={sprint.id}
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onSelectSprint(sprint.id)}
+                className="text-[11px] h-7 px-2.5 text-primary hover:underline font-semibold cursor-pointer"
+              >
+                {sprint.name}
+              </Button>
+            ))}
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => onSelectSprint(activeSprint.id)}
-            className="text-[11px] h-7 px-2.5 text-primary hover:underline font-semibold cursor-pointer"
-          >
-            Fokus ke Sprint Ini
-          </Button>
         </div>
       ) : null}
 
@@ -335,7 +338,7 @@ export function SprintHeaderControls({
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
               {confirmAction?.type === "reopen"
                 ? `Sprint "${confirmAction.sprint.name}" akan dikembalikan ke status perencanaan (planning) dan progres proyek akan dihitung ulang.`
-                : `Apakah Anda yakin ingin menghapus sprint "${confirmAction?.sprint.name}"? Sprint hanya dapat dihapus jika tidak memiliki Todo.`}
+                : `Sprint planning "${confirmAction?.sprint.name}" akan disembunyikan sementara dan dapat dipulihkan. Sprint yang sudah berjalan tidak bisa dihapus.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
@@ -354,7 +357,7 @@ export function SprintHeaderControls({
               {isConfirmPending && <Spinner className="size-3.5 mr-1.5" />}
               {confirmAction?.type === "reopen"
                 ? "Ya, Buka Kembali"
-                : "Ya, Hapus Sprint"}
+                : "Ya, Hapus Sementara"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -376,7 +379,6 @@ export function SprintHeaderControls({
         <StartSprintModal
           projectId={projectId}
           sprint={startModalSprint}
-          activeSprint={activeSprint}
           isOpen={true}
           onClose={() => setStartModalSprint(null)}
         />

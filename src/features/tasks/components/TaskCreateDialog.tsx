@@ -58,7 +58,7 @@ export function TaskCreateDialog({
   const { data: sprints = [] } = useProjectSprintsQuery(projectId);
   const { data: roster = [] } = useProjectRosterQuery(projectId);
 
-  const assignableSprints = sprints.filter((s) => s.status !== "completed");
+  const assignableSprints = sprints.filter((s) => s.status !== "completed" && s.status !== "deleted");
 
   const {
     register,
@@ -73,6 +73,8 @@ export function TaskCreateDialog({
       description: "",
       status: initialStatus,
       priority: "medium",
+      sprintId: initialSprintId ?? "",
+      assigneeId: undefined,
       assigneeName: "",
     },
   });
@@ -84,6 +86,8 @@ export function TaskCreateDialog({
         description: "",
         status: initialStatus,
         priority: "medium",
+        sprintId: initialSprintId ?? "",
+        assigneeId: undefined,
         assigneeName: "",
       });
       setStatus(initialStatus);
@@ -198,7 +202,7 @@ export function TaskCreateDialog({
                 value={sprintId === "none" ? "" : sprintId}
                 onValueChange={(val) => {
                   setSprintId(val);
-                  setValue("sprintId", val);
+                  setValue("sprintId", val, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger id="task-create-sprint" className="w-full rounded-xl text-xs h-10">
@@ -231,7 +235,7 @@ export function TaskCreateDialog({
                 value={status}
                 onValueChange={(val: TaskStatus) => {
                   setStatus(val);
-                  setValue("status", val);
+                  setValue("status", val, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger id="task-create-status" className="w-full rounded-xl text-xs h-10">
@@ -259,7 +263,7 @@ export function TaskCreateDialog({
                 value={priority}
                 onValueChange={(val: TaskPriority) => {
                   setPriority(val);
-                  setValue("priority", val);
+                  setValue("priority", val, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger id="task-create-priority" className="w-full rounded-xl text-xs h-10">

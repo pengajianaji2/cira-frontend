@@ -69,7 +69,7 @@ export function CumulativeProgressBar({
                   className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-700 border-emerald-500/30 inline-flex items-center gap-1.5"
                 >
                   <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-                  Sprint Aktif: {activeSprintName}
+                  {activeCount > 1 ? `${activeCount} sprint aktif` : `Sprint Aktif: ${activeSprintName}`}
                 </Badge>
               )}
             </div>

@@ -2,10 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  PlayIcon,
-  AlertCircleIcon,
-} from "@hugeicons/core-free-icons";
+import { PlayIcon } from "@hugeicons/core-free-icons";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +26,6 @@ import { useStartSprintMutation } from "../queries/sprints.queries";
 interface StartSprintModalProps {
   projectId: string;
   sprint: Sprint;
-  activeSprint?: Sprint | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -37,7 +33,6 @@ interface StartSprintModalProps {
 export function StartSprintModal({
   projectId,
   sprint,
-  activeSprint,
   isOpen,
   onClose,
 }: StartSprintModalProps) {
@@ -90,8 +85,6 @@ export function StartSprintModal({
     );
   };
 
-  const hasAnotherActive = Boolean(activeSprint && activeSprint.id !== sprint.id);
-
   return (
     <Dialog
       open={isOpen}
@@ -110,18 +103,6 @@ export function StartSprintModal({
             Sesuai aturan BR-SPRINT-02, tentukan tanggal mulai dan tanggal selesai valid (WIB) untuk mengaktifkan sprint ini.
           </DialogDescription>
         </DialogHeader>
-
-        {hasAnotherActive && (
-          <div
-            role="status"
-            className="bg-destructive/10 border border-destructive/20 rounded-2xl p-3 flex items-start gap-2.5 text-destructive my-2"
-          >
-            <HugeiconsIcon icon={AlertCircleIcon} className="size-4 shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-[11px] leading-relaxed">
-              Peringatan: Proyek ini sudah memiliki sprint aktif (<strong>{activeSprint?.name}</strong>). Hanya satu sprint yang boleh aktif dalam satu waktu.
-            </p>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4 my-2">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -180,7 +161,7 @@ export function StartSprintModal({
             </Button>
             <Button
               type="submit"
-              disabled={startMutation.isPending || hasAnotherActive}
+              disabled={startMutation.isPending}
               className="rounded-full text-xs h-9 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
             >
               {startMutation.isPending ? (

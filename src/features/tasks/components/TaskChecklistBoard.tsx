@@ -86,7 +86,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
       );
     });
 
-    return sprints.map((sprint) => ({
+    return sprints.filter((sprint) => sprint.status !== "deleted").map((sprint) => ({
       sprint,
       tasks: filtered.filter((task) => task.sprintId === sprint.id),
     }));
@@ -192,7 +192,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
             <Button
               type="button"
               size="sm"
-              disabled={!sprints.some((sprint) => sprint.status !== "completed")}
+              disabled={!sprints.some((sprint) => sprint.status !== "completed" && sprint.status !== "deleted")}
               className={`rounded-full text-xs h-9 px-4 cursor-pointer ${TODO_BUTTON_INTERACTION_CLASS}`}
               onClick={() => {
                 setCreateInitialSprintId(activeSprint?.id ?? sprints.find((sprint) => sprint.status === "planning")?.id ?? null);

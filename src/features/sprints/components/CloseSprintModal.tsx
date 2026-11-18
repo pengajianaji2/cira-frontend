@@ -65,8 +65,8 @@ export function CloseSprintModal({
 
   const [destinations, setDestinations] = useState<Record<string, string>>({});
 
-  const planningSprints = useMemo(
-    () => allSprints.filter((s) => s.id !== sprint.id && s.status === "planning"),
+  const targetSprints = useMemo(
+    () => allSprints.filter((s) => s.id !== sprint.id && s.status !== "completed" && s.status !== "deleted"),
     [allSprints, sprint.id]
   );
 
@@ -75,11 +75,11 @@ export function CloseSprintModal({
     setDestinations((prev) => {
       const next: Record<string, string> = {};
       todoTasks.forEach((task) => {
-        next[task.id] = prev[task.id] || planningSprints[0]?.id || "";
+        next[task.id] = prev[task.id] || targetSprints[0]?.id || "";
       });
       return next;
     });
-  }, [isOpen, sprint.id, todoTasks, planningSprints]);
+  }, [isOpen, sprint.id, todoTasks, targetSprints]);
 
   const handleDestinationChange = (taskId: string, target: string) => {
     setDestinations((prev) => ({
@@ -197,9 +197,9 @@ export function CloseSprintModal({
                 </div>
               </div>
 
-              {todoTasks.length > 0 && planningSprints.length === 0 && (
+              {todoTasks.length > 0 && targetSprints.length === 0 && (
                 <p role="alert" className="rounded-xl bg-amber-500/10 p-3 text-xs text-amber-800">
-                  Buat Sprint planning terlebih dahulu agar Todo yang tersisa memiliki tujuan.
+                  Buat Sprint planning atau aktifkan sprint lain agar Todo yang tersisa memiliki tujuan.
                 </p>
               )}
 
@@ -246,9 +246,9 @@ export function CloseSprintModal({
                                 <SelectValue placeholder="Pilih tujuan" />
                               </SelectTrigger>
                               <SelectContent className="rounded-xl">
-                                {planningSprints.map((ps) => (
+                                {targetSprints.map((ps) => (
                                   <SelectItem key={ps.id} value={ps.id} className="text-xs">
-                                    Sprint Planning: {ps.name}
+                                    {ps.status === "active" ? "Sprint Aktif" : "Sprint Planning"}: {ps.name}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -292,7 +292,7 @@ export function CloseSprintModal({
             type="button"
             className="rounded-full text-xs h-9 px-5 bg-primary text-primary-foreground font-semibold cursor-pointer"
             onClick={handleConfirm}
-            disabled={isLoadingDetail || isDetailError || completeMutation.isPending || (todoTasks.length > 0 && (planningSprints.length === 0 || todoTasks.some((task) => !destinations[task.id])))}
+            disabled={isLoadingDetail || isDetailError || completeMutation.isPending || (todoTasks.length > 0 && (targetSprints.length === 0 || todoTasks.some((task) => !destinations[task.id])))}
           >
             {completeMutation.isPending && <Spinner className="size-3.5 mr-1.5" />}
             Selesaikan Sprint &amp; Pindahkan Task
