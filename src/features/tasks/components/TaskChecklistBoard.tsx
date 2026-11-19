@@ -43,12 +43,13 @@ interface TaskChecklistBoardProps {
     name: string;
     status: string;
   };
+  sprintId?: string;
 }
 
 /**
  * Papan Todo proyek yang selalu mengelompokkan pekerjaan ke Sprint.
  */
-export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
+export function TaskChecklistBoard({ project, sprintId }: TaskChecklistBoardProps) {
   const { data: permissions = [] } = useMyPermissionsQuery();
   const canWriteTasks = permissions.includes("tasks.write");
   const canDeleteTasks = permissions.includes("tasks.delete");
@@ -86,11 +87,11 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
       );
     });
 
-    return sprints.filter((sprint) => sprint.status !== "deleted").map((sprint) => ({
+    return sprints.filter((sprint) => sprint.status !== "deleted" && (!sprintId || sprint.id === sprintId)).map((sprint) => ({
       sprint,
       tasks: filtered.filter((task) => task.sprintId === sprint.id),
     }));
-  }, [tasks, sprints, searchQuery]);
+  }, [tasks, sprints, searchQuery, sprintId]);
 
   // Handlers
   const handleToggleStatus = (task: Task, nextStatus: "todo" | "done") => {
@@ -168,10 +169,10 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
   return (
     <div className="space-y-6">
       {/* Banner DP Warning (jika belum ada pembayaran terverifikasi) */}
-      <DpWarningBanner projectId={project.id} projectStatus={project.status} />
+      {!sprintId && <DpWarningBanner projectId={project.id} projectStatus={project.status} />}
 
       {/* Kontrol Filter & Tambah Task */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card border border-border rounded-2xl p-3.5">
+      {!sprintId && <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card border border-border rounded-2xl p-3.5">
         <div className="relative flex-1 max-w-sm">
           <HugeiconsIcon
             icon={Search01Icon}
@@ -204,13 +205,13 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
             </Button>
           </div>
         )}
-      </div>
+      </div>}
 
       <div className="space-y-3">
         {sprintTaskGroups.length ? sprintTaskGroups.map(({ sprint, tasks: sprintTasks }) => {
           const doneCount = sprintTasks.filter((task) => task.status === "done").length;
           return (
-            <section key={sprint.id} className="bg-card border border-border rounded-2xl p-4 sm:p-5 space-y-3">
+            <section key={sprint.id} className={sprintId ? "space-y-3" : "bg-card border border-border rounded-2xl p-4 sm:p-5 space-y-3"}>
               <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <Badge variant={sprint.status === "active" ? "default" : "secondary"} className="text-[10px] shrink-0">
@@ -218,7 +219,14 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
                   </Badge>
                   <h3 className="text-sm font-bold truncate">{sprint.name}</h3>
                 </div>
-                <span className="text-[11px] text-muted-foreground shrink-0">{doneCount}/{sprintTasks.length} selesai</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground shrink-0">{doneCount}/{sprintTasks.length} selesai</span>
+                  {canWriteTasks && sprint.status !== "completed" && (
+                    <Button type="button" variant="outline" size="sm" className="h-8 rounded-full text-[11px]" onClick={() => { setCreateInitialSprintId(sprint.id); setIsCreateOpen(true); }}>
+                      <HugeiconsIcon icon={Add01Icon} className="mr-1 size-3.5" aria-hidden="true" />Tambah Todo
+                    </Button>
+                  )}
+                </div>
               </div>
               {sprintTasks.length ? (
                 <div className="space-y-2">
@@ -255,6 +263,7 @@ export function TaskChecklistBoard({ project }: TaskChecklistBoardProps) {
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         initialSprintId={createInitialSprintId}
+        fixedSprintId={sprintId}
         onSubmit={handleCreateSubmit}
         isPending={createTaskMutation.isPending}
       />

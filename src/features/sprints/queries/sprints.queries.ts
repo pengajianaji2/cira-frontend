@@ -189,19 +189,6 @@ export function useDeleteSprintMutation(projectId: string) {
   });
 }
 
-/** Hook mutasi pemulihan sprint yang dihapus sementara. */
-export function useRestoreSprintMutation(projectId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (sprintId: string) => sprintsApi.restoreSprint(sprintId),
-    onSuccess: (res) => {
-      toast.success(res.message || "Sprint berhasil dipulihkan");
-      invalidateSprintRelatedQueries(queryClient, projectId, { includeTasksAndFinance: true });
-    },
-    onError: (err: unknown) => toast.error(getErrorMessage(err, "Gagal memulihkan sprint")),
-  });
-}
-
 export function useAssignTasksToSprintMutation(projectId: string) {
   const queryClient = useQueryClient();
 

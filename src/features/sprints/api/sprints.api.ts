@@ -123,14 +123,6 @@ export const sprintsApi = {
     return response.data;
   },
 
-  /** Memulihkan sprint yang dihapus sementara ke status planning. */
-  async restoreSprint(sprintId: string): Promise<ApiResponse<{ sprint: Sprint }>> {
-    const response = await apiClient.post<ApiResponse<{ sprint: Sprint }>>(
-      `/sprints/${sprintId}/restore`
-    );
-    return response.data;
-  },
-
   /**
    * Memasukkan daftar task ke dalam sprint.
    */

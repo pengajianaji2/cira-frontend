@@ -338,7 +338,7 @@ export function SprintHeaderControls({
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
               {confirmAction?.type === "reopen"
                 ? `Sprint "${confirmAction.sprint.name}" akan dikembalikan ke status perencanaan (planning) dan progres proyek akan dihitung ulang.`
-                : `Sprint planning "${confirmAction?.sprint.name}" akan disembunyikan sementara dan dapat dipulihkan. Sprint yang sudah berjalan tidak bisa dihapus.`}
+                : `Sprint planning "${confirmAction?.sprint.name}" dan seluruh Todo di dalamnya akan dihapus permanen. Tindakan ini tidak dapat dibatalkan. Sprint yang sudah pernah dimulai tidak bisa dihapus.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
@@ -357,7 +357,7 @@ export function SprintHeaderControls({
               {isConfirmPending && <Spinner className="size-3.5 mr-1.5" />}
               {confirmAction?.type === "reopen"
                 ? "Ya, Buka Kembali"
-                : "Ya, Hapus Sementara"}
+                : "Ya, Hapus Permanen"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

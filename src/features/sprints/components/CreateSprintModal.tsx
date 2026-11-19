@@ -15,12 +15,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { extractWibDateOnly, isValidDateOnly } from "@/shared/lib/business-date";
 import { Sprint } from "../types/sprints.types";
+import { parseSprintTemplate } from "../lib/parseSprintTemplate";
 import {
   useCreateSprintMutation,
   useSprintByIdQuery,
   useUpdateSprintMutation,
 } from "../queries/sprints.queries";
-import { CreateSprintInput } from "../types/sprints.types";
 import { useUpdateTaskMutation } from "@/features/tasks/queries/tasks.queries";
 import { useProjectRosterQuery } from "@/features/projects";
 import {
@@ -30,28 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-function parseSprintTemplate(value: string): CreateSprintInput & { errors: string[] } {
-  const lines = value.split(/\r?\n/);
-  const get = (key: string) => lines.find((line) => line.toUpperCase().startsWith(`${key}:`))?.slice(key.length + 1).trim() || "";
-  const taskIndex = lines.findIndex((line) => line.trim().toUpperCase() === "TASKS:");
-  const tasks: NonNullable<CreateSprintInput["tasks"]> = [];
-  const errors: string[] = [];
-  for (const line of lines.slice(taskIndex < 0 ? lines.length : taskIndex + 1)) {
-    if (!line.trim()) continue;
-    if (line.trim().startsWith("- ")) {
-      const match = line.trim().slice(2).match(/^\[(LOW|MEDIUM|HIGH|URGENT)\]\s+(.+)$/i);
-      if (!match) { errors.push(`Format task tidak valid: ${line.trim()}`); continue; }
-      tasks.push({ title: match[2].trim(), priority: match[1].toLowerCase() as "low" | "medium" | "high" | "urgent" });
-    } else if (line.trim().startsWith(">") && tasks.length) {
-      tasks[tasks.length - 1].description = line.trim().slice(1).trim();
-    }
-  }
-  const name = get("SPRINT");
-  if (!name) errors.unshift("Isi nama dengan format SPRINT: Nama Sprint.");
-  if (taskIndex < 0 || tasks.length === 0) errors.push("Tambahkan TASKS: dan minimal satu baris - [MEDIUM] Judul task.");
-  return { name, goal: get("GOAL") || undefined, startDate: get("START") || undefined, endDate: get("END") || undefined, tasks, errors };
-}
 
 interface CreateSprintModalProps {
   projectId: string;

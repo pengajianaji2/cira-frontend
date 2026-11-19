@@ -37,6 +37,7 @@ interface TaskCreateDialogProps {
   onClose: () => void;
   initialStatus?: TaskStatus;
   initialSprintId?: string | null;
+  fixedSprintId?: string | null;
   onSubmit: (input: CreateTaskInput) => void;
   isPending?: boolean;
 }
@@ -47,6 +48,7 @@ export function TaskCreateDialog({
   onClose,
   initialStatus = "todo",
   initialSprintId = null,
+  fixedSprintId,
   onSubmit,
   isPending = false,
 }: TaskCreateDialogProps) {
@@ -98,8 +100,8 @@ export function TaskCreateDialog({
   }, [isOpen, initialStatus, initialSprintId, reset]);
 
   const onFormSubmit = (data: CreateTaskInput) => {
-    if (sprintId === "none") return;
-    const selectedSprint = sprintId;
+    const selectedSprint = fixedSprintId ?? sprintId;
+    if (selectedSprint === "none" || !selectedSprint) return;
 
     let finalAssigneeId: string | undefined = undefined;
     let finalAssigneeName = data.assigneeName?.trim() || undefined;
@@ -190,7 +192,7 @@ export function TaskCreateDialog({
           </div>
 
           {/* Alokasi Sprint */}
-          <div className="grid grid-cols-2 gap-3">
+          {!fixedSprintId && <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label
                 htmlFor="task-create-sprint"
@@ -220,7 +222,7 @@ export function TaskCreateDialog({
                 <p className="text-[11px] text-muted-foreground">Buat Sprint planning terlebih dahulu untuk menambahkan Todo.</p>
               )}
             </div>
-          </div>
+          </div>}
 
           {/* Status Task & Prioritas */}
           <div className="grid grid-cols-2 gap-3">

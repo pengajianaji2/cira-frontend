@@ -38,13 +38,12 @@ import {
   useDeleteSprintMutation,
   useProjectSprintsQuery,
   useReopenSprintMutation,
-  useRestoreSprintMutation,
 } from "../queries/sprints.queries";
 import { CumulativeProgressBar } from "./CumulativeProgressBar";
 import { CreateSprintModal } from "./CreateSprintModal";
 import { StartSprintModal } from "./StartSprintModal";
 import { CloseSprintModal } from "./CloseSprintModal";
-import { TaskChecklistBoard } from "@/features/tasks/components/TaskChecklistBoard";
+import { SprintTodoSection } from "./SprintTodoSection";
 
 interface SprintsTabContentProps {
   project: {
@@ -93,7 +92,6 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
 
   const reopenMutation = useReopenSprintMutation(project.id);
   const deleteMutation = useDeleteSprintMutation(project.id);
-  const restoreMutation = useRestoreSprintMutation(project.id);
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [sprintToEdit, setSprintToEdit] = useState<Sprint | null>(null);
@@ -104,22 +102,20 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
     sprint: Sprint;
   } | null>(null);
 
-  const { activeSprints, planningSprints, completedSprints, deletedSprints, activeSprint } =
+  const { activeSprints, planningSprints, completedSprints, activeSprint } =
     useMemo(() => {
       const active = sprints.filter((s) => s.status === "active");
       const planning = sprints.filter((s) => s.status === "planning");
       const completed = sprints.filter((s) => s.status === "completed");
-      const deleted = sprints.filter((s) => s.status === "deleted");
       return {
         activeSprints: active,
         planningSprints: planning,
         completedSprints: completed,
-        deletedSprints: deleted,
         activeSprint: active[0] ?? null,
       };
     }, [sprints]);
 
-  const isConfirmPending = reopenMutation.isPending || deleteMutation.isPending || restoreMutation.isPending;
+  const isConfirmPending = reopenMutation.isPending || deleteMutation.isPending;
 
   const handleOpenCreateModal = () => {
     setSprintToEdit(null);
@@ -320,6 +316,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                 )}
               </div>
             </div>
+            <SprintTodoSection project={project} sprint={activeSprint} />
           </div>
           ))}
           </div>
@@ -379,8 +376,9 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
             {planningSprints.map((sprint) => (
               <div
                 key={sprint.id}
-                className="bg-card border border-border rounded-3xl p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                className="bg-card border border-border rounded-3xl p-5 shadow-xs space-y-4"
               >
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="space-y-1.5 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="text-sm font-bold text-foreground">{sprint.name}</h4>
@@ -454,14 +452,16 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                       size="icon-sm"
                       onClick={() => setConfirmAction({ type: "delete", sprint })}
                       disabled={isConfirmPending}
-                      aria-label={`Hapus sementara sprint "${sprint.name}"`}
-                      title="Hapus sementara"
+                      aria-label={`Hapus permanen sprint "${sprint.name}"`}
+                      title="Hapus permanen"
                       className="rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                     >
                       <HugeiconsIcon icon={Delete02Icon} className="size-4" aria-hidden="true" />
                     </Button>
                   )}
                 </div>
+                </div>
+                <SprintTodoSection project={project} sprint={sprint} />
               </div>
             ))}
           </div>
@@ -488,8 +488,9 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
             {completedSprints.map((sprint) => (
               <div
                 key={sprint.id}
-                className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                className="bg-card border border-border/80 rounded-2xl p-4 space-y-3"
               >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="text-xs sm:text-sm font-bold text-foreground">
@@ -536,45 +537,12 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
                   )}
 
                 </div>
+                </div>
+                <SprintTodoSection project={project} sprint={sprint} />
               </div>
             ))}
           </div>
         )}
-      </section>
-
-      {canDeleteSprint && deletedSprints.length > 0 && (
-        <section aria-labelledby="deleted-sprint-heading" className="space-y-3">
-          <div className="flex items-center gap-2">
-            <h3 id="deleted-sprint-heading" className="text-sm font-bold text-foreground">Sprint Dihapus Sementara</h3>
-            <Badge variant="secondary" className="text-[11px] font-mono rounded-full px-2 py-0">{deletedSprints.length}</Badge>
-          </div>
-          <div className="space-y-2">
-            {deletedSprints.map((sprint) => (
-              <div key={sprint.id} className="bg-muted/30 border border-border rounded-2xl p-4 flex items-center justify-between gap-3">
-                <div>
-                  <span className="text-sm font-medium text-muted-foreground">{sprint.name}</span>
-                  <p className="text-[11px] text-muted-foreground">{getSprintTaskCount(sprint)} task tersimpan</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isConfirmPending}
-                  onClick={() => restoreMutation.mutate(sprint.id)}
-                  className="rounded-full text-xs h-8 px-3"
-                >
-                  {restoreMutation.isPending && <Spinner className="size-3.5 mr-1.5" />}
-                  Pulihkan
-                </Button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section id="sprint-tasks" aria-labelledby="sprint-tasks-heading" className="space-y-3">
-        <h3 id="sprint-tasks-heading" className="text-sm font-bold text-foreground">Todo per Sprint</h3>
-        <TaskChecklistBoard project={project} />
       </section>
 
       {/* Dialog Buat / Edit Sprint */}
@@ -628,7 +596,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
               {confirmAction?.type === "reopen"
                 ? `Sprint "${confirmAction.sprint.name}" akan dikembalikan ke tahap perencanaan (planning) dan persentase progres proyek akan dihitung ulang secara otomatis.`
-                : `Sprint planning "${confirmAction?.sprint.name}" dan task di dalamnya akan disembunyikan sementara dan dapat dipulihkan. Sprint yang sudah berjalan tidak bisa dihapus.`}
+                : `Sprint planning "${confirmAction?.sprint.name}" dan seluruh Todo di dalamnya akan dihapus permanen. Tindakan ini tidak dapat dibatalkan. Sprint yang sudah pernah dimulai tidak bisa dihapus.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
@@ -647,7 +615,7 @@ export function SprintsTabContent({ project }: SprintsTabContentProps) {
               {isConfirmPending && <Spinner className="size-3.5 mr-1.5" />}
               {confirmAction?.type === "reopen"
                 ? "Ya, Buka Kembali"
-                : "Ya, Hapus Sementara"}
+                : "Ya, Hapus Permanen"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
