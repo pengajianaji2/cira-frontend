@@ -183,12 +183,14 @@ export function CreateSprintModal({
         }
       }}
     >
-      <DialogContent className="max-w-xl rounded-3xl p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-bold tracking-tight">
+      <DialogContent className={isEditMode
+        ? "max-w-xl rounded-3xl p-4 sm:p-6"
+        : "w-[calc(100%-1rem)] max-w-6xl max-h-[90dvh] overflow-y-auto rounded-3xl p-4 sm:max-w-6xl sm:p-6 lg:p-8"}>
+        <DialogHeader className={isEditMode ? "" : "border-b border-border/70 pb-4 pr-10 sm:pb-5"}>
+          <DialogTitle className={isEditMode ? "text-lg font-bold tracking-tight" : "text-xl font-bold tracking-tight sm:text-2xl"}>
             {isEditMode ? `Edit Sprint: ${sprintToEdit?.name}` : "Buat Sprint Baru"}
           </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
+          <DialogDescription className={isEditMode ? "text-xs text-muted-foreground" : "text-sm text-muted-foreground sm:text-base"}>
             {isEditMode
               ? isActiveSprintEdit
                 ? "Perbarui nama, sasaran, atau jadwal tanggal (WIB) sprint yang sedang berjalan."
@@ -235,28 +237,30 @@ export function CreateSprintModal({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 my-2 min-w-0">
-          {!isEditMode && <div className="flex gap-2"><Button type="button" variant={inputMode === "manual" ? "default" : "outline"} size="sm" onClick={() => setInputMode("manual")}>Manual</Button><Button type="button" variant={inputMode === "template" ? "default" : "outline"} size="sm" onClick={() => setInputMode("template")}>Paste Template</Button></div>}
+          {!isEditMode && <div className="flex gap-2 border-b border-border/60 pb-4" role="group" aria-label="Mode pembuatan sprint"><Button type="button" variant={inputMode === "manual" ? "default" : "outline"} size="sm" className="min-h-10 rounded-full px-5" onClick={() => setInputMode("manual")}>Manual</Button><Button type="button" variant={inputMode === "template" ? "default" : "outline"} size="sm" className="min-h-10 rounded-full px-5" onClick={() => setInputMode("template")}>Paste Template</Button></div>}
           {!isEditMode && inputMode === "template" && (
-            <div className="space-y-2 min-w-0">
-              <label htmlFor="sprint-template" className="text-xs font-semibold">Template Sprint</label>
+            <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-2">
+              <div className="min-w-0 space-y-2">
+              <label htmlFor="sprint-template" className="text-sm font-semibold">Template Sprint</label>
               <Textarea
                 id="sprint-template"
                 value={template}
                 onChange={(e) => setTemplate(e.target.value)}
-                rows={9}
-                className="font-mono text-xs"
+                rows={15}
+                className="min-h-[360px] resize-y rounded-2xl border-primary/40 bg-background font-mono text-xs focus-visible:ring-primary/30 sm:text-sm"
                 placeholder={'SPRINT: Sprint 1 — Contoh\nGOAL: Hasil yang dituju\nSTART: 2026-11-16\nEND: 2026-11-27\n\nTASKS:\n- [HIGH] Judul task\n  > Deskripsi task'}
               />
-              <p className="text-[11px] text-muted-foreground">Tanggal YYYY-MM-DD; prioritas LOW, MEDIUM, HIGH, URGENT.</p>
-              {templatePreview.errors.length > 0 && <p role="alert" className="text-xs text-destructive">{templatePreview.errors[0]}</p>}
-              <div className="rounded-xl border border-border bg-muted/30 p-3 text-xs">
+              <p className="text-xs text-muted-foreground">Tanggal YYYY-MM-DD; prioritas LOW, MEDIUM, HIGH, URGENT.</p>
+              {templatePreview.errors.length > 0 && <p role="alert" className="text-sm text-destructive">{templatePreview.errors[0]}</p>}
+              </div>
+              <section aria-label="Preview Sprint dan Todo" className="min-w-0 rounded-2xl border border-border bg-muted/20 p-4 text-sm sm:p-5">
                 <p className="font-semibold">Preview {templatePreview.name || "Sprint"} · {templatePreview.tasks?.length ?? 0} Todo</p>
                 {(templatePreview.tasks?.length ?? 0) > 0 && (
-                  <div className="mt-3 space-y-2">
-                    <div className="flex items-center gap-2">
+                  <div className="mt-4 space-y-2">
+                    <div className="flex flex-col items-stretch gap-2 sm:flex-row">
                       <Select value={defaultAssigneeId} onValueChange={setDefaultAssigneeId}>
-                        <SelectTrigger className="h-9 flex-1 rounded-lg text-xs">
-                          <SelectValue placeholder="Pilih PIC" />
+                        <SelectTrigger className="h-10 min-w-0 flex-1 rounded-xl text-xs">
+                          <SelectValue placeholder="Pilih PIC untuk semua" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="__none">Tanpa PIC</SelectItem>
@@ -269,7 +273,7 @@ export function CreateSprintModal({
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="h-9 rounded-lg text-xs"
+                        className="h-10 shrink-0 rounded-xl px-4 text-xs"
                         onClick={() => setTaskAssignees({})}
                         disabled={isPending}
                       >
@@ -279,15 +283,16 @@ export function CreateSprintModal({
                     <p className="text-[11px] text-muted-foreground">Pilih PIC di atas lalu terapkan ke semua Todo. Kamu bisa mengganti PIC masing-masing Todo di bawah.</p>
                   </div>
                 )}
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <ul className="mt-3 max-h-[48dvh] space-y-2 overflow-y-auto pr-1">
                   {templatePreview.tasks?.map((task, i) => (
-                    <li key={`${task.title}-${i}`} className="space-y-1.5 py-1">
-                      <div>{task.title} <span className="text-muted-foreground">({task.priority})</span></div>
+                    <li key={`${task.title}-${i}`} className="rounded-xl border border-border bg-card p-3">
+                      <div className="flex items-start justify-between gap-3"><span className="min-w-0 text-sm font-medium">{task.title}</span><span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">{task.priority}</span></div>
+                      {task.description && <p className="mt-1 text-xs text-muted-foreground">{task.description}</p>}
                       <Select
                         value={taskAssignees[i] ?? defaultAssigneeId}
                         onValueChange={(value) => setTaskAssignees((current) => ({ ...current, [i]: value }))}
                       >
-                        <SelectTrigger className="h-8 w-full rounded-lg text-xs">
+                        <SelectTrigger className="mt-2 h-9 w-full rounded-lg text-xs">
                           <SelectValue placeholder="Pilih PIC" />
                         </SelectTrigger>
                         <SelectContent>
@@ -300,7 +305,8 @@ export function CreateSprintModal({
                     </li>
                   ))}
                 </ul>
-              </div>
+                {(templatePreview.tasks?.length ?? 0) === 0 && <p className="mt-5 rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">Daftar Todo akan tampil setelah template terbaca.</p>}
+              </section>
             </div>
           )}
           {inputMode === "manual" && <>
@@ -385,7 +391,9 @@ export function CreateSprintModal({
             </p>
           )}
 
-          <DialogFooter className="pt-2 flex items-center justify-end gap-2">
+          <DialogFooter className={isEditMode
+            ? "pt-2 flex items-center justify-end gap-2"
+            : "sticky bottom-0 z-10 -mx-4 mt-2 flex items-center justify-end gap-2 border-t border-border/70 bg-popover px-4 py-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"}>
             <Button
               type="button"
               variant="outline"
